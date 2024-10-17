@@ -22,7 +22,7 @@ AppRegistry.registerComponent("defineIT", () => App);
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
-
+// COMMMENT
 
 export default function App() {
   const [user, setUser] = useState(null);
