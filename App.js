@@ -15,6 +15,11 @@ import { SocketProvider } from "./socketProvider";
 import { useState, useEffect } from "react";
 import {onAuthStateChanged, User} from 'firebase/auth'
 import { FirebaseAuth } from "./Firebase/FirebaseConfig";
+
+import { AppRegistry } from "react-native";
+
+AppRegistry.registerComponent("defineIT", () => App);
+
 // Create a Stack Navigator
 const Stack = createStackNavigator();
 
