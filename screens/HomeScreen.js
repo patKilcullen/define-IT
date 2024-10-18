@@ -14,7 +14,7 @@ import {
   SafeAreaView,
   Image,
   ScrollView,
-  Modal
+  Modal, Dimensions
 } from "react-native";
 
 import DefinitionInput from "../components/DefinitionInput";
@@ -24,12 +24,12 @@ import axios from "axios";
 import  pic from '../pic.png'
 
 import AllGames from "./AllGames";
-
+import Navbar from "../NavBar";
 
 
 export default function HomeScreen() {
   const username = useSelector((state) => state.auth.me.username);
-
+  const screenWidth = Dimensions.get("window").width;
       const [word, setWord] = useState(null);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState(null);
@@ -37,6 +37,7 @@ export default function HomeScreen() {
        const [answer, setAnswer] = useState("");
        const [openModal, setOpenModal] = useState(false)
 
+       
       const handleGetWord = async () => {
    
         setLoading(true);
@@ -81,9 +82,11 @@ function handleOpenModal (){
 }
        return (
          <SafeAreaView style={styles.container}>
+           {/* <View style={{width: screenWidth}}>
+             <Navbar />
+           </View> */}
            <ScrollView style={styles.scroll}>
-            
-            <AllGames></AllGames>
+             <AllGames></AllGames>
            </ScrollView>
          </SafeAreaView>
        );
@@ -132,6 +135,9 @@ const styles = StyleSheet.create({
     width: 200,
 
   },
+  navbar: {
+
+  }
 });
 
 

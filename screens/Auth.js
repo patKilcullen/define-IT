@@ -158,7 +158,7 @@ marginTop: -40
   },
   switchContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+     justifyContent: "center",
     marginBottom: 20,
    gap: 30
   },

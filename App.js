@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Dimensions} from "react-native";
 import { NavigationContainer } from "@react-navigation/native"; // Correct import for NavigationContainer
 import { createStackNavigator } from "@react-navigation/stack"; // Correct import for Stack Navigator
 import { Provider } from "react-redux";
@@ -15,10 +15,11 @@ import { SocketProvider } from "./socketProvider";
 import { useState, useEffect } from "react";
 import {onAuthStateChanged, User} from 'firebase/auth'
 import { FirebaseAuth } from "./Firebase/FirebaseConfig";
+import Navbar from "./NavBar";
 
-import { AppRegistry } from "react-native";
+// import { AppRegistry } from "react-native";
 
-AppRegistry.registerComponent("defineIT", () => App);
+// AppRegistry.registerComponent("defineIT", () => App);
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
@@ -26,6 +27,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
   const [user, setUser] = useState(null);
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FirebaseAuth, (user) => {
@@ -37,10 +39,13 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+const screenWidth = Dimensions.get("window").width;
   return (
     <SocketProvider>
       <Provider store={store}>
-        <NavigationContainer>
+        <NavigationContainer style={{ backgroundColor: "red" }}>
+          {user && <Navbar />}
+
           <Stack.Navigator>
             {/* If the user is not authenticated, show the Auth screen */}
             {!user ? (
@@ -52,11 +57,31 @@ export default function App() {
             ) : (
               <>
                 {/* If the user is authenticated, show the Home and other screens */}
-                <Stack.Screen name="Home" component={HomeScreen} />
-                <Stack.Screen name="UserGames" component={UserGames} />
-                <Stack.Screen name="CreateGame" component={CreateGame} />
-                <Stack.Screen name="SingleGame" component={SingleGame} />
-                <Stack.Screen name="SearchGame" component={SearchGame} />
+                <Stack.Screen
+                  name="Home"
+                  component={HomeScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="UserGames"
+                  component={UserGames}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="CreateGame"
+                  component={CreateGame}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="SingleGame"
+                  component={SingleGame}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="SearchGame"
+                  component={SearchGame}
+                  options={{ headerShown: false }}
+                />
               </>
             )}
           </Stack.Navigator>
