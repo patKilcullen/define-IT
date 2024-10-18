@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import {FireBaseDB} from '../Firebase/FirebaseConfig'
-import {addDoc, collection, doc, getDoc}  from 'firebase/firestore'
+import {addDoc, collection, doc, getDoc, query, where, getDocs}  from 'firebase/firestore'
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -97,17 +97,52 @@ export const fetchSingleGame = createAsyncThunk("singleGame", async (id, { rejec
 });
 
 // GET SINGLE GAME BY NAME - for search
+// export const findGameByName = createAsyncThunk(
+//   "findGameByName",
+//   async (gameName) => {
+//     try {
+//       const { data } = await api.get(`/api/games/findGame/${gameName}`);
+//       return data;
+//     } catch (error) {
+//       console.log("ERROR IN FETCH ALL GAMES THUNK: ", error);
+//     }
+//   }
+// );
+
+// FIND GAME BY NAME
 export const findGameByName = createAsyncThunk(
   "findGameByName",
-  async (gameName) => {
+  async (gameName, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/api/games/findGame/${gameName}`);
-      return data;
+      // Reference to the "games" collection
+      const gamesRef = collection(FireBaseDB, "games");
+
+      // Query to find games where the "name" field matches gameName
+      const q = query(gamesRef, where("name", "==", gameName));
+
+      // Get all documents matching the query
+      const querySnapshot = await getDocs(q);
+
+      // Check if we got any results
+      if (querySnapshot.empty) {
+        throw new Error(`No game found with name: ${gameName}`);
+      }
+
+      // Extract the data from the document(s)
+      const games = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Return the first game found (or all games, if needed)
+      return games.length > 0 ? games[0] : null;
     } catch (error) {
-      console.log("ERROR IN FETCH ALL GAMES THUNK: ", error);
+      console.log("ERROR IN FIND GAME BY NAME THUNK: ", error);
+      return rejectWithValue(error.message);
     }
   }
 );
+
 
 // EDIT GAME
 export const editGame = createAsyncThunk("editGame", async (game) => {
