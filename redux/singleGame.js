@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import {FireBaseDB} from '../Firebase/FirebaseConfig'
-import {addDoc, collection}  from 'firebase/firestore'
+import {addDoc, collection, doc, getDoc}  from 'firebase/firestore'
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -70,13 +70,29 @@ export const createGame = createAsyncThunk(
   }
 );
 
-// // GET SIGNLE GAME
-export const fetchSingleGame = createAsyncThunk("singleGame", async (id) => {
+// // // GET SIGNLE GAME
+// export const fetchSingleGame = createAsyncThunk("singleGame", async (id) => {
+//   try {
+//     const { data } = await api.get(`/api/games/${id}`);
+//     return data;
+//   } catch (error) {
+//     console.log("ERROR IN SINGLE GAME THUNK: ", error);
+//   }
+// });
+// GET SINGLE GAME
+export const fetchSingleGame = createAsyncThunk("singleGame", async (id, { rejectWithValue }) => {
   try {
-    const { data } = await api.get(`/api/games/${id}`);
-    return data;
+    const gameRef = doc(FireBaseDB, 'games', id);  // Reference to the document
+    const gameDoc = await getDoc(gameRef);
+
+    if (gameDoc.exists()) {
+      return { id: gameDoc.id, ...gameDoc.data() };  // Return game data with its ID
+    } else {
+      throw new Error("Game not found");
+    }
   } catch (error) {
     console.log("ERROR IN SINGLE GAME THUNK: ", error);
+    return rejectWithValue(error.message);  // Reject with error message
   }
 });
 
