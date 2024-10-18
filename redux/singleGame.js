@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+import {FireBaseDB} from '../Firebase/FirebaseConfig'
+import {addDoc, collection}  from 'firebase/firestore'
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -8,6 +9,117 @@ const api = axios?.create({
     "Content-Type": "application/json",
   },
 });
+
+
+
+// export const createGame  = async  ({
+//     userId,
+//     name,
+//     rounds,
+//     roundsLeft,
+//     winner,
+//     started,
+//     complete,
+//     ownerId,
+//     publicX,
+//     numPlayers,
+//     turn,
+//   })=>{
+
+//  try {
+//       const docRef = await addDoc(collection(FireBaseDB, "games"), {
+//         userId,
+//         name,
+//         rounds,
+//         roundsLeft,
+//         winner,
+//         started,
+//         complete,
+//         ownerId,
+//         publicX,
+//         numPlayers,
+//         turn,
+//       });
+//       console.log("DocRef: ", docRef);
+
+//       return {
+//         id: docRef.id, // Returning the document ID
+//         userId,
+//         name,
+//         rounds,
+//         roundsLeft,
+//         winner,
+//         started,
+//         complete,
+//         ownerId,
+//         publicX,
+//         numPlayers,
+//         turn,
+//       };
+//     } catch (error) {
+//       console.log("ERROR IN CREATE GAME THUNK: ", error);
+//     }
+
+
+// }
+ 
+
+    
+
+// CREATE GAME
+export const createGame = createAsyncThunk(
+  "createGame",
+  async (
+    {
+      userId,
+      name,
+      rounds,
+      roundsLeft,
+      winner,
+      started,
+      complete,
+      ownerId,
+      publicX,
+      numPlayers,
+      turn,
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const docRef = await addDoc(collection(FireBaseDB, "games"), {
+        userId: userId || "", // Default value or validation
+        name: name || "Untitled Game",
+        rounds: rounds || 0,
+        roundsLeft: roundsLeft || 0,
+        winner: winner || null,
+        started: started || false,
+        complete: complete || false,
+        ownerId: ownerId || "",
+        publicX: publicX || false,
+        numPlayers: numPlayers || 1,
+        turn: turn || "",
+      });
+      console.log("DocRef: ".docRef);
+
+      return {
+        id: docRef.id, // Returning the document ID
+        userId,
+        name,
+        rounds,
+        roundsLeft,
+        winner,
+        started,
+        complete,
+        ownerId,
+        publicX,
+        numPlayers,
+        turn,
+      };
+    } catch (error) {
+      console.log("ERROR IN CREATE GAME THUNK: ", error);
+    }
+  }
+);
 
 // // GET SIGNLE GAME
 export const fetchSingleGame = createAsyncThunk("singleGame", async (id) => {
@@ -59,43 +171,43 @@ export const editGameTurn = createAsyncThunk(
   }
 );
 
-// CREATE GAME
-export const createGame = createAsyncThunk(
-  "createGame",
-  async ({
-    userId,
-    name,
-    rounds,
-    roundsLeft,
-    winner,
-    started,
-    complete,
-    ownerId,
-    publicX,
-    numPlayers,
-    turn,
-  }) => {
-    try {
-      const { data } = await api.post("/api/games", {
-        userId,
-        name,
-        rounds,
-        roundsLeft,
-        winner,
-        started,
-        complete,
-        ownerId,
-        publicX,
-        numPlayers,
-        turn,
-      });
+// // CREATE GAME
+// export const createGame = createAsyncThunk(
+//   "createGame",
+//   async ({
+//     userId,
+//     name,
+//     rounds,
+//     roundsLeft,
+//     winner,
+//     started,
+//     complete,
+//     ownerId,
+//     publicX,
+//     numPlayers,
+//     turn,
+//   }) => {
+//     try {
+//       const { data } = await api.post("/api/games", {
+//         userId,
+//         name,
+//         rounds,
+//         roundsLeft,
+//         winner,
+//         started,
+//         complete,
+//         ownerId,
+//         publicX,
+//         numPlayers,
+//         turn,
+//       });
 
-      return data;
-    } catch (error) {
-      console.log("ERROR IN CREATE GAME THUNK: ", error);
-    }
-  }
-);
+//       return data;
+//     } catch (error) {
+//       console.log("ERROR IN CREATE GAME THUNK: ", error);
+//     }
+//   }
+// );
 
 const singleGameSlice = createSlice({
   name: "singleGame",

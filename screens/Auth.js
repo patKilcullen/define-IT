@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
  import { authenticate } from "../redux/store";
 import {
@@ -13,6 +13,9 @@ import {
 import { useNavigation } from "@react-navigation/native"; // For navigation
 import { FirebaseAuth } from "../Firebase/FirebaseConfig";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword,} from "firebase/auth";
+// import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+
 
 const AuthForm = () => {
   const { error } = useSelector((state) => state.auth);
@@ -75,6 +78,62 @@ const [err,setErr] = useState(false)
      }
   };
 
+
+  // GOOGLE AUTH DO NOT DELETE
+  // useEffect(() => {
+  //   GoogleSignin.configure({
+  //     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_ID, // From Firebase Console
+  //     offlineAccess: true, // If you want to access Google API on behalf of the user FROM your server
+  //   });
+  // }, []);
+
+
+    // const handleGoogleLogin = async () => {
+    //   try {
+    //     // Initiate the Google sign-in process
+    //     await GoogleSignin.hasPlayServices();
+    //     const { idToken } = await GoogleSignin.signIn();
+
+    //     // Create a Firebase credential with the Google token
+    //     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    //     // Sign-in the user with the credential
+    //     await auth().signInWithCredential(googleCredential);
+
+    //     console.log("User signed in with Google");
+    //   } catch (error) {
+    //     console.error("Google login failed:", error);
+    //   }
+    // };
+
+
+    // async function handleGoogleLogin() {
+    //   // Check if your device supports Google Play
+    //   await GoogleSignin.hasPlayServices({
+    //     showPlayServicesUpdateDialog: true,
+    //   });
+    //   // Get the users ID token
+    //   const { idToken } = await GoogleSignin.signIn();
+
+    //   // Create a Google credential with the token
+    //   const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    //   // Sign-in the user with the credential
+    //   return auth().signInWithCredential(googleCredential);
+    // }
+
+    const handleLogout = async () => {
+      try {
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut();
+        await auth().signOut();
+        console.log("User logged out");
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    };
+    
+
   return (
     // <View style={styles.container}>
     <View style={styles.formContainer}>
@@ -127,6 +186,9 @@ const [err,setErr] = useState(false)
             color="#6200ee"
           />
         </View>
+        {/* <View style={styles.container}>
+          <Button title="Login with Google" onPress={handleGoogleLogin} />
+        </View> */}
         {err ? <Text style={styles.errorText}>{err}</Text> : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
       </KeyboardAvoidingView>
