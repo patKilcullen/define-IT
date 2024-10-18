@@ -21,6 +21,7 @@ import {
 
 // SOCKET
 import { SocketContext } from "../../socketProvider";
+import { UserContext } from "../../UserContext";
 
 // COMPONENTS
 import GamePlay from "./GampePlay";
@@ -45,12 +46,13 @@ const SingleGame = () => {
   const route = useRoute();
 
   const gameId = route.params.id; // Get gameId from route parameters
-  const userId = useSelector((state) => state.auth.me.id);
+//   const userId = useSelector((state) => state.auth.me.id);
+const { user } = useContext(UserContext); 
   const username = useSelector((state) => state.auth.me.username);
   const game = useSelector(selectSingleGame);
   const scores = useSelector(selectAllScores);
   const tempScoreCardTurn = useSelector(selectTempScoreCardMessages);
-  const userScore = scores.find((score) => score.userId === userId);
+  const userScore = scores.find((score) => score.userId === user.uid);
   const word = useSelector(selectWord);
   const definition = useSelector(selectRealDefinition);
 
@@ -116,7 +118,7 @@ const SingleGame = () => {
         turn: false,
         turnNum: null,
         gameId: gameId,
-        userId: userId,
+        userId: user,uid,
       })
     );
     clientSocket.emit("send_ask_to_join", {
@@ -210,7 +212,7 @@ const SingleGame = () => {
         {showFinalCard && <FinalCard game={game} userScore={userScore} />}
 
         <ScoreCard
-          userId={userId}
+          userId={user.uid}
           userScore={userScore}
           game={game}
           handleAskJoin={handleAskJoin}
@@ -219,13 +221,13 @@ const SingleGame = () => {
           handleAcceptRequest={handleAcceptRequest}
         />
 
-        {(game.started === true && game.ownerId === userId) ||
+        {(game.started === true && game.ownerId === user.uid) ||
         (game.started === true && userScore) ? (
           <GamePlay
             setShowTempScoreCard={setShowTempScoreCard}
             setReloadFlip={setReloadFlip}
             reloadFlip={reloadFlip}
-            userId={userId}
+            userId={user.uid}
             game={game}
             userScore={userScore}
             reloadScores={reloadScores}
