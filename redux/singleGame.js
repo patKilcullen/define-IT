@@ -12,57 +12,6 @@ const api = axios?.create({
 
 
 
-// export const createGame  = async  ({
-//     userId,
-//     name,
-//     rounds,
-//     roundsLeft,
-//     winner,
-//     started,
-//     complete,
-//     ownerId,
-//     publicX,
-//     numPlayers,
-//     turn,
-//   })=>{
-
-//  try {
-//       const docRef = await addDoc(collection(FireBaseDB, "games"), {
-//         userId,
-//         name,
-//         rounds,
-//         roundsLeft,
-//         winner,
-//         started,
-//         complete,
-//         ownerId,
-//         publicX,
-//         numPlayers,
-//         turn,
-//       });
-//       console.log("DocRef: ", docRef);
-
-//       return {
-//         id: docRef.id, // Returning the document ID
-//         userId,
-//         name,
-//         rounds,
-//         roundsLeft,
-//         winner,
-//         started,
-//         complete,
-//         ownerId,
-//         publicX,
-//         numPlayers,
-//         turn,
-//       };
-//     } catch (error) {
-//       console.log("ERROR IN CREATE GAME THUNK: ", error);
-//     }
-
-
-// }
- 
 
     
 
@@ -99,7 +48,7 @@ export const createGame = createAsyncThunk(
         numPlayers: numPlayers || 1,
         turn: turn || "",
       });
-      console.log("DocRef: ".docRef);
+    
 
       return {
         id: docRef.id, // Returning the document ID
@@ -227,6 +176,7 @@ const singleGameSlice = createSlice({
       return action.payload;
     });
     builder.addCase(createGame.fulfilled, (state, action) => {
+        console.log("CREATE GAME REDUCER")
       return action.payload;
     });
   },

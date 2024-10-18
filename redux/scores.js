@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { FireBaseDB } from "../Firebase/FirebaseConfig";
+import { addDoc, collection } from "firebase/firestore";
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -38,19 +40,47 @@ export const fetchHighestGameScores = createAsyncThunk(
 );
 
 // CREATE SCORE
+// export const createScore = createAsyncThunk(
+//   "createScore",
+//   async ({ score, accepted, turn, turnNum, gameId, userId }) => {
+//     try {
+//       const { data } = await api.post("/api/scores", {
+//         score,
+//         accepted,
+//         turn,
+//         turnNum,
+//         gameId,
+//         userId,
+//       });
+//       return data;
+//     } catch (error) {
+//       console.log("ERROR IN CREAT Score THUNK: ", error);
+//     }
+//   }
+// );
+
 export const createScore = createAsyncThunk(
   "createScore",
   async ({ score, accepted, turn, turnNum, gameId, userId }) => {
     try {
-      const { data } = await api.post("/api/scores", {
-        score,
-        accepted,
-        turn,
-        turnNum,
-        gameId,
-        userId,
-      });
-      return data;
+    const docRef = await addDoc(collection(FireBaseDB, "scores"), {
+      score: score || 0,
+      accepted: accepted || false,
+      turn: turn || false,
+      turnNum: turnNum || null,
+      gameId: gameId || "",
+      userId: userId || "",
+    });
+
+       return {
+         id: docRef.id, // Returning the document ID
+         score,
+         accepted,
+         turn,
+         turnNum,
+         gameId,
+         userId,
+       };
     } catch (error) {
       console.log("ERROR IN CREAT Score THUNK: ", error);
     }

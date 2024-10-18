@@ -108,10 +108,11 @@ const api = axios?.create({
 
 // REFRESH => add username argument to thunk and use that to getItem(username)
 export const me = createAsyncThunk("auth/me", async (username, thunkAPI) => {
+    console.log("AUTH ME")
   try {
     // Retrieve the token using AsyncStorage
     const token = await AsyncStorage.getItem(username || TOKEN);
-console.log("TOKED: ", token)
+
     if (token) {
       const res = await api.get("/auth/me", {
         headers: {
@@ -160,9 +161,10 @@ export const authenticate = createAsyncThunk(
       const res = await signInWithEmailAndPassword(
         FirebaseAuth,
         username,
-        password
+        passwordr
       );
-console.log("RESSS: ", res)
+
+      console.log("RES IN AUTH: ", res)
       // Store the token using AsyncStorage
       await AsyncStorage.setItem(username || TOKEN, res.data.token);
 

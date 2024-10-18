@@ -10,7 +10,7 @@ const api = axios?.create({
 
 // GET SINGLE USER
 export const fetchSingleUser = createAsyncThunk("singleUser", async (id) => {
-  console.log("ise typ: ", id, typeof id)
+
   try {
     const { data } = await api.get(`/api/users/${id}`);
 

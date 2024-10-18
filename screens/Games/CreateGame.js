@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -10,9 +10,11 @@ import {
 } from "react-native";
 import { createGame } from "../../redux/singleGame";
 import { createScore } from "../../redux/scores";
+import { UserContext } from "../../UserContext";
 
 const CreateGame = () => {
-  const userId = useSelector((state) => state.auth.me.id);
+     const { user } = useContext(UserContext); 
+//   const userId = useSelector((state) => state.auth.me.id);
   const [gameName, setGameName] = useState("");
   const [rounds, setRounds] = useState(1);
   const [error, setError] = useState("");
@@ -26,14 +28,14 @@ const CreateGame = () => {
     if (!isNaN(rounds) && rounds > 0) {
       dispatch(
         createGame({
-          userId: userId,
+          userId: user.uid,
           name: gameName,
           rounds: rounds,
           roundsLeft: rounds,
           winner: "null",
           started: false,
           complete: false,
-          ownerId: userId,
+          ownerId: user.uid,
           publicX: true,
           numPlayers: 1,
           turn: 1,
@@ -46,10 +48,10 @@ const CreateGame = () => {
             turn: true,
             turnNum: 1,
             gameId: res.payload.id,
-            userId: userId,
+            userId: user.uid,
           })
         ).then((res) => {
-      console.log("RESSSSS: ", res.payload.gameId);
+ 
           navigation.navigate("SingleGame", { id: res.payload.gameId });
         });
       });

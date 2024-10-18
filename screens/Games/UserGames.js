@@ -14,7 +14,7 @@ import CardFront from "../CardFront";
 const UserGames = () => {
   const [displayGames, setDisplayGames] = useState([]);
   const userId = useSelector((state) => state.auth.me.id);
-console.log("USER ID: ", userId)
+
   const dispatch = useDispatch();
   const route = useRoute();
   const navigation = useNavigation();
@@ -23,10 +23,9 @@ console.log("USER ID: ", userId)
 
   // Fetch and filter games based on the route params
   useEffect(() => {
-    console.log("gAMES : ", route.params?.type);
-     console.log("gaaa: ", games);
+   
     if (games === "all-games") {
-        console.log("afafadf")
+    
       dispatch(fetchSingleUser(userId)).then((res) => {
         setDisplayGames(res.payload.games);
       });

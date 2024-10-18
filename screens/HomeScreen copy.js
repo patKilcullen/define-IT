@@ -44,8 +44,7 @@ export default function HomeScreen() {
           const response = await axios.get(
             "http://192.168.4.188:3000/api/newWords/8"
           );
-       console.log("RES; ", response)
-        console.log("RES DATA; ", response.data);
+   
           setWord(response.data);
         } catch (err) {
           setError("Failed to fetch word");

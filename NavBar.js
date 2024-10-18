@@ -34,7 +34,7 @@ const Navbar = () => {
 
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(FirebaseAuth, (user) => {
-        console.log("USER: ", user);
+   
         setUser(user);
       });
 
