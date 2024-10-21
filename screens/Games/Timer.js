@@ -16,6 +16,9 @@ import {
   selectFakeDefinitions,
 } from "../../redux/gameplay";
 
+import { RealTimeDB } from "../../Firebase/FirebaseConfig";
+import { ref, set } from "firebase/database";
+
 const Timer = ({
   checkIfTied,
   setTempBack,
@@ -74,7 +77,8 @@ const Timer = ({
 
   // Emit socket event to start countdown when the component mounts
   useEffect(() => {
-    clientSocket.emit("start_countdown", { gameName });
+    // clientSocket.emit("start_countdown", { gameName });
+     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
   }, []);
 
   // When playGame becomes true, hide the previous styles to show guessDefs

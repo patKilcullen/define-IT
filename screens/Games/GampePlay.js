@@ -50,9 +50,10 @@ const GamePlay = ({
 }) => {
   const dispatch = useDispatch();
   const me = useSelector(selectMe);
-  const username = me.username;
+ 
   const gameName = game.name;
 const { user } = useContext(UserContext);
+ const username = user.displayName;
   // SOCKET
   const clientSocket = useContext(SocketContext);
 
@@ -158,7 +159,7 @@ const { user } = useContext(UserContext);
 //     setTimer(true);
 //     setChoseWord(true);
 //   };
-
+console.log("GAMEANEM: ", gameName, user.displayName)
  const handleChooseWord = () => {
    dispatch(addRealDefinition(definition));
    handleGetFakeWords();
@@ -226,7 +227,9 @@ useEffect(() => {
 
   // Listen for word data (receive_word)
   const wordListener = onValue(wordRef, (snapshot) => {
+    
     const data = snapshot.val();
+    console.log("WORD SNAPSHIOT: ", data);
     if (data && data.playerTurnName !== username && data.room === gameName) {
       dispatch(setWordState(data.word));
       dispatch(addRealDefinition(data.definition));
@@ -239,7 +242,9 @@ useEffect(() => {
 
   // Listen for countdown start (receive_start_countdown)
   const countdownListener = onValue(countdownRef, (snapshot) => {
+
     const room = snapshot.val();
+      console.log("SNAPSHOT: ", room);
     setTimer(room === gameName);
   });
 
