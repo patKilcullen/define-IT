@@ -70,6 +70,42 @@ export const createGame = createAsyncThunk(
   }
 );
 
+
+// FIND GAME BY NAME
+export const fetchAllGames = createAsyncThunk(
+  "findGameByName",
+  async (user, { rejectWithValue }) => {
+    try {
+      // Reference to the "games" collection
+      const gamesRef = collection(FireBaseDB, "games");
+
+      // Query to find games where the "name" field matches gameName
+      const q = query(gamesRef, where("", "==", gameName));
+
+      // Get all documents matching the query
+      const querySnapshot = await getDocs(q);
+
+      // Check if we got any results
+      if (querySnapshot.empty) {
+        throw new Error(`No game found with name: ${gameName}`);
+      }
+
+      // Extract the data from the document(s)
+      const games = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Return the first game found (or all games, if needed)
+      return games.length > 0 ? games[0] : null;
+    } catch (error) {
+      console.log("ERROR IN FIND GAME BY NAME THUNK: ", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
 // // // GET SIGNLE GAME
 // export const fetchSingleGame = createAsyncThunk("singleGame", async (id) => {
 //   try {
@@ -171,43 +207,7 @@ export const editGameTurn = createAsyncThunk(
   }
 );
 
-// // CREATE GAME
-// export const createGame = createAsyncThunk(
-//   "createGame",
-//   async ({
-//     userId,
-//     name,
-//     rounds,
-//     roundsLeft,
-//     winner,
-//     started,
-//     complete,
-//     ownerId,
-//     publicX,
-//     numPlayers,
-//     turn,
-//   }) => {
-//     try {
-//       const { data } = await api.post("/api/games", {
-//         userId,
-//         name,
-//         rounds,
-//         roundsLeft,
-//         winner,
-//         started,
-//         complete,
-//         ownerId,
-//         publicX,
-//         numPlayers,
-//         turn,
-//       });
 
-//       return data;
-//     } catch (error) {
-//       console.log("ERROR IN CREATE GAME THUNK: ", error);
-//     }
-//   }
-// );
 
 const singleGameSlice = createSlice({
   name: "singleGame",

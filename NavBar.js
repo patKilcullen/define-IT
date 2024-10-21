@@ -12,8 +12,7 @@ import { FirebaseAuth } from "./Firebase/FirebaseConfig";
 
 
 const Navbar = () => {
-  const isLoggedIn = useSelector((state) => !!state.auth.me.id);
-  const dispatch = useDispatch();
+
   const navigation = useNavigation();
 
   const logoutAndRedirectHome = () => {

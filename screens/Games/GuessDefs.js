@@ -38,7 +38,9 @@ import { SocketContext } from "../../socketProvider";
 
 // COMPONENTS
 import TempScoreCard from "../../screens/scores/TempScoreCard";
-import CardFront from "../CardFront";
+// import CardFront from "../CardFront";
+const CardFront = React.lazy(() => import("../CardFront"));
+
 
 const GuessDefs = ({
   checkIfTied,

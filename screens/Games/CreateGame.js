@@ -13,7 +13,7 @@ import { createScore } from "../../redux/scores";
 import { UserContext } from "../../UserContext";
 
 const CreateGame = () => {
-     const { user } = useContext(UserContext); 
+    const { user } = useContext(UserContext);  
 //   const userId = useSelector((state) => state.auth.me.id);
   const [gameName, setGameName] = useState("");
   const [rounds, setRounds] = useState(1);

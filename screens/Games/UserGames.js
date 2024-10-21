@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
@@ -11,10 +11,12 @@ import { fetchSingleUser } from "../../redux/users";
 // import Navbar from "../navbar/Navbar"; // Adapt Navbar to React Native or remove if not necessary
 // Ensure CardFront is a React Native component
 import CardFront from "../CardFront";
+
+import { UserContext } from "../../UserContext";
 const UserGames = () => {
   const [displayGames, setDisplayGames] = useState([]);
-  const userId = useSelector((state) => state.auth.me.id);
-
+//   const userId = useSelector((state) => state.auth.me.id);
+const { user } = useContext(UserContext); 
   const dispatch = useDispatch();
   const route = useRoute();
   const navigation = useNavigation();
@@ -23,20 +25,21 @@ const UserGames = () => {
 
   // Fetch and filter games based on the route params
   useEffect(() => {
-   
+
     if (games === "all-games") {
-    
-      dispatch(fetchSingleUser(userId)).then((res) => {
+    let user = fetchSingleUser(user.uid);
+
+      dispatch(fetchSingleUser(user.uid)).then((res) => {
         setDisplayGames(res.payload.games);
       });
     } else if (games === "started-games") {
-      dispatch(fetchSingleUser(userId)).then((res) => {
+      dispatch(fetchSingleUser(user.uid)).then((res) => {
         setDisplayGames(
           res.payload.games.filter((game) => game.started === true)
         );
       });
     } else if (games === "unstarted-games") {
-      dispatch(fetchSingleUser(userId)).then((res) => {
+      dispatch(fetchSingleUser(user.uid)).then((res) => {
         setDisplayGames(
           res.payload.games.filter((game) => game.started === false)
         );

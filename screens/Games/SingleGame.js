@@ -118,7 +118,7 @@ const { user } = useContext(UserContext);
         turn: false,
         turnNum: null,
         gameId: gameId,
-        userId: user,uid,
+        userId: user.uid,
       })
     );
     clientSocket.emit("send_ask_to_join", {

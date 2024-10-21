@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { FireBaseDB } from "../Firebase/FirebaseConfig";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -10,16 +10,40 @@ const api = axios?.create({
   },
 });
 
+// // GET ALL GAME'S SCORES
+// export const fetchAllGameScores = createAsyncThunk(
+//   "allScores",
+//   async (gameId) => {
+//     try {
+//       const { data } = await api.get(`/api/scores/game/${gameId}`);
+
+//       return data;
+//     } catch (error) {
+//       console.log("ERROR IN FETCH ALL SCORES THUNK: ", error);
+//     }
+//   }
+// );
 // GET ALL GAME'S SCORES
 export const fetchAllGameScores = createAsyncThunk(
   "allScores",
-  async (gameId) => {
+  async (gameId, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/api/scores/game/${gameId}`);
+      // Reference to the "scores" collection
+      const scoresRef = collection(FireBaseDB, 'scores');
+      
+      // Query to get all scores for the specific gameId
+      const q = query(scoresRef, where('gameId', '==', gameId));
+      
+      // Get all documents matching the query
+      const querySnapshot = await getDocs(q);
 
-      return data;
+      // Map over the documents and return the data with document ID
+      const scores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      return scores;  // Return all scores
     } catch (error) {
       console.log("ERROR IN FETCH ALL SCORES THUNK: ", error);
+      return rejectWithValue(error.message);  // Reject with error message
     }
   }
 );
