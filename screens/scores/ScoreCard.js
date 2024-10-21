@@ -23,7 +23,7 @@ const ScoreCard = ({
   handleAcceptRequest,
 }) => {
   const scores = useSelector(selectAllScores);
-   console.log("SCORE cCARD USER SCORE: ", userScore)
+   console.log("SCORE cCARD USER SCORE: ", scores)
 
   return (
     <View style={styles.container}>
@@ -161,7 +161,7 @@ const ScoreCard = ({
                   style={styles.playerRequest}
                 >
                   <Text style={styles.requestPlayerName}>
-                    {score?.user?.username}:
+                    {score?.displayName}:
                   </Text>
                   <Buttons
                     name={"Accept"}

@@ -86,26 +86,28 @@ export const fetchHighestGameScores = createAsyncThunk(
 
 export const createScore = createAsyncThunk(
   "createScore",
-  async ({ score, accepted, turn, turnNum, gameId, userId }) => {
+  async ({ score, accepted, turn, turnNum, gameId, userId, displayName }) => {
     try {
-    const docRef = await addDoc(collection(FireBaseDB, "scores"), {
-      score: score || 0,
-      accepted: accepted || false,
-      turn: turn || false,
-      turnNum: turnNum || null,
-      gameId: gameId || "",
-      userId: userId || "",
-    });
+      const docRef = await addDoc(collection(FireBaseDB, "scores"), {
+        score: score || 0,
+        accepted: accepted || false,
+        turn: turn || false,
+        turnNum: turnNum || null,
+        gameId: gameId || "",
+        userId: userId || "",
+        displayName: displayName || "",
+      });
 
-       return {
-         id: docRef.id, // Returning the document ID
-         score,
-         accepted,
-         turn,
-         turnNum,
-         gameId,
-         userId,
-       };
+      return {
+        id: docRef.id, // Returning the document ID
+        score,
+        accepted,
+        turn,
+        turnNum,
+        gameId,
+        userId,
+        displayName,
+      };
     } catch (error) {
       console.log("ERROR IN CREAT Score THUNK: ", error);
     }

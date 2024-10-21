@@ -53,7 +53,7 @@ const { user } = useContext(UserContext);
   const game = useSelector(selectSingleGame);
   const scores = useSelector(selectAllScores);
   const tempScoreCardTurn = useSelector(selectTempScoreCardMessages);
-  const userScore = scores.find((score) => score.userId === user?.uid);
+  const userScore = scores.find((score) => score?.userId === user?.uid);
   console.log("USER SCORE: ", userScore)
   const word = useSelector(selectWord);
   const definition = useSelector(selectRealDefinition);
@@ -117,6 +117,7 @@ const { user } = useContext(UserContext);
 
   // Ask to join the game
   const handleAskJoin = () => {
+    console.log("THIS USERR create askkkk: ", user.displayName, user);
     dispatch(
       createScore({
         score: 0,
@@ -125,6 +126,7 @@ const { user } = useContext(UserContext);
         turnNum: null,
         gameId: gameId,
         userId: user?.uid,
+        displayName: user.displayName
       })
     );
     clientSocket.emit("send_ask_to_join", {

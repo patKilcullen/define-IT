@@ -265,8 +265,219 @@
 // export default AuthForm;
 
 
+// 
+
+// import React, { useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import {
+//   View,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   StyleSheet,
+//   Button,
+//   KeyboardAvoidingView,
+//   Platform,
+// } from "react-native";
+// import { useNavigation } from "@react-navigation/native";
+// import { FirebaseAuth } from "../Firebase/FirebaseConfig";
+// import {
+//   createUserWithEmailAndPassword,
+//   signInWithEmailAndPassword,
+//   updateProfile,
+// } from "firebase/auth";
+
+// const AuthForm = () => {
+//   const { error } = useSelector((state) => state.auth);
+//   const dispatch = useDispatch();
+//   const navigation = useNavigation(); // For navigating between screens
+//   const [selectedForm, setSelectedForm] = useState("login");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [userName, setUserName] = useState(""); // For the displayName
+//   const [err, setErr] = useState(false);
+
+//   const handleSelectForm = (formType) => {
+//     setSelectedForm(formType);
+//   };
+
+//   const handleSubmit = async () => {
+//     if (selectedForm === "signup") {
+//       try {
+//         // Create the user with Firebase Authentication
+//         const res = await createUserWithEmailAndPassword(
+//           FirebaseAuth,
+//           email,
+//           password
+//         );
+// console.log("RESSSSS: ",res.user)
+//         // Update the user's displayName
+//         const user = FirebaseAuth.currentUser;
+//         await updateProfile(user, {
+//           displayName: userName,
+//         });
+
+//         alert("Signup Successful, check your email.");
+//         navigation.navigate("Home"); // Navigate to Home after signup
+//       } catch (err) {
+//         setErr(true);
+//         alert("Sign up failed " + err.message);
+//       }
+//     }
+
+//     if (selectedForm === "login") {
+//       try {
+//         const res = await signInWithEmailAndPassword(
+//           FirebaseAuth,
+//           email,
+//           password
+//         );
+//         navigation.navigate("Home"); // Navigate to Home after login
+//       } catch (err) {
+//         setErr(true);
+//         alert("Sign in failed " + err.message);
+//       }
+//     }
+//   };
+
+//   return (
+//     <KeyboardAvoidingView
+//       style={{ flex: 1 }}
+//       behavior={Platform.OS === "ios" ? "padding" : "height"}
+//       keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
+//     >
+//       <View style={styles.formContainer}>
+//         <KeyboardAvoidingView>
+//           <Text style={styles.title}>Define-IT</Text>
+//           <View style={styles.switchContainer}>
+//             <TouchableOpacity onPress={() => handleSelectForm("login")}>
+//               <Text
+//                 style={[
+//                   styles.switchText,
+//                   selectedForm === "login" && styles.selectedText,
+//                 ]}
+//               >
+//                 Log In
+//               </Text>
+//             </TouchableOpacity>
+//             <TouchableOpacity onPress={() => handleSelectForm("signup")}>
+//               <Text
+//                 style={[
+//                   styles.switchText,
+//                   selectedForm === "signup" && styles.selectedText,
+//                 ]}
+//               >
+//                 Sign Up
+//               </Text>
+//             </TouchableOpacity>
+//           </View>
+
+//           {selectedForm === "signup" && (
+//             <>
+//               <Text style={styles.label}>Username:</Text>
+//               <TextInput
+//                 style={styles.input}
+//                 onChangeText={(text) => setUserName(text)}
+//                 value={userName}
+//                 autoCapitalize="none"
+//                 autoCorrect={false}
+//               />
+//             </>
+//           )}
+
+//           <Text style={styles.label}>Email:</Text>
+//           <TextInput
+//             style={styles.input}
+//             onChangeText={(text) => setEmail(text)}
+//             value={email}
+//             autoCapitalize="none"
+//             autoCorrect={false}
+//           />
+
+//           <Text style={styles.label}>Password:</Text>
+//           <TextInput
+//             style={styles.input}
+//             onChangeText={(text) => setPassword(text)}
+//             value={password}
+//             secureTextEntry
+//           />
+
+//           <Button
+//             title={selectedForm === "login" ? "Log In" : "Sign Up"}
+//             onPress={handleSubmit}
+//             color="#6200ee"
+//           />
+
+//           {err ? <Text style={styles.errorText}>{err}</Text> : null}
+//           {error ? <Text style={styles.errorText}>{error}</Text> : null}
+//         </KeyboardAvoidingView>
+//       </View>
+//     </KeyboardAvoidingView>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   title: {
+//     fontSize: 50,
+//     marginBottom: 50,
+//     marginTop: -40,
+//   },
+//   formContainer: {
+//     backgroundColor: "#88ebe6",
+//     padding: 20,
+//     borderWidth: 3,
+//     borderColor: "#000",
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   switchContainer: {
+//     flexDirection: "row",
+//     justifyContent: "center",
+//     marginBottom: 20,
+//     gap: 30,
+//   },
+//   switchText: {
+//     fontSize: 18,
+//     color: "grey",
+//   },
+//   selectedText: {
+//     fontWeight: "bold",
+//     color: "black",
+//     textDecorationLine: "underline",
+//   },
+//   label: {
+//     fontSize: 16,
+//     fontWeight: "bold",
+//     marginVertical: 10,
+//   },
+//   input: {
+//     height: 50,
+//     width: 300,
+//     borderColor: "black",
+//     borderWidth: 2,
+//     borderRadius: 10,
+//     padding: 10,
+//     backgroundColor: "white",
+//   },
+//   errorText: {
+//     color: "red",
+//     marginTop: 10,
+//   },
+// });
+
+// export default AuthForm;
+
+
+
+
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import {
   View,
   Text,
@@ -277,64 +488,60 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // For navigation
-import { FirebaseAuth, FireBaseDB } from "../Firebase/FirebaseConfig";
+import { useNavigation } from "@react-navigation/native";
 import {
+  getAuth,
   createUserWithEmailAndPassword,
+  updateProfile,
   signInWithEmailAndPassword,
-} from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; // Firestore methods
+} from "firebase/auth"; // Use these Firebase methods
 
 const AuthForm = () => {
-  const { error } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
-  const navigation = useNavigation(); // For navigating between screens
   const [selectedForm, setSelectedForm] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userName, setUserName] = useState(""); // New state for username
-  const [err, setErr] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [err, setErr] = useState("");
+  const navigation = useNavigation();
 
   const handleSelectForm = (formType) => {
     setSelectedForm(formType);
   };
 
   const handleSubmit = async () => {
+    const auth = getAuth();
+
     if (selectedForm === "signup") {
       try {
         // Create the user with Firebase Authentication
-        const res = await createUserWithEmailAndPassword(
-          FirebaseAuth,
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
           email,
           password
         );
+        const user = userCredential.user;
 
-        // Store the userName in Firestore under the newly created user
-        await setDoc(doc(FireBaseDB, "users", res.user.uid), {
-          userName: userName,
-          email: email,
-          userId: res.user.uid,
+        // Ensure the user's displayName is set after the account is created
+        await updateProfile(user, {
+          displayName: userName,
         });
 
-        alert("Signup Successful, check your email.");
+        console.log("Profile updated with displayName:", userName);
+        alert("Signup Successful!");
         navigation.navigate("Home"); // Navigate to Home after signup
       } catch (err) {
-        setErr(true);
-        alert("Sign up failed " + err.message);
+        console.error("Error during signup:", err);
+        setErr("Sign up failed: " + err.message);
       }
     }
 
     if (selectedForm === "login") {
       try {
-        const res = await signInWithEmailAndPassword(
-          FirebaseAuth,
-          email,
-          password
-        );
-        navigation.navigate("Home"); // Navigate to Home after login
+        await signInWithEmailAndPassword(auth, email, password);
+        navigation.navigate("Home");
       } catch (err) {
-        setErr(true);
-        alert("Sign in failed " + err.message);
+        console.error("Error during login:", err);
+        setErr("Sign in failed: " + err.message);
       }
     }
   };
@@ -342,91 +549,76 @@ const AuthForm = () => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"} // Set behavior for each platform
-      keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0} // Offset for iOS (optional)
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
     >
       <View style={styles.formContainer}>
-        <KeyboardAvoidingView>
-          <Text style={styles.title}>Define-IT</Text>
-          <View style={styles.switchContainer}>
-            <TouchableOpacity onPress={() => handleSelectForm("login")}>
-              <Text
-                style={[
-                  styles.switchText,
-                  selectedForm === "login" && styles.selectedText,
-                ]}
-              >
-                Log In
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectForm("signup")}>
-              <Text
-                style={[
-                  styles.switchText,
-                  selectedForm === "signup" && styles.selectedText,
-                ]}
-              >
-                Sign Up
-              </Text>
-            </TouchableOpacity>
-          </View>
+        <Text style={styles.title}>Define-IT</Text>
+        <View style={styles.switchContainer}>
+          <TouchableOpacity onPress={() => handleSelectForm("login")}>
+            <Text
+              style={[
+                styles.switchText,
+                selectedForm === "login" && styles.selectedText,
+              ]}
+            >
+              Log In
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleSelectForm("signup")}>
+            <Text
+              style={[
+                styles.switchText,
+                selectedForm === "signup" && styles.selectedText,
+              ]}
+            >
+              Sign Up
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-          {selectedForm === "signup" && (
-            <>
-              <Text style={styles.label}>Username:</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={(text) => setUserName(text)}
-                value={userName}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </>
-          )}
+        {selectedForm === "signup" && (
+          <>
+            <Text style={styles.label}>Username:</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setUserName(text)}
+              value={userName}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </>
+        )}
 
-          <Text style={styles.label}>Email:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+        <Text style={styles.label}>Email:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
 
-          <Text style={styles.label}>Password:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            secureTextEntry
-          />
+        <Text style={styles.label}>Password:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          secureTextEntry
+        />
 
-          <Button
-            title={selectedForm === "login" ? "Log In" : "Sign Up"}
-            onPress={handleSubmit}
-            color="#6200ee"
-          />
-
-          {err ? <Text style={styles.errorText}>{err}</Text> : null}
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        </KeyboardAvoidingView>
+        <Button
+          title={selectedForm === "login" ? "Log In" : "Sign Up"}
+          onPress={handleSubmit}
+          color="#6200ee"
+        />
+        {err && <Text style={styles.errorText}>{err}</Text>}
       </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 50,
-    marginBottom: 50,
-    marginTop: -40,
-  },
   formContainer: {
     backgroundColor: "#88ebe6",
     padding: 20,
@@ -436,11 +628,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  title: {
+    fontSize: 50,
+    marginBottom: 50,
+    marginTop: -40,
+  },
   switchContainer: {
     flexDirection: "row",
     justifyContent: "center",
     marginBottom: 20,
-    gap: 30,
   },
   switchText: {
     fontSize: 18,
