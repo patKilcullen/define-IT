@@ -54,6 +54,7 @@ const { user } = useContext(UserContext);
   const scores = useSelector(selectAllScores);
   const tempScoreCardTurn = useSelector(selectTempScoreCardMessages);
   const userScore = scores.find((score) => score.userId === user?.uid);
+  console.log("USER SCORE: ", userScore)
   const word = useSelector(selectWord);
   const definition = useSelector(selectRealDefinition);
 

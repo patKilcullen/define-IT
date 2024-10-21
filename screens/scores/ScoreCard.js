@@ -23,7 +23,7 @@ const ScoreCard = ({
   handleAcceptRequest,
 }) => {
   const scores = useSelector(selectAllScores);
-    console.log("SCORES: ", scores)
+   console.log("SCORE cCARD USER SCORE: ", userScore)
 
   return (
     <View style={styles.container}>
@@ -185,14 +185,26 @@ const ScoreCard = ({
       )}
 
       {/* If Not Game Owner and Game Not Started: Ask to Join */}
-      {game.ownerId !== userId && !game.started && !userScore ? (
+
+      {game.ownerId !== userId && !game.started && userScore === undefined ? (
+        // Display "Ask to join game" button when userScore is undefined
         <Buttons
           name={"Ask to join game"}
           func={handleAskJoin}
           pulse={"pulse"}
         />
-      ) : game.ownerId !== userId && !game.started && userScore ? (
+      ) : game.ownerId !== userId &&
+        !game.started &&
+        userScore &&
+        !userScore.accepted ? (
+        // Display message if request has been sent but not accepted yet
         <Text style={styles.requestSent}>REQUEST SENT</Text>
+      ) : game.ownerId !== userId &&
+        !game.started &&
+        userScore &&
+        userScore.accepted ? (
+        // Display if the user has been accepted
+        <Text style={styles.requestSent}>You haved joined the game.</Text>
       ) : null}
 
       {/* Start Game Button (Only if Owner and More Than One Player) */}
