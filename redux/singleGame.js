@@ -181,24 +181,7 @@ export const findGameByName = createAsyncThunk(
 );
 
 
-// EDIT GAME
-// export const editGame = createAsyncThunk("editGame", async (game) => {
-//   try {
-//     //   const gamesRef = collection(FireBaseDB, "games");
 
-//           const gameRef = doc(FireBaseDB, "games", game.id);
-//         await updateDoc(gameRef, {
-//           ...game,
-
-//           players: arrayUnion({ user: game.userId, score: 0 }),
- 
-//         });
-//         console.log("GALELMMEMMEM: ", game)
-//     return game;
-//   } catch (err) {
-//     console.log(err);
-//   }
-// });
 // EDIT GAME
 export const editGame = createAsyncThunk("editGame", async (game) => {
   try {
@@ -226,24 +209,7 @@ export const editGame = createAsyncThunk("editGame", async (game) => {
 });
 
 
-// Start GAME.... should 
-export const startGame = createAsyncThunk("editGame", async (game) => {
-  try {
-    //   const gamesRef = collection(FireBaseDB, "games");
 
-          const gameRef = doc(FireBaseDB, "games", game.id);
-        await updateDoc(gameRef, {
-          ...game,
-
-          players: arrayUnion({ user: game.userId, score: 0 }),
- 
-        });
-        console.log("GALELMMEMMEM: ", game)
-    return game;
-  } catch (err) {
-    console.log(err);
-  }
-});
 
 // EDIT GAME TURN
 export const editGameTurn = createAsyncThunk(

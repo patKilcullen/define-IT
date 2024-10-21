@@ -4,6 +4,7 @@ import { getAnalytics } from "firebase/analytics";
  
 import {getAuth} from 'firebase/auth'
 import {getFirestore} from 'firebase/firestore'
+import { getDatabase } from "firebase/database";
 
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,6 +21,7 @@ const firebaseConfig = {
   messagingSenderId: "446729024380",
   appId: "1:446729024380:web:fd4a5207bf8afe3b67eaf9",
   measurementId: "G-16SX6TJGJJ",
+  databaseURL: "https://define-it-977f4-default-rtdb.firebaseio.com/",
 };
 
 // Initialize Firebase
@@ -27,6 +29,7 @@ export const FirebaseApp = initializeApp(firebaseConfig);
 // export const FirebaseAuth = getAuth(FirebaseApp);
 export const FireBaseDB = getFirestore(FirebaseApp)
 
+export const RealTimeDB = getDatabase(FirebaseApp);
 // // const analytics = getAnalytics(app);
 export const FirebaseAuth = initializeAuth(FirebaseApp, {
   persistence: getReactNativePersistence(AsyncStorage),

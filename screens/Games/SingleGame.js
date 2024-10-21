@@ -134,7 +134,7 @@ const { user } = useContext(UserContext);
       userName: username,
     });
   };
-console.log("GAMEEE: ", game.id)
+
   // Start the game
   const handleStartGame = () => {
     dispatch(editGame({ id: game.id, started: true })).then(() => {

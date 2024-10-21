@@ -25,7 +25,7 @@ import  pic from '../pic.png'
 
 import AllGames from "./AllGames";
 import Navbar from "../NavBar";
-
+import { balderdashWords } from "../Words";
 
 export default function HomeScreen() {
   const username = useSelector((state) => state.auth.me.username);
@@ -38,23 +38,35 @@ export default function HomeScreen() {
        const [openModal, setOpenModal] = useState(false)
 
        
-      const handleGetWord = async () => {
+      // const handleGetWord = async () => {
    
-        setLoading(true);
-        setError(null);
+      //   setLoading(true);
+      //   setError(null);
 
-        try {
-          // API call using Axios
-          const response = await axios.get(
-            "http://192.168.4.188:3000/api/newWords/8"
-          );
+
+
+      //   try {
+      //     // API call using Axios
+      //     const response = await axios.get(
+      //       "http://192.168.4.188:3000/api/newWords/8"
+      //     );
      
-          setWord(response.data);
-        } catch (err) {
-          setError("Failed to fetch word");
-        } finally {
-          setLoading(false);
-        }
+      //     setWord(response.data);
+      //   } catch (err) {
+      //     setError("Failed to fetch word");
+      //   } finally {
+      //     setLoading(false);
+      //   }
+      // };
+
+         
+      const handleGetWord = async () => {
+        
+        setError(null);
+let newWord = balderdashWords[Math.random() * balderdashWords.length]
+console.log("NEW WORD: ", newWord)
+          setWord(newWord.word);
+         setDefinition(newWord.definition);
       };
 
         const handleAskAI = async () => {
