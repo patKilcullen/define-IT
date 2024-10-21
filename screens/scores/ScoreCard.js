@@ -23,7 +23,7 @@ const ScoreCard = ({
   handleAcceptRequest,
 }) => {
   const scores = useSelector(selectAllScores);
-   console.log("SCORE cCARD USER SCORE: ", scores)
+
 
   return (
     <View style={styles.container}>

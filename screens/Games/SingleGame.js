@@ -54,7 +54,7 @@ const { user } = useContext(UserContext);
   const scores = useSelector(selectAllScores);
   const tempScoreCardTurn = useSelector(selectTempScoreCardMessages);
   const userScore = scores.find((score) => score?.userId === user?.uid);
-  console.log("USER SCORE: ", userScore)
+
   const word = useSelector(selectWord);
   const definition = useSelector(selectRealDefinition);
 
@@ -83,11 +83,11 @@ const { user } = useContext(UserContext);
 
   // Accept request to join the game
   const handleAcceptRequest = ({scoreId, userId}) => {
-    console.log("ACCCEPPPTPTPPTPPTPTPTt: ", scoreId, userId);
+
     dispatch(
-      editGame({ id: game.id, numPlayers: game.numPlayers + 1, userId })
+      editGame({ id: game.id, numPlayers: game.numPlayers + 1, userId, addPlayers: true })
     ).then((res) => {
-        console.log("NEXTTTTTTT: ")
+    
       dispatch(
         editScore({
             scoreId: scoreId,
@@ -134,7 +134,7 @@ const { user } = useContext(UserContext);
       userName: username,
     });
   };
-
+console.log("GAMEEE: ", game.id)
   // Start the game
   const handleStartGame = () => {
     dispatch(editGame({ id: game.id, started: true })).then(() => {

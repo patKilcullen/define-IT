@@ -182,7 +182,52 @@ export const findGameByName = createAsyncThunk(
 
 
 // EDIT GAME
+// export const editGame = createAsyncThunk("editGame", async (game) => {
+//   try {
+//     //   const gamesRef = collection(FireBaseDB, "games");
+
+//           const gameRef = doc(FireBaseDB, "games", game.id);
+//         await updateDoc(gameRef, {
+//           ...game,
+
+//           players: arrayUnion({ user: game.userId, score: 0 }),
+ 
+//         });
+//         console.log("GALELMMEMMEM: ", game)
+//     return game;
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
+// EDIT GAME
 export const editGame = createAsyncThunk("editGame", async (game) => {
+  try {
+    const gameRef = doc(FireBaseDB, "games", game.id);
+    
+    // Prepare the update data object
+    const updateData = {
+      ...game,
+    };
+
+    // Conditionally add to the players array if userId is defined
+    if (game.addPlayers) {
+      updateData.players = arrayUnion({ user: game.userId, score: 0 });
+      updateData.players2 = arrayUnion({ user: game.userId, score: 0 });
+    }
+
+    // Update the game document with the new data
+    await updateDoc(gameRef, updateData);
+
+    console.log("Updated game: ", game);
+    return game;
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+
+// Start GAME.... should 
+export const startGame = createAsyncThunk("editGame", async (game) => {
   try {
     //   const gamesRef = collection(FireBaseDB, "games");
 
@@ -191,8 +236,9 @@ export const editGame = createAsyncThunk("editGame", async (game) => {
           ...game,
 
           players: arrayUnion({ user: game.userId, score: 0 }),
-          players2: arrayUnion({ user: game.userId, score: 0 }),
+ 
         });
+        console.log("GALELMMEMMEM: ", game)
     return game;
   } catch (err) {
     console.log(err);
