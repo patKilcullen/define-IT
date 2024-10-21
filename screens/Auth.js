@@ -8,11 +8,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   Button,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native"; // For navigation
 import { FirebaseAuth } from "../Firebase/FirebaseConfig";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword,} from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, } from "firebase/auth";
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 
@@ -136,63 +138,70 @@ const [err,setErr] = useState(false)
 
   return (
     // <View style={styles.container}>
-    <View style={styles.formContainer}>
-      <KeyboardAvoidingView>
-        <Text style={styles.title}>Define-IT</Text>
-        <View style={styles.switchContainer}>
-          <TouchableOpacity onPress={() => handleSelectForm("login")}>
-            <Text
-              style={[
-                styles.switchText,
-                selectedForm === "login" && styles.selectedText,
-              ]}
-            >
-              Log In
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSelectForm("signup")}>
-            <Text
-              style={[
-                styles.switchText,
-                selectedForm === "signup" && styles.selectedText,
-              ]}
-            >
-              Sign Up
-            </Text>
-          </TouchableOpacity>
-        </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // Set behavior for each platform
+      keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0} // Offset for iOS (optional)
+    >
+      <View style={styles.formContainer}>
+        <KeyboardAvoidingView>
+          <Text style={styles.title}>Define-IT</Text>
+          <View style={styles.switchContainer}>
+            <TouchableOpacity onPress={() => handleSelectForm("login")}>
+              <Text
+                style={[
+                  styles.switchText,
+                  selectedForm === "login" && styles.selectedText,
+                ]}
+              >
+                Log In
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectForm("signup")}>
+              <Text
+                style={[
+                  styles.switchText,
+                  selectedForm === "signup" && styles.selectedText,
+                ]}
+              >
+                Sign Up
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-        <View>
-          <Text style={styles.label}>Email:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+          <View>
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
 
-          <Text style={styles.label}>Password:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            secureTextEntry
-          />
+            <Text style={styles.label}>Password:</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              secureTextEntry
+            />
 
-          <Button
-            title={selectedForm === "login" ? "Log In" : "Sign Up"}
-            onPress={handleSubmit}
-            color="#6200ee"
-          />
-        </View>
-        {/* <View style={styles.container}>
+            <Button
+              title={selectedForm === "login" ? "Log In" : "Sign Up"}
+              onPress={handleSubmit}
+              color="#6200ee"
+            />
+          </View>
+
+          {/* <View style={styles.container}>
           <Button title="Login with Google" onPress={handleGoogleLogin} />
         </View> */}
-        {err ? <Text style={styles.errorText}>{err}</Text> : null}
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      </KeyboardAvoidingView>
-    </View>
+          {err ? <Text style={styles.errorText}>{err}</Text> : null}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        </KeyboardAvoidingView>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 

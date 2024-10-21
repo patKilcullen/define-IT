@@ -12,6 +12,7 @@ import {
   deleteScore,
   createScore,
 } from "../../redux/scores";
+
 import {
   selectTempScoreCardMessages,
   clearTempScoreCardMessages,
@@ -52,7 +53,7 @@ const { user } = useContext(UserContext);
   const game = useSelector(selectSingleGame);
   const scores = useSelector(selectAllScores);
   const tempScoreCardTurn = useSelector(selectTempScoreCardMessages);
-  const userScore = scores.find((score) => score.userId === user.uid);
+  const userScore = scores.find((score) => score.userId === user?.uid);
   const word = useSelector(selectWord);
   const definition = useSelector(selectRealDefinition);
 
@@ -80,26 +81,30 @@ const { user } = useContext(UserContext);
   }, [showTempScoreCard]);
 
   // Accept request to join the game
-  const handleAcceptRequest = (id) => {
-    dispatch(editGame({ id: game.id, numPlayers: game.numPlayers + 1 })).then(
-      (res) => {
-        dispatch(
-          editScore({
-            userId: id,
-            turnNum: res.payload.numPlayers,
-            gameId: game.id,
-            accepted: true,
-          })
-        ).then((editScoreRes) => {
-          clientSocket.emit("send_ask_to_join", {
-            room: game.name,
-            userName: username,
-          });
-          dispatch(fetchSingleGame(gameId));
-          dispatch(fetchAllGameScores(gameId));
+  const handleAcceptRequest = ({scoreId, userId}) => {
+    console.log("ACCCEPPPTPTPPTPPTPTPTt: ", scoreId, userId);
+    dispatch(
+      editGame({ id: game.id, numPlayers: game.numPlayers + 1, userId })
+    ).then((res) => {
+        console.log("NEXTTTTTTT: ")
+      dispatch(
+        editScore({
+            scoreId: scoreId,
+          userId: userId,
+          turnNum: res.payload.numPlayers,
+          gameId: game.id,
+          accepted: true,
+        })
+        // editScore()
+      ).then((editScoreRes) => {
+        clientSocket.emit("send_ask_to_join", {
+          room: game.name,
+          userName: username,
         });
-      }
-    );
+        dispatch(fetchSingleGame(gameId));
+        dispatch(fetchAllGameScores(gameId));
+      });
+    });
   };
 
   // Decline request to play
@@ -118,7 +123,7 @@ const { user } = useContext(UserContext);
         turn: false,
         turnNum: null,
         gameId: gameId,
-        userId: user.uid,
+        userId: user?.uid,
       })
     );
     clientSocket.emit("send_ask_to_join", {
@@ -212,7 +217,7 @@ const { user } = useContext(UserContext);
         {showFinalCard && <FinalCard game={game} userScore={userScore} />}
 
         <ScoreCard
-          userId={user.uid}
+          userId={user?.uid}
           userScore={userScore}
           game={game}
           handleAskJoin={handleAskJoin}
@@ -221,13 +226,13 @@ const { user } = useContext(UserContext);
           handleAcceptRequest={handleAcceptRequest}
         />
 
-        {(game.started === true && game.ownerId === user.uid) ||
+        {(game.started === true && game.ownerId === user?.uid) ||
         (game.started === true && userScore) ? (
           <GamePlay
             setShowTempScoreCard={setShowTempScoreCard}
             setReloadFlip={setReloadFlip}
             reloadFlip={reloadFlip}
-            userId={user.uid}
+            userId={user?.uid}
             game={game}
             userScore={userScore}
             reloadScores={reloadScores}

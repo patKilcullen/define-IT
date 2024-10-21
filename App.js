@@ -39,7 +39,7 @@ export default function App() {
     // Clean up the subscription on unmount
     return () => unsubscribe();
   }, []);
-console.log("USERRRRR:", user)
+
 const screenWidth = Dimensions.get("window").width;
   return (
     <SocketProvider>

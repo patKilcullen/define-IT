@@ -23,6 +23,7 @@ const ScoreCard = ({
   handleAcceptRequest,
 }) => {
   const scores = useSelector(selectAllScores);
+    console.log("SCORES: ", scores)
 
   return (
     <View style={styles.container}>
@@ -59,7 +60,17 @@ const ScoreCard = ({
         <Text style={styles.sectionTitle}>Players</Text>
         {scores &&
           scores
-            .filter((score) => score.accepted && score.userId !== userId)
+            // .filter((score) => score?.accepted && score.userId !== userId)
+            // .filter(
+            //   (score) => score && score.accepted && score.userId !== userId
+            // ) // Filter out undefined or falsy scores
+            .filter(
+              (score) =>
+                score !== undefined &&
+                score !== null &&
+                score.accepted &&
+                score.userId !== userId
+            ) // Filt
             .map((user) => (
               <View key={user?.user?.id} style={styles.playerScore}>
                 <Text style={styles.playerName}>{user?.user?.username}:</Text>
@@ -81,7 +92,7 @@ const ScoreCard = ({
       </ScrollView>
 
       {/* If Game Owner and Game Not Started: Player Requests */}
-      {game.ownerId === userId && !game.started && (
+      {/* {game.ownerId === userId && !game.started && (
         <View style={styles.requestsContainer}>
           <Text style={styles.sectionTitle}>Player Requests</Text>
           {scores &&
@@ -95,6 +106,72 @@ const ScoreCard = ({
                   <Buttons
                     name={"Accept"}
                     func={() => handleAcceptRequest(score?.user?.id)}
+                    small={true}
+                  />
+                  <Buttons
+                    name={"Decline"}
+                    func={() => handleDeclineRequest(score?.user?.id)}
+                    small={true}
+                  />
+                </View>
+              ))}
+        </View>
+      )} */}
+      {/* If Game Owner and Game Not Started: Player Requests */}
+      {/* {game.ownerId === userId && !game.started && (
+        <View style={styles.requestsContainer}>
+          <Text style={styles.sectionTitle}>Player Requests</Text>
+          {scores &&
+            scores
+              .filter((score) => !score.accepted)
+              .map((score, index) => (
+                <View
+                  key={score?.user?.id || index}
+                  style={styles.playerRequest}
+                >
+                  <Text style={styles.requestPlayerName}>
+                    {score?.user?.username}:
+                  </Text>
+                  <Buttons
+                    name={"Accept"}
+                    func={() => handleAcceptRequest(score?.user?.id)}
+                    small={true}
+                  />
+                  <Buttons
+                    name={"Decline"}
+                    func={() => handleDeclineRequest(score?.user?.id)}
+                    small={true}
+                  />
+                </View>
+              ))}
+        </View>
+      )} */}
+      {/* If Game Owner and Game Not Started: Player Requests */}
+      {game.ownerId === userId && !game.started && (
+        <View style={styles.requestsContainer}>
+          <Text style={styles.sectionTitle}>Player Requests</Text>
+          {scores &&
+            scores
+
+              //   .filter((score) => !score.accepted)
+              .filter((score) => score !== undefined && !score.accepted)
+              .map((score, index) => (
+                <View
+                  key={score?.user?.id || index}
+                  style={styles.playerRequest}
+                >
+                  <Text style={styles.requestPlayerName}>
+                    {score?.user?.username}:
+                  </Text>
+                  <Buttons
+                    name={"Accept"}
+                    // func={() => handleAcceptRequest(score?.user?.id)}
+                    func={() =>
+                      handleAcceptRequest({
+                        scoreId: score.id,
+                        userId: score?.userId,
+                      })
+                    }
                     small={true}
                   />
                   <Buttons

@@ -7,6 +7,8 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
 } from "react-native";
 import { createGame } from "../../redux/singleGame";
 import { createScore } from "../../redux/scores";
@@ -67,24 +69,30 @@ const CreateGame = () => {
           <Text style={styles.title}>Create a New Game</Text>
           <View>
             <Text style={styles.label}>Game Name:</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Pick a fun game name..."
-              value={gameName}
-              onChangeText={(text) => setGameName(text)}
-              required
-            />
-            <Text style={styles.label}>Rounds:</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Number of rounds"
-              value={rounds.toString()}
-              onChangeText={(text) => setRounds(parseInt(text))}
-              keyboardType="numeric"
-            />
-            <TouchableOpacity style={styles.button} onPress={handleCreateGame}>
-              <Text style={styles.buttonText}>Create Game</Text>
-            </TouchableOpacity>
+            <KeyboardAvoidingView>
+              <TextInput
+                style={styles.input}
+                placeholder="Pick a fun game name..."
+                value={gameName}
+                onChangeText={(text) => setGameName(text)}
+                required
+              />
+              <Text style={styles.label}>Rounds:</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Number of rounds"
+                value={rounds.toString()}
+                onChangeText={(text) => setRounds(parseInt(text))}
+                keyboardType="numeric"
+              />
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleCreateGame}
+              >
+                <Text style={styles.buttonText}>Create Game</Text>
+              </TouchableOpacity>
+            </KeyboardAvoidingView>
           </View>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>

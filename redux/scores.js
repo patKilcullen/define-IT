@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { FireBaseDB } from "../Firebase/FirebaseConfig";
-import { addDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { addDoc, collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -28,6 +28,7 @@ export const fetchAllGameScores = createAsyncThunk(
   "allScores",
   async (gameId, { rejectWithValue }) => {
     try {
+    
       // Reference to the "scores" collection
       const scoresRef = collection(FireBaseDB, 'scores');
       
@@ -111,16 +112,27 @@ export const createScore = createAsyncThunk(
   }
 );
 
+
 // EDIT SCORE
 export const editScore = createAsyncThunk("editScore", async (score) => {
-  try {
-    const { data } = await api.put(`/api/scores/${score.userId}`, score);
 
-    return data;
+  try {
+    const scoreRef = doc(FireBaseDB, "scores", score.scoreId);
+  
+    
+    await updateDoc(scoreRef, {
+      accepted: score.accepted,
+      gameId: score.gameId,
+      userId: score.userId,
+      turnNum: score.turnNum,
+    });
+    
+    return score;
   } catch (err) {
-    console.log(err);
+    console.log("Error in editScore:", err);
   }
 });
+
 
 // ADD POINT TO SCORE
 export const addPoint = createAsyncThunk(
@@ -191,6 +203,7 @@ const allScoresSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchAllGameScores.fulfilled, (state, action) => {
+   
       return action.payload;
     }),
       builder.addCase(createScore.fulfilled, (state, action) => {

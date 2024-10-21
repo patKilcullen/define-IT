@@ -27,6 +27,7 @@ const { user } = useContext(UserContext);
   useEffect(() => {
 
     if (games === "all-games") {
+        console.log("USAAA")
     let user = fetchSingleUser(user.uid);
 
       dispatch(fetchSingleUser(user.uid)).then((res) => {

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import {FireBaseDB} from '../Firebase/FirebaseConfig'
-import {addDoc, collection, doc, getDoc, query, where, getDocs}  from 'firebase/firestore'
+import {addDoc, collection, doc, getDoc, query, where, getDocs, updateDoc, arrayUnion}  from 'firebase/firestore'
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -47,6 +47,7 @@ export const createGame = createAsyncThunk(
         publicX: publicX || false,
         numPlayers: numPlayers || 1,
         turn: turn || "",
+        players: [userId]
       });
     
 
@@ -183,8 +184,16 @@ export const findGameByName = createAsyncThunk(
 // EDIT GAME
 export const editGame = createAsyncThunk("editGame", async (game) => {
   try {
-    const { data } = await api.put(`/api/games/${game.id}`, game);
-    return data;
+    //   const gamesRef = collection(FireBaseDB, "games");
+
+          const gameRef = doc(FireBaseDB, "games", game.id);
+        await updateDoc(gameRef, {
+          ...game,
+
+          players: arrayUnion({ user: game.userId, score: 0 }),
+          players2: arrayUnion({ user: game.userId, score: 0 }),
+        });
+    return game;
   } catch (err) {
     console.log(err);
   }
