@@ -15,7 +15,8 @@ import { createScore } from "../../redux/scores";
 import { UserContext } from "../../UserContext";
 
 const CreateGame = () => {
-    const { user } = useContext(UserContext);  
+    const { user } = useContext(UserContext);
+    console.log("USER HERE : ", user)  
 //   const userId = useSelector((state) => state.auth.me.id);
   const [gameName, setGameName] = useState("");
   const [rounds, setRounds] = useState(1);
@@ -51,6 +52,7 @@ const CreateGame = () => {
             turnNum: 1,
             gameId: res.payload.id,
             userId: user.uid,
+            userName: user.displayName
           })
         ).then((res) => {
  
