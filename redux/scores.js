@@ -10,38 +10,22 @@ const api = axios?.create({
   },
 });
 
-// // GET ALL GAME'S SCORES
-// export const fetchAllGameScores = createAsyncThunk(
-//   "allScores",
-//   async (gameId) => {
-//     try {
-//       const { data } = await api.get(`/api/scores/game/${gameId}`);
 
-//       return data;
-//     } catch (error) {
-//       console.log("ERROR IN FETCH ALL SCORES THUNK: ", error);
-//     }
-//   }
-// );
 // GET ALL GAME'S SCORES
 export const fetchAllGameScores = createAsyncThunk(
   "allScores",
   async (gameId, { rejectWithValue }) => {
     try {
-    
-      // Reference to the "scores" collection
-      const scoresRef = collection(FireBaseDB, 'scores');
-      
-      // Query to get all scores for the specific gameId
-      const q = query(scoresRef, where('gameId', '==', gameId));
-      
-      // Get all documents matching the query
-      const querySnapshot = await getDocs(q);
 
-      // Map over the documents and return the data with document ID
+      const scoresRef = collection(FireBaseDB, 'scores');
+
+      const query = query(scoresRef, where('gameId', '==', gameId));
+      
+      const querySnapshot = await getDocs(query);
+
       const scores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      return scores;  // Return all scores
+      return scores;  
     } catch (error) {
       console.log("ERROR IN FETCH ALL SCORES THUNK: ", error);
       return rejectWithValue(error.message);  // Reject with error message
@@ -65,25 +49,6 @@ export const fetchHighestGameScores = createAsyncThunk(
 );
 
 // CREATE SCORE
-// export const createScore = createAsyncThunk(
-//   "createScore",
-//   async ({ score, accepted, turn, turnNum, gameId, userId }) => {
-//     try {
-//       const { data } = await api.post("/api/scores", {
-//         score,
-//         accepted,
-//         turn,
-//         turnNum,
-//         gameId,
-//         userId,
-//       });
-//       return data;
-//     } catch (error) {
-//       console.log("ERROR IN CREAT Score THUNK: ", error);
-//     }
-//   }
-// );
-
 export const createScore = createAsyncThunk(
   "createScore",
   async ({ score, accepted, turn, turnNum, gameId, userId, displayName }) => {
@@ -99,7 +64,7 @@ export const createScore = createAsyncThunk(
       });
 
       return {
-        id: docRef.id, // Returning the document ID
+        id: docRef.id, 
         score,
         accepted,
         turn,
@@ -205,8 +170,7 @@ const allScoresSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchAllGameScores.fulfilled, (state, action) => {
-   
-      return action.payload;
+    return action.payload;
     }),
       builder.addCase(createScore.fulfilled, (state, action) => {
         state.push(action.payload);

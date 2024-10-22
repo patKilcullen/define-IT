@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  TouchableWithoutFeedback,
   KeyboardAvoidingView,
 } from "react-native";
 import { createGame } from "../../redux/singleGame";
@@ -15,9 +14,9 @@ import { createScore } from "../../redux/scores";
 import { UserContext } from "../../UserContext";
 
 const CreateGame = () => {
-    const { user } = useContext(UserContext);
-    console.log("USER HERE : ", user)  
-//   const userId = useSelector((state) => state.auth.me.id);
+  const { user } = useContext(UserContext);
+
+  //   const userId = useSelector((state) => state.auth.me.id);
   const [gameName, setGameName] = useState("");
   const [rounds, setRounds] = useState(1);
   const [error, setError] = useState("");
@@ -25,6 +24,7 @@ const CreateGame = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
+  //   CREATE GAME
   const handleCreateGame = (e) => {
     e.preventDefault();
 
@@ -52,10 +52,9 @@ const CreateGame = () => {
             turnNum: 1,
             gameId: res.payload.id,
             userId: user.uid,
-            userName: user.displayName
+            userName: user.displayName,
           })
         ).then((res) => {
- 
           navigation.navigate("SingleGame", { id: res.payload.gameId });
         });
       });

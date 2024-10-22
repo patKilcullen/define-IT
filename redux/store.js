@@ -1,29 +1,7 @@
-// import { configureStore } from "@reduxjs/toolkit";
-//  import logger from "redux-logger";
-//  import authReducer from "../features/auth/authSlice";
-// // import singleGameSlice from "../features/games/singleGameSlice";
-// // import singleUserSlice from "../features/users/singleUserSlice";
-// // import allScoreSlice from "../features/scores/scoresSlice";
-// // import gamePlaySlice from "../features/gamePlay/gamePlaySlice";
 
-// const store = configureStore({
-//   reducer: {
-//     auth: authReducer,
-//     // singleGame: singleGameSlice,
-//     // singleUser: singleUserSlice,
-//     // allScores: allScoreSlice,
-//     // gamePlay: gamePlaySlice,
-//   },
-
-//   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
-// });
-
-// export default store;
-// export * from "../features/auth/authSlice";
 import { configureStore } from "@reduxjs/toolkit";
-// import logger from "redux-logger";
 import authReducer from "./auth";
-// Uncomment these slices when you need them in the app
+// Uncomment these slices when needed
 // import singleGameSlice from "../features/games/singleGameSlice";
 // import singleUserSlice from "../features/users/singleUserSlice";
 // import allScoreSlice from "../features/scores/scoresSlice";

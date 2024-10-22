@@ -4,14 +4,12 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
 import Buttons from "../../Buttons";
 
 // STORE
 import { selectAllScores } from "../../redux/scores";
-import { selectSingleGame } from "../../redux/singleGame";
 
 const ScoreCard = ({
   userId,
@@ -23,7 +21,6 @@ const ScoreCard = ({
   handleAcceptRequest,
 }) => {
   const scores = useSelector(selectAllScores);
-
 
   return (
     <View style={styles.container}>
@@ -60,10 +57,6 @@ const ScoreCard = ({
         <Text style={styles.sectionTitle}>Players</Text>
         {scores &&
           scores
-            // .filter((score) => score?.accepted && score.userId !== userId)
-            // .filter(
-            //   (score) => score && score.accepted && score.userId !== userId
-            // ) // Filter out undefined or falsy scores
             .filter(
               (score) =>
                 score !== undefined &&
@@ -92,68 +85,11 @@ const ScoreCard = ({
       </ScrollView>
 
       {/* If Game Owner and Game Not Started: Player Requests */}
-      {/* {game.ownerId === userId && !game.started && (
-        <View style={styles.requestsContainer}>
-          <Text style={styles.sectionTitle}>Player Requests</Text>
-          {scores &&
-            scores
-              .filter((score) => !score.accepted)
-              .map((score) => (
-                <View key={score?.user?.id} style={styles.playerRequest}>
-                  <Text style={styles.requestPlayerName}>
-                    {score?.user?.username}:
-                  </Text>
-                  <Buttons
-                    name={"Accept"}
-                    func={() => handleAcceptRequest(score?.user?.id)}
-                    small={true}
-                  />
-                  <Buttons
-                    name={"Decline"}
-                    func={() => handleDeclineRequest(score?.user?.id)}
-                    small={true}
-                  />
-                </View>
-              ))}
-        </View>
-      )} */}
-      {/* If Game Owner and Game Not Started: Player Requests */}
-      {/* {game.ownerId === userId && !game.started && (
-        <View style={styles.requestsContainer}>
-          <Text style={styles.sectionTitle}>Player Requests</Text>
-          {scores &&
-            scores
-              .filter((score) => !score.accepted)
-              .map((score, index) => (
-                <View
-                  key={score?.user?.id || index}
-                  style={styles.playerRequest}
-                >
-                  <Text style={styles.requestPlayerName}>
-                    {score?.user?.username}:
-                  </Text>
-                  <Buttons
-                    name={"Accept"}
-                    func={() => handleAcceptRequest(score?.user?.id)}
-                    small={true}
-                  />
-                  <Buttons
-                    name={"Decline"}
-                    func={() => handleDeclineRequest(score?.user?.id)}
-                    small={true}
-                  />
-                </View>
-              ))}
-        </View>
-      )} */}
-      {/* If Game Owner and Game Not Started: Player Requests */}
       {game.ownerId === userId && !game.started && (
         <View style={styles.requestsContainer}>
           <Text style={styles.sectionTitle}>Player Requests</Text>
           {scores &&
             scores
-
-              //   .filter((score) => !score.accepted)
               .filter((score) => score !== undefined && !score.accepted)
               .map((score, index) => (
                 <View
@@ -183,6 +119,7 @@ const ScoreCard = ({
               ))}
         </View>
       )}
+
 
       {/* If Not Game Owner and Game Not Started: Ask to Join */}
 
@@ -214,6 +151,9 @@ const ScoreCard = ({
     </View>
   );
 };
+
+
+
 
 const styles = StyleSheet.create({
   container: {

@@ -4,48 +4,35 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
 } from "react-native";
 
 // SLICES/STATE REDUCERS
 import {
-  selectFakeWords,
-  getFakeDefinitions,
-  selectFakeDefinitions,
   addTempScoreCardMessage,
-  selectTempScoreCardMessages,
-  selectRealDefinition,
   clearFakeWords,
-  clearFakeDefs,
   selectWord,
 } from "../../redux/gameplay";
+import { addPoint } from "../../redux/scores";
 import {
-  editScore,
-  addPoint,
-  fetchHighestGameScores,
-} from "../../redux/scores";
-import {
-  editGame,
   editGameTurn,
-  fetchSingleGame,
   selectSingleGame,
 } from "../../redux/singleGame";
-import { fetchSingleUser, selectSingleUser } from "../../redux/users";
 
 // SOCKET
 import { SocketContext } from "../../socketProvider";
 
 // COMPONENTS
 import TempScoreCard from "../../screens/scores/TempScoreCard";
-// import CardFront from "../CardFront";
 const CardFront = React.lazy(() => import("../CardFront"));
 
+import { ref, set, onValue } from "firebase/database";
+import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
 const GuessDefs = ({
   checkIfTied,
-  showBackOfCard,
-  makeHidden,
+  //   showBackOfCard,
+  //   makeHidden,
   game,
   username,
   userId,
@@ -62,7 +49,7 @@ const GuessDefs = ({
   setChoseWord,
 }) => {
   const [fakeDefs, setFakeDefs] = useState([]);
-  const [defList, setDefList] = useState(null);
+  const [defList, setDefList] = useState(false);
   const [guessed, setGuessed] = useState(false);
   const [countdown, setCountdown] = useState(10);
 
@@ -71,24 +58,22 @@ const GuessDefs = ({
   const clientSocket = useContext(SocketContext);
 
   const singleGame = useSelector(selectSingleGame);
-  const tempScoreCardMessages = useSelector(selectTempScoreCardMessages);
 
-  // Sets card to front when GuessDefs component loads
-  useEffect(() => {
-    showBackOfCard("front");
-  }, []);
+  //   useEffect(() => {
+  //     showBackOfCard("front");
+  //   }, []);
 
   // Countdown logic to change game state when time runs out
   useEffect(() => {
     const timer = setTimeout(() => {
       if (countdown > 0) {
-        setDefList(true);
+        setDefList(true); // Show definitions when countdown starts
         setCountdown(countdown - 1);
       } else if (countdown === 0) {
         handleChangeGameTurn();
         reloadScores();
         resetState();
-        makeHidden();
+        // makeHidden();
       }
     }, 1000);
 
@@ -117,21 +102,9 @@ const GuessDefs = ({
       dispatch(
         editGameTurn({ gameId, turn: newTurn, roundsLeft: newRoundsLeft })
       );
-    } else {
-      dispatch(fetchHighestGameScores(gameId)).then((res) => {
-        if (res.payload.length > 1) {
-          checkIfTied();
-        }
-        const newTurn = game.turn === 1 ? game.numPlayers : game.turn - 1;
-        const newRoundsLeft =
-          res.payload.length > 1 ? game.roundsLeft : game.roundsLeft - 1;
-        dispatch(
-          editGameTurn({ gameId, turn: newTurn, roundsLeft: newRoundsLeft })
-        );
-      });
     }
   };
-
+  // Set Fake Definitions
   useEffect(() => {
     setFakeDefs(fakeDefinitions);
   }, [fakeDefinitions]);
@@ -141,7 +114,6 @@ const GuessDefs = ({
     setGuessed(true);
     const userKey = Object.keys(def)[0];
     let message;
-
     if (userKey === "fake") {
       message = `${username} guessed the WRONG answer!`;
     } else if (userKey === "real") {
@@ -156,27 +128,62 @@ const GuessDefs = ({
     if (singleGame.turn === userScore.turnNum) {
       dispatch(addTempScoreCardMessage(message));
     } else {
-      clientSocket.emit("send_score_card_info", {
-        gameName,
-        playerTurnName,
-        message,
-      });
+      const scoreCardRef = ref(RealTimeDB, `games/${gameName}/score_card_info`);
+
+      // Send scorecard information to Firebase
+      set(scoreCardRef, {
+        gameName: gameName,
+        playerTurnName: playerTurnName,
+        message: message,
+      })
+        .then(() => {
+          console.log("Scorecard information sent to Firebase successfully");
+        })
+        .catch((error) => {
+          console.error(
+            "Error sending scorecard information to Firebase:",
+            error
+          );
+        });
     }
   };
 
-  // Socket to handle fake definitions and score information
+  // ReadTimeDB to handle fake definitions and score information
   useEffect(() => {
-    clientSocket.emit("send_fake_defs", { fakeDefinitions, gameName });
-    clientSocket.on("receive_fake_defs", (fakeDefinitions) => {
-      setFakeDefs(fakeDefinitions);
-    });
+    // Reference to the location where fake definitions will be stored in Firebase
+    const fakeDefsRef = ref(RealTimeDB, `games/${gameName}/fake_definitions`);
+    const scoreCardRef = ref(RealTimeDB, `games/${gameName}/score_card_info`);
 
-    clientSocket.on("receive_score_card_info", ({ room, message }) => {
-      if (room === gameName && singleGame.turn === userScore.turnNum) {
-        dispatch(addTempScoreCardMessage(message));
+    // Emit fake definitions to Firebase (similar to sending data via Socket.io)
+    set(fakeDefsRef, { fakeDefinitions, gameName });
+
+    // Listen for fake definitions (replaces clientSocket.on('receive_fake_defs'))
+    const fakeDefsListener = onValue(fakeDefsRef, (snapshot) => {
+      const data = snapshot.val();
+
+      if (data) {
+        setFakeDefs(data.fakeDefinitions);
       }
     });
-  }, [clientSocket]);
+
+    // Listen for score card information (replaces clientSocket.on('receive_score_card_info'))
+    const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
+      const data = snapshot.val();
+      if (
+        data &&
+        data.room === gameName &&
+        singleGame.turn === userScore.turnNum
+      ) {
+        dispatch(addTempScoreCardMessage(data.message)); // Dispatch the score card message
+      }
+    });
+
+    // Cleanup function to remove Firebase listeners on component unmount
+    return () => {
+      fakeDefsListener();
+      scoreCardListener();
+    };
+  }, [gameName, fakeDefinitions, singleGame, userScore, dispatch]);
 
   return (
     <View style={styles.container}>
@@ -185,19 +192,20 @@ const GuessDefs = ({
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {!guessed &&
           defList &&
+          fakeDefs?.length &&
           fakeDefs.length > 0 &&
           fakeDefs
             .filter((def) => !def.hasOwnProperty(`${userId}`))
-            .map((def) => {
+            .map((def, index) => {
               const value = Object.values(def)[0];
               return (
                 <CardFront
-                  key={value}
+                  key={`def-${index}`} // Use unique key
                   def={def}
                   handleChooseWord={handleChooseWord}
                   defCards={true}
                   fullScreen={true}
-                  top={word}
+                  top={word || ""}
                   bottom={value}
                   side={"front"}
                   userScore={userScore}

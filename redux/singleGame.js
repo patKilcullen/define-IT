@@ -133,31 +133,20 @@ export const fetchSingleGame = createAsyncThunk("singleGame", async (id, { rejec
   }
 });
 
-// GET SINGLE GAME BY NAME - for search
-// export const findGameByName = createAsyncThunk(
-//   "findGameByName",
-//   async (gameName) => {
-//     try {
-//       const { data } = await api.get(`/api/games/findGame/${gameName}`);
-//       return data;
-//     } catch (error) {
-//       console.log("ERROR IN FETCH ALL GAMES THUNK: ", error);
-//     }
-//   }
-// );
+
 
 // FIND GAME BY NAME
 export const findGameByName = createAsyncThunk(
   "findGameByName",
   async (gameName, { rejectWithValue }) => {
     try {
-      // Reference to the "games" collection
+      
       const gamesRef = collection(FireBaseDB, "games");
 
-      // Query to find games where the "name" field matches gameName
+   
       const q = query(gamesRef, where("name", "==", gameName));
 
-      // Get all documents matching the query
+
       const querySnapshot = await getDocs(q);
 
       // Check if we got any results
@@ -165,7 +154,7 @@ export const findGameByName = createAsyncThunk(
         throw new Error(`No game found with name: ${gameName}`);
       }
 
-      // Extract the data from the document(s)
+      // Extract the data from the documents
       const games = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -187,21 +176,20 @@ export const editGame = createAsyncThunk("editGame", async (game) => {
   try {
     const gameRef = doc(FireBaseDB, "games", game.id);
     
-    // Prepare the update data object
+
     const updateData = {
       ...game,
     };
 
-    // Conditionally add to the players array if userId is defined
+// add players if needed
     if (game.addPlayers) {
       updateData.players = arrayUnion({ user: game.userId, score: 0 });
       updateData.players2 = arrayUnion({ user: game.userId, score: 0 });
     }
 
-    // Update the game document with the new data
+
     await updateDoc(gameRef, updateData);
 
-    console.log("Updated game: ", game);
     return game;
   } catch (err) {
     console.log(err);
@@ -248,7 +236,6 @@ const singleGameSlice = createSlice({
       return action.payload;
     });
     builder.addCase(createGame.fulfilled, (state, action) => {
-        console.log("CREATE GAME REDUCER")
       return action.payload;
     });
   },

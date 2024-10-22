@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import defaultDefs from "./defaultFakeDefs";
-
+import { balderdashWords } from "../Words";
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -26,10 +26,9 @@ export const getWord = createAsyncThunk("/getWord", async () => {
 // GET FAKE WORDS
 export const getFakeWords = createAsyncThunk("/getFakeWords", async () => {
   try {
-    const { data } = await api.get(
-      `https://random-word-api.vercel.app/api?words=1`
-    );
-    return data;
+    let newWord =
+      balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
+    return newWord.word;
   } catch (error) {
     console.log("ERROR IN GET FAKES WORDS");
     return error.message;
@@ -56,19 +55,14 @@ export const getDefinition = createAsyncThunk(
 );
 
 // GET FAKE DEFINITIONS
+
 export const getFakeDefinitions = createAsyncThunk(
   "/getFakeDefinitions",
   async (word) => {
     try {
-      const { data } = await api.get(`/api/wordsAndDefinitions/${word}`);
-      if (data[0].shortdef) {
-        const numOfDefs = Math.floor(Math.random() * data[0].shortdef.length);
-        return data[0].shortdef[numOfDefs];
-      } else {
-        const defaultNum = Math.floor(Math.random() * defaultDefs.length);
-
-        return defaultDefs[defaultNum];
-      }
+      let newWord =
+        balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
+      return newWord.definition;
     } catch (error) {
       console.log("ERROR un getFakeDefinition");
       return error.message;
@@ -77,7 +71,7 @@ export const getFakeDefinitions = createAsyncThunk(
 );
 
 const initialState = {
-  word: {},
+  word: "",
   definition: {},
   fakeWords: [],
   fakeDefinitions: [],

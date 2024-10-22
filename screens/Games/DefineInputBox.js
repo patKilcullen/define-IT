@@ -12,8 +12,14 @@ import {
 import { SocketContext } from "../../socketProvider";
 
 import { addPlayerFakeDef } from "../../redux/gameplay";
-
-const DefInputBox = ({ showBackOfCard, gameName, userId, playerTurnName }) => {
+import { ref, set, onValue } from "firebase/database";
+import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
+const DefInputBox = ({
+  //  showBackOfCard,
+  gameName,
+  userId,
+  playerTurnName,
+}) => {
   // COMPONENT STATE
   const [playerDef, setPlayerDef] = useState("");
   const [seeInput, setSeeInput] = useState(true);
@@ -32,7 +38,8 @@ const DefInputBox = ({ showBackOfCard, gameName, userId, playerTurnName }) => {
   const handleEnterFakeDef = (e) => {
     e.preventDefault();
     dispatch(addPlayerFakeDef(playerDef));
-    clientSocket.emit("send_player_fake_def", {
+
+    set(ref(RealTimeDB, `games/${gameName}/fake__playe_definition`), {
       playerDef,
       room: gameName,
       userId,
@@ -40,7 +47,7 @@ const DefInputBox = ({ showBackOfCard, gameName, userId, playerTurnName }) => {
     });
     setSeeInput(false);
     setPlayerDef("");
-    showBackOfCard("back");
+    // showBackOfCard("back");
   };
 
   return (

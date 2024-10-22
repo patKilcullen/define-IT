@@ -50,10 +50,10 @@ const GamePlay = ({
 }) => {
   const dispatch = useDispatch();
   const me = useSelector(selectMe);
- 
+
   const gameName = game.name;
-const { user } = useContext(UserContext);
- const username = user.displayName;
+  const { user } = useContext(UserContext);
+  const username = user.displayName;
   // SOCKET
   const clientSocket = useContext(SocketContext);
 
@@ -69,6 +69,7 @@ const { user } = useContext(UserContext);
   const [moveOffScreen, setMoveOffScreen] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
 
+//   GET PLAYERS TURN NUMBER
   useEffect(() => {
     if (game && game.scores) {
       setPlayerTurn(game.scores.filter((score) => score.turnNum === game.turn));
@@ -78,38 +79,7 @@ const { user } = useContext(UserContext);
     }
   }, []);
 
-//   const handleGetWord = () => {
-//     word ? setMoveOffScreen(true) : null;
-//     word ? setFlip(false) : null;
-
-//     setTimeout(
-//       () => {
-//         word ? setMoveOffScreen(false) : null;
-//         setFlipSide("back");
-
-//         setTimeout(
-//           () => {
-//             setFlip(true);
-//             setFlipSide("front");
-//           },
-//           word ? 500 : 0
-//         );
-//       },
-//       word ? 1000 : 0
-//     );
-
-//     dispatch(clearFakeDefs());
-//     dispatch(clearTempScoreCardMessages());
-//     dispatch(getWord()).then((res) => {
-//       setWord(res.payload[0]);
-//       dispatch(getDefinition(res.payload[0])).then((res) => {
-//         setDefinition(res.payload);
-//         dispatch(addDefinition({ real: res.payload }));
-//         setFlipSide("front");
-//       });
-//     });
-//     setWordToDb(false);
-//   };
+// GET WORD
   const handleGetWord = () => {
     word ? setMoveOffScreen(true) : null;
     word ? setFlip(false) : null;
@@ -133,54 +103,18 @@ const { user } = useContext(UserContext);
     dispatch(clearFakeDefs());
     dispatch(clearTempScoreCardMessages());
 
-          let newWord =
-            balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
-     
-          setWord(newWord.word);
-          setDefinition(newWord.definition);
-        dispatch(addDefinition({ real: newWord.definition }));
-        setFlipSide("front");
-    
-  
+    let newWord =
+      balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
+
+    setWord(newWord?.word);
+    setDefinition(newWord.definition);
+    dispatch(addDefinition({ real: newWord.definition }));
+    setFlipSide("front");
     setWordToDb(false);
   };
-   
 
-
-//   const handleChooseWord = () => {
-//     dispatch(addRealDefinition(definition));
-//     handleGetFakeWords();
-//     clientSocket.emit("send_word", {
-//       word: word,
-//       definition: definition,
-//       room: gameName,
-//       playerTurnName: username,
-//     });
-//     setTimer(true);
-//     setChoseWord(true);
-//   };
-console.log("GAMEANEM: ", gameName, user.displayName)
- const handleChooseWord = () => {
-   dispatch(addRealDefinition(definition));
-   handleGetFakeWords();
-    set(ref(RealTimeDB, `games/${gameName}/word`), {
-      word: word,
-      definition: definition,
-      room: game.name,
-      playerTurnName: user.displayName,
-    });
-   setTimer(true);
-   setChoseWord(true);
- };
-
-
-
-
-  const handleAddNewWord = () => {
-    setWordToDb(true);
-    dispatch(addNewWord({ word: word, definition: definition }));
-  };
-
+  // GET FAKE WORDS   called in handleChooseWord function,
+  // clears fake words from last round, then gets 5 fake words
   const handleGetFakeWords = () => {
     dispatch(clearFakeWords());
     let count = 0;
@@ -189,89 +123,130 @@ console.log("GAMEANEM: ", gameName, user.displayName)
       count++;
     }
   };
+  //   const handleChooseWord = () => {
+  //     dispatch(addRealDefinition(definition));
+  //     handleGetFakeWords();
+  //     clientSocket.emit("send_word", {
+  //       word: word,
+  //       definition: definition,
+  //       room: gameName,
+  //       playerTurnName: username,
+  //     });
+  //     setTimer(true);
+  //     setChoseWord(true);
+  //   };
 
-//   useEffect(() => {
-//     clientSocket.on(
-//       "receive_word",
-//       ({ word, definition, room, playerTurnName }) => {
-//         if (playerTurnName !== username && room === gameName) {
-//           dispatch(setWordState(word));
-//           dispatch(addRealDefinition(definition));
-//           setPlayerTurnName(playerTurnName);
-//           setWord(word);
-//           setFlip(true);
-//           setFlipSide("front");
-//         }
-//       }
-//     );
+  //   const handles = () => {
+  //     dispatch(clearFakeWords());
+  //     let count = 0;
+  //     while (count < 5) {
+  //       dispatch(getFakeWords());
+  //       count++;
+  //     }
+  //   };
 
-//     clientSocket.on("receive_start_countdown", (room) => {
-//       room === gameName ? setTimer(true) : setTimer(false);
-//     });
-
-//     clientSocket.on(
-//       "receive_player_fake_def",
-//       ({ playerDef, room, userId, playerTurnName }) => {
-//         if (room === gameName && playerTurnName === username) {
-//           dispatch(addDefinition({ [userId]: playerDef }));
-//         }
-//       }
-//     );
-//   }, [clientSocket, game]);
-useEffect(() => {
-  const wordRef = ref(RealTimeDB, `games/${gameName}/word`);
-  const countdownRef = ref(RealTimeDB, `games/${gameName}/countdown`);
-  const fakeDefRef = ref(RealTimeDB, `games/${gameName}/fake_definitions`);
-
-//   const dispatch = useDispatch();
-
-  // Listen for word data (receive_word)
-  const wordListener = onValue(wordRef, (snapshot) => {
-    
-    const data = snapshot.val();
-    console.log("WORD SNAPSHIOT: ", data);
-    if (data && data.playerTurnName !== username && data.room === gameName) {
-      dispatch(setWordState(data.word));
-      dispatch(addRealDefinition(data.definition));
-      setPlayerTurnName(data.playerTurnName);
-      setWord(data.word);
-      setFlip(true);
-      setFlipSide("front");
-    }
-  });
-
-  // Listen for countdown start (receive_start_countdown)
-  const countdownListener = onValue(countdownRef, (snapshot) => {
-
-    const room = snapshot.val();
-      console.log("SNAPSHOT: ", room);
-    setTimer(room === gameName);
-  });
-
-  // Listen for player fake definitions (receive_player_fake_def)
-  const fakeDefListener = onValue(fakeDefRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data && data.room === gameName && data.playerTurnName === username) {
-      dispatch(addDefinition({ [data.userId]: data.playerDef }));
-    }
-  });
-
-  // Cleanup function to unsubscribe listeners on unmount
-  return () => {
-    wordListener();
-    countdownListener();
-    fakeDefListener();
+  const handleChooseWord = () => {
+    dispatch(addRealDefinition(definition));
+    handleGetFakeWords();
+    set(ref(RealTimeDB, `games/${gameName}/word`), {
+      word: word,
+      definition: definition,
+      room: game.name,
+      playerTurnName: user.displayName,
+    });
+    setTimer(true);
+    setChoseWord(true);
   };
-}, [
-  gameName,
-  username,
-  dispatch,
-  setPlayerTurnName,
-  setWord,
-  setFlip,
-  setFlipSide,
-  setTimer,
-]);
+
+//   const handleAddNewWord = () => {
+//     setWordToDb(true);
+//     dispatch(addNewWord({ word: word, definition: definition }));
+//   };
+
+  //   useEffect(() => {
+  //     clientSocket.on(
+  //       "receive_word",
+  //       ({ word, definition, room, playerTurnName }) => {
+  //         if (playerTurnName !== username && room === gameName) {
+  //           dispatch(setWordState(word));
+  //           dispatch(addRealDefinition(definition));
+  //           setPlayerTurnName(playerTurnName);
+  //           setWord(word);
+  //           setFlip(true);
+  //           setFlipSide("front");
+  //         }
+  //       }
+  //     );
+
+  //     clientSocket.on("receive_start_countdown", (room) => {
+  //       room === gameName ? setTimer(true) : setTimer(false);
+  //     });
+
+  //     clientSocket.on(
+  //       "receive_player_fake_def",
+  //       ({ playerDef, room, userId, playerTurnName }) => {
+  //         if (room === gameName && playerTurnName === username) {
+  //           dispatch(addDefinition({ [userId]: playerDef }));
+  //         }
+  //       }
+  //     );
+  //   }, [clientSocket, game]);
+  useEffect(() => {
+    const wordRef = ref(RealTimeDB, `games/${gameName}/word`);
+    const countdownRef = ref(RealTimeDB, `games/${gameName}/countdown`);
+    const fakeDefRef = ref(
+      RealTimeDB,
+      `games/${gameName}/fake_player_definition`
+    );
+
+    //   const dispatch = useDispatch();
+
+    // Listen for word data (receive_word)
+    const wordListener = onValue(wordRef, (snapshot) => {
+      const data = snapshot.val();
+
+      if (data && data.playerTurnName !== username && data.room === gameName) {
+        dispatch(setWordState(data?.word || ""));
+        dispatch(addRealDefinition(data.definition));
+        setPlayerTurnName(data.playerTurnName);
+        setWord(data.word);
+        setFlip(true);
+        setFlipSide("front");
+      }
+    });
+
+    // Listen for countdown start (receive_start_countdown)
+    const countdownListener = onValue(countdownRef, (snapshot) => {
+      const room = snapshot.val();
+      console.log("CountDOEN: ", rroom, gameName);
+      setTimer(room === gameName);
+    });
+
+    // Listen for player fake definitions (receive_player_fake_def)
+    const fakeDefListener = onValue(fakeDefRef, (snapshot) => {
+      const data = snapshot.val();
+
+      if (data && data.room === gameName && data.playerTurnName === username) {
+        dispatch(addDefinition({ [data.userId]: data.playerDef }));
+      }
+    });
+
+    // Cleanup function to unsubscribe listeners on unmount
+    return () => {
+      wordListener();
+      countdownListener();
+      fakeDefListener();
+    };
+  }, [
+    gameName,
+    username,
+    dispatch,
+    setPlayerTurnName,
+    setWord,
+    setFlip,
+    setFlipSide,
+    setTimer,
+  ]);
 
   const [bottomCard, setBottomCard] = useState(
     game && userScore && game.turn === userScore.turnNum ? false : true
@@ -310,18 +285,17 @@ useEffect(() => {
           {/* <CardFront notReverse={true} side={"back"} baseCard={true} /> */}
 
           {/* Card Flipping Info */}
-          <CardFront
+          {/* <CardFront
             moveOffScreen={moveOffScreen}
             flip={!flip}
             side={"back"}
             bottomCard={bottomCard}
-          
-          />
+          top={null}
+          /> */}
           <CardFront
-       
             moveOffScreen={moveOffScreen}
             checkIfTied={checkIfTied}
-            top={word}
+            top={word || ""}
             bottom={definition}
             side={flipSide}
             flip={flip}
@@ -340,6 +314,9 @@ useEffect(() => {
             setTimer={setTimer}
             setChoseWord={setChoseWord}
             flippable={true}
+            //
+            def={definition}
+            handleChooseWord={handleChooseWord}
           />
         </View>
 

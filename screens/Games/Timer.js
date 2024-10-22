@@ -21,9 +21,9 @@ import { ref, set } from "firebase/database";
 
 const Timer = ({
   checkIfTied,
-  setTempBack,
-  showBackOfCard,
-  makeHidden,
+  //   setTempBack,
+  //   showBackOfCard,
+  //   makeHidden,
   game,
   username,
   userId,
@@ -36,6 +36,7 @@ const Timer = ({
   setWord,
   setTimer,
   setChoseWord,
+  top,
 }) => {
   // COMPONENT STATE
   const [countdown, setCountdown] = useState(12);
@@ -65,8 +66,8 @@ const Timer = ({
         handleGetFakeDefinitions();
         setPlayGame(true);
         setDefInput(false);
-        showBackOfCard("front");
-        setTempBack(false);
+        // showBackOfCard("front");
+        false;
       } else {
         setDefInput(false);
       }
@@ -78,13 +79,13 @@ const Timer = ({
   // Emit socket event to start countdown when the component mounts
   useEffect(() => {
     // clientSocket.emit("start_countdown", { gameName });
-     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
+    set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
   }, []);
 
   // When playGame becomes true, hide the previous styles to show guessDefs
   useEffect(() => {
     if (playGame) {
-      makeHidden();
+      //   makeHidden();
     }
   }, [playGame]);
 
@@ -96,26 +97,26 @@ const Timer = ({
       </View>
 
       {/* Definition Input Box (renders if it's not the player's turn and they've been accepted) */}
-      {defInput &&
+      {/* {defInput &&
       userScore.turnNum !== game.turn &&
       userScore.accepted === true ? (
         <DefInputBox
-          showBackOfCard={showBackOfCard}
+          //   showBackOfCard={showBackOfCard}
           game={game}
           gameName={gameName}
           userId={userId}
           playerTurnName={playerTurnName}
         />
-      ) : null}
+      ) : null} */}
 
       {/* Guess Definitions Component */}
-      {playGame ? (
+      {/* {playGame ? (
         <GuessDefs
           checkIfTied={checkIfTied}
-          showBackOfCard={showBackOfCard}
-          makeHidden={makeHidden}
+          //   showBackOfCard={showBackOfCard}
+          //   makeHidden={makeHidden}
           guessDefs={true}
-          top={top}
+          top={top || ""}
           game={game}
           username={username}
           userScore={userScore}
@@ -132,7 +133,7 @@ const Timer = ({
           setPlayGame={setPlayGame}
           setChoseWord={setChoseWord}
         />
-      ) : null}
+      ) : null} */}
     </View>
   );
 };
