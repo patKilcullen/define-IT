@@ -59,6 +59,7 @@ const { user } = useContext(UserContext);
   const game = useSelector(selectSingleGame);
   const scores = useSelector(selectAllScores);
   const tempScoreCardTurn = useSelector(selectTempScoreCardMessages);
+
   const userScore = scores.find((score) => score?.userId === user?.uid);
 
   const word = useSelector(selectWord);
@@ -170,11 +171,11 @@ const handleAskJoin = () => {
   );
 // TODO ROOM NOT NECESSARY...
   const joinRequestsRef = ref(RealTimeDB, `games/${game.name}/join_requests`);
-//   push(joinRequestsRef, {
-//     room: game.name,
-//     userName: user.displayName,
-//   })
-  push(joinRequestsRef, )
+  push(joinRequestsRef, {
+    room: game.name,
+    userName: user.displayName,
+  })
+//   push(joinRequestsRef, )
     .then(() => {
       console.log("Join request successfully sent to Firebase.");
     })

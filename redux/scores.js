@@ -19,9 +19,9 @@ export const fetchAllGameScores = createAsyncThunk(
 
       const scoresRef = collection(FireBaseDB, 'scores');
 
-      const query = query(scoresRef, where('gameId', '==', gameId));
+      const q = query(scoresRef, where('gameId', '==', gameId));
       
-      const querySnapshot = await getDocs(query);
+      const querySnapshot = await getDocs(q);
 
       const scores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
@@ -170,6 +170,7 @@ const allScoresSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchAllGameScores.fulfilled, (state, action) => {
+        console.log("ACTION PAY:L ", action.payload)
     return action.payload;
     }),
       builder.addCase(createScore.fulfilled, (state, action) => {
