@@ -11,6 +11,8 @@ import {
   doc,
 } from "firebase/firestore";
 
+ import { ref, get, orderByChild, equalTo, update } from "firebase/database";
+
 const api = axios?.create({
   baseURL: "http://localhost:8080",
   headers: {
@@ -57,6 +59,91 @@ export const fetchPlayerRequests = createAsyncThunk(
     }
   }
 );
+// Update the request using scoreId
+// export const acceptJoinRequestByScoreId = async ({game, scoreId}) => {
+   
+//   try {
+//        console.log("GAMEID: ", game.id);
+//        console.log("scoreId: ", scoreId);
+
+//         const joinRequestsRef = ref(
+//           RealTimeDB,
+//           `games/${game.id}/join_requests`
+//         );
+//     // const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests/${scoreId}`);
+// console.log("joinRequestsRef: ", joinRequestsRef);
+//     // Query the requests where scoreId matches
+//     const queryRef = query(joinRequestsRef, orderByChild('scoreId'));
+//     console.log("queryRef: ", queryRef);
+//     const snapshot = await get(queryRef);
+// console.log("snapshot.val(): ", snapshot.val());
+//     if (snapshot.exists()) {
+//       // Find the key (requestId) for the request
+//       const requestKey = Object.keys(snapshot.val())[0];
+//          console.log("requeyKey: ", requestKey);
+//       const requestRef = ref(RealTimeDB, `games/${game.id}/join_requests/${requestKey}`);
+
+//       // Update the request to set accepted to true
+//       await update(requestRef, {
+//         accepted: true,
+//       });
+
+//       console.log("Join request successfully accepted.");
+//     } else {
+//       console.error("No matching request found for scoreId:", scoreId);
+//     }
+//   } catch (error) {
+//     console.error("Error updating join request by scoreId:", error);
+//   }
+// };
+export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
+  try {
+    console.log("GAMEID: ", game.id);
+    console.log("scoreId: ", scoreId);
+
+    const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
+    console.log("joinRequestsRef: ", joinRequestsRef);
+
+    // Query the requests where scoreId matches
+    const queryRef = query(joinRequestsRef, orderByChild("scoreId"));
+    console.log("queryRef: ", queryRef);
+
+    const snapshot = await get(queryRef);
+    console.log("snapshot.val(): ", snapshot.val());
+
+    if (snapshot.exists()) {
+      const requests = snapshot.val();
+
+      // Find the correct request where scoreId matches
+      const matchingRequestKey = Object.keys(requests).find(
+        (key) => requests[key].scoreId === scoreId
+      );
+
+      if (matchingRequestKey) {
+        console.log("Matching request key: ", matchingRequestKey);
+
+        const requestRef = ref(
+          RealTimeDB,
+          `games/${game.id}/join_requests/${matchingRequestKey}`
+        );
+
+        // Update the request to set accepted to true
+        await update(requestRef, {
+          accepted: true,
+        });
+
+        console.log("Join request successfully accepted.");
+      } else {
+        console.error("No matching request found for scoreId:", scoreId);
+      }
+    } else {
+      console.error("No join requests found for the game.");
+    }
+  } catch (error) {
+    console.error("Error updating join request by scoreId:", error);
+  }
+};
+
 
 // GET HIGHEST SCORE IN GAME
 export const fetchHighestGameScores = createAsyncThunk(
@@ -232,7 +319,7 @@ const allScoresSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllGameScores.fulfilled, (state, action) => {
-        console.log("ACTION PAYLOAD - Scores: ", action.payload);
+        // console.log("ACTION PAYLOAD - Scores: ", action.payload);
         state.scores = action.payload; // Update only the scores part of the state
       })
       .addCase(fetchPlayerRequests.fulfilled, (state, action) => {

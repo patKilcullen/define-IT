@@ -290,33 +290,19 @@ const ScoreCard = ({
       const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
 const playerRequests = useSelector(selectPlayerRequests);
-useEffect(()=>{
-console.log("THESE SCORES: ", scores)
-}, [scores])
+useEffect(() => {
+  console.log("THESE playerRequests: ", playerRequests);
+
+console.log(
+  "FILTERED: ",
+  playerRequests.filter((request) => request.accepted === false)
+);  
+}, [playerRequests]);
 
   useEffect(() => {
-    // Reference to score card event in Firebase
-    // const scoreCardRef = ref(RealTimeDB, `games/${game.name}/score_card`);
-
-    // const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
-    //   const data = snapshot.val();
-    //   if (data) {
-    //     setTempScoreCard(data.tempScoreCardMessages);
-    //   }
-    // });
-
-    // Reference to start game event in Firebase
-    // const startGameRef = ref(RealTimeDB, `games/${game.name}/start_game`);
-
-    // const startGameListener = onValue(startGameRef, (snapshot) => {
-    //   const data = snapshot.val();
-    //   if (data && data.room === game.name) {
-    //     dispatch(fetchSingleGame(gameId));
-    //   }
-    // });
-
+  
     // Reference to join requests event in Firebase
-    const joinRequestsRef = ref(RealTimeDB, `games/${game.name}/join_requests`);
+    const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
 
     const joinRequestsListener = onValue(joinRequestsRef, (snapshot) => {
       const requests = snapshot.val();
@@ -333,25 +319,16 @@ console.log("THESE SCORES: ", scores)
       }
     });
 
-    // Reference to play again event in Firebase
-    // const playAgainRef = ref(RealTimeDB, `games/${game.name}/play_again`);
 
-    // const playAgainListener = onValue(playAgainRef, (snapshot) => {
-    //   const data = snapshot.val();
-    //   if (data && data.room === game.name) {
-    //     dispatch(fetchSingleGame(data.gameId));
-    //   }
-    // });
-
-    //Unsubscribe from all Firebase listeners
     return () => {
-    //   off(scoreCardRef, scoreCardListener);
-    //   off(startGameRef, startGameListener);
+   
       off(joinRequestsRef, joinRequestsListener);
-    //   off(playAgainRef, playAgainListener);
+   
     };
   }, [game.name, game.id, dispatch]);
 
+
+  
 
   return (
     <View style={styles.container}>
@@ -397,7 +374,9 @@ console.log("THESE SCORES: ", scores)
             ) // Filt
             .map((user) => (
               <View key={user?.user?.id} style={styles.playerScore}>
-                <Text style={styles.playerName}>{user?.user?.username}:</Text>
+                <Text style={styles.playerName}>
+                  {user?.displayName || null}:
+                </Text>
                 <Text style={styles.playerScoreValue}>{user.score}</Text>
                 <Text style={styles.points}>
                   {user.score === 1 ? "pt" : "pts"}
@@ -414,54 +393,41 @@ console.log("THESE SCORES: ", scores)
               </View>
             ))}
       </ScrollView>
-      <View>
-        {playerRequests &&
-          playerRequests.map((request) => (
-            <View key={request.id}>
-              <Text>{request.user.username}</Text>
-              <Buttons
-                name="Accept"
-                func={() => handleAcceptRequest(request.userId)}
-                small={true}
-              />
-              <Buttons
-                name="Decline"
-                func={() => handleDeclineRequest(request.userId)}
-                small={true}
-              />
-            </View>
-          ))}
-      </View>
 
-      {/* If Game Owner and Game Not Started: Player Requests */}
       {game.ownerId === userId && !game.started && (
         <View style={styles.requestsContainer}>
-          <Text style={styles.sectionTitle}>Player Requests</Text>
-          {scores &&
-            scores
-              .filter((score) => score !== undefined && !score.accepted)
-              .map((score, index) => (
+          <Text style={styles.sectionTitle}>3 Player Requests</Text>
+          {playerRequests &&
+            playerRequests
+              .filter((request) => request.accepted === false)
+              .map((request, index) => (
                 <View
-                  key={score?.user?.id || index}
+                  key={request?.userId || index}
                   style={styles.playerRequest}
                 >
                   <Text style={styles.requestPlayerName}>
-                    {score?.displayName}:
+                    {request.userName || "Unnamed"}:
+                  </Text>
+                  <Text style={styles.requestPlayerName}>
+                    {"accept: " + request.accepted}:
+                  </Text>
+                  <Text style={styles.requestPlayerName}>
+                    {"room: " + request.room}:
                   </Text>
                   <Buttons
                     name={"Accept"}
-                    // func={() => handleAcceptRequest(score?.user?.id)}
                     func={() =>
                       handleAcceptRequest({
-                        scoreId: score.id,
-                        userId: score?.userId,
+                        requestId: request.id,
+                        userId: userId,
+                        scoreId: request.scoreId,
                       })
                     }
                     small={true}
                   />
                   <Buttons
                     name={"Decline"}
-                    func={() => handleDeclineRequest(score?.user?.id)}
+                    func={() => handleDeclineRequest(request.userId)}
                     small={true}
                   />
                 </View>

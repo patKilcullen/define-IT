@@ -174,6 +174,7 @@ export const findGameByName = createAsyncThunk(
 // EDIT GAME
 export const editGame = createAsyncThunk("editGame", async (game) => {
   try {
+    console.log("HHHHHH: ", game)
     const gameRef = doc(FireBaseDB, "games", game.id);
     
 

@@ -11,6 +11,9 @@ import {
   editScore,
   deleteScore,
   createScore,
+  acceptJoinRequestByScoreId,
+  fetchPlayerRequests,
+  selectPlayerRequests,
 } from "../../redux/scores";
 
 import {
@@ -32,7 +35,7 @@ import TempScoreCard from "../scores/TempScoreCard";
  import CardFront from "../CardFront";
 
  import { RealTimeDB } from "../../Firebase/FirebaseConfig";
- import { ref, push, onValue, set, off } from "firebase/database";
+ import { ref, push, onValue, set, off, update } from "firebase/database";
 
 
 const SingleGame = () => {
@@ -45,8 +48,9 @@ const SingleGame = () => {
 const { user } = useContext(UserContext); 
 
 
-  // SOCKET
-  const clientSocket = useContext(SocketContext);
+
+
+
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -59,6 +63,15 @@ const { user } = useContext(UserContext);
   const game = useSelector(selectSingleGame);
   const scores = useSelector(selectAllScores);
   const tempScoreCardTurn = useSelector(selectTempScoreCardMessages);
+
+const [state, setState] = useState(false)
+const playerRequests = useSelector(selectPlayerRequests);
+useEffect(() => {
+setState((state) => !state)
+}, [playerRequests]);
+// SOCKET
+const clientSocket = useContext(SocketContext);
+
 
   const userScore = scores.find((score) => score?.userId === user?.uid);
 
@@ -91,34 +104,32 @@ const { user } = useContext(UserContext);
   }, [showTempScoreCard]);
 
   // Accept request to join the game
-  const handleAcceptRequest = ({scoreId, userId}) => {
-
+  const handleAcceptRequest = ({scoreId, userId, requestId }) => {
+console.log("HELP: game: ", game)
     dispatch(
-      editGame({ id: game.id, numPlayers: game.numPlayers + 1, userId, addPlayers: true })
+      editGame({
+        ...game,
+        userId: userId,
+        numPlayers: game.numPlayers + 1,
+        addPlayers: true,
+      })
+      //   editGame({ id: game.id, numPlayers: game.numPlayers + 1, userId: userId, addPlayers: true })
     ).then((res) => {
-    
       dispatch(
         editScore({
-            scoreId: scoreId,
+          scoreId: scoreId,
           userId: userId,
           turnNum: res.payload.numPlayers,
           gameId: game.id,
           accepted: true,
         })
-
-      )
-      .then((editScoreRes) => {
-
-          const joinRequestsRef = ref(
-            RealTimeDB,
-            `games/${game.name}/join_requests`
-          );
-           push(joinRequestsRef, {
-             room: game.name,
-             userName: user.displayName,
-           });
+      ).then(async (editScoreRes) => {
+        console.log("HEL: P: ", scoreId);
+         dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
+       
         dispatch(fetchSingleGame(gameId));
         dispatch(fetchAllGameScores(gameId));
+        dispatch(fetchPlayerRequests(gameId));
       });
     });
   };
@@ -141,20 +152,25 @@ const handleAskJoin = () => {
       userId: user?.uid,
       displayName: user.displayName,
     })
-  );
-// TODO ROOM NOT NECESSARY...
-  const joinRequestsRef = ref(RealTimeDB, `games/${game.name}/join_requests`);
-  push(joinRequestsRef, {
-    room: game.name,
-    userName: user.displayName,
-  })
-//   push(joinRequestsRef, )
-    .then(() => {
-      console.log("Join request successfully sent to Firebase.");
+  ).then((res)=>{
+    console.log("SCORE RES: ", res.payload);
+    // TODO ROOM NOT NECESSARY...
+    const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
+    push(joinRequestsRef, {
+      room: game.name,
+      userName: user.displayName,
+      accepted: false,
+      scoreId: res.payload.id
     })
-    .catch((error) => {
-      console.error("Error sending join request to Firebase:", error);
-    });
+      //   push(joinRequestsRef, )
+      .then(() => {
+        console.log("Join request successfully sent to Firebase.");
+      })
+      .catch((error) => {
+        console.error("Error sending join request to Firebase:", error);
+      });
+  })
+
 };
 
 
@@ -199,19 +215,19 @@ useEffect(() => {
   });
 
   // Reference to join requests event in Firebase
-  const joinRequestsRef = ref(RealTimeDB, `games/${game.name}/join_requests`);
+//   const joinRequestsRef = ref(RealTimeDB, `games/${game.name}/join_requests`);
 
-  const joinRequestsListener = onValue(joinRequestsRef, (snapshot) => {
-    const requests = snapshot.val();
-    if (requests) {
-      // Loop over the requests and handle each one
-      Object.values(requests).forEach((request) => {
-        if (request.room === game.name) {
-          dispatch(fetchAllGameScores(gameId)); 
-        }
-      });
-    }
-  });
+//   const joinRequestsListener = onValue(joinRequestsRef, (snapshot) => {
+//     const requests = snapshot.val();
+//     if (requests) {
+//       // Loop over the requests and handle each one
+//       Object.values(requests).forEach((request) => {
+//         if (request.room === game.name) {
+//           dispatch(fetchAllGameScores(gameId)); 
+//         }
+//       });
+//     }
+//   });
 
   // Reference to play again event in Firebase
   const playAgainRef = ref(RealTimeDB, `games/${game.name}/play_again`);
@@ -227,7 +243,7 @@ useEffect(() => {
   return () => {
     off(scoreCardRef, scoreCardListener); 
     off(startGameRef, startGameListener); 
-    off(joinRequestsRef, joinRequestsListener);
+    // off(joinRequestsRef, joinRequestsListener);
     off(playAgainRef, playAgainListener); 
   };
 }, [game.name, gameId, dispatch]);
@@ -289,6 +305,7 @@ useEffect(() => {
           <Text style={styles.homeButton}>Home</Text>
         </TouchableOpacity>
       </ScrollView>
+      {state}
     </View>
   );
 };
