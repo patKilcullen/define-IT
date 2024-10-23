@@ -63,8 +63,8 @@ const AllGames = () => {
           <CardFront
             notReverse={true}
             side="back"
-            top="Unstarted Game"
-            title={{ first: "Unstarted", second: "Games" }}
+            top="Pending Games"
+            title={{ first: "Pending", second: "Games" }}
           />
         </TouchableOpacity>
       </View>
