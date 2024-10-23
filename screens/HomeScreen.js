@@ -3,18 +3,11 @@ import { useSelector } from "react-redux";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
-  Text,
-  View,
-  TouchableWithoutFeedback,
-  Pressable,
-  TouchableOpacity,
-  Button,
-  Alert,
-  ActivityIndicator,
+
   SafeAreaView,
-  Image,
+
   ScrollView,
-  Modal, Dimensions
+ Dimensions
 } from "react-native";
 
 import DefinitionInput from "../components/DefinitionInput";
@@ -31,33 +24,11 @@ export default function HomeScreen() {
   const username = useSelector((state) => state.auth.me.username);
   const screenWidth = Dimensions.get("window").width;
       const [word, setWord] = useState(null);
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState(null);
+
        const [definition, setDefinition] = useState("");
-       const [answer, setAnswer] = useState("");
-       const [openModal, setOpenModal] = useState(false)
-
-       
-      // const handleGetWord = async () => {
-   
-      //   setLoading(true);
-      //   setError(null);
 
 
-
-      //   try {
-      //     // API call using Axios
-      //     const response = await axios.get(
-      //       "http://192.168.4.188:3000/api/newWords/8"
-      //     );
-     
-      //     setWord(response.data);
-      //   } catch (err) {
-      //     setError("Failed to fetch word");
-      //   } finally {
-      //     setLoading(false);
-      //   }
-      // };
+    
 
          
       const handleGetWord = async () => {
@@ -88,9 +59,6 @@ console.log("NEW WORD: ", newWord)
           }
         };
 
-function handleOpenModal (){
-  setOpenModal((prev) => !prev)
-}
        return (
          <SafeAreaView style={styles.container}>
            {/* <View style={{width: screenWidth}}>

@@ -16,7 +16,7 @@ const AllGames = () => {
             notReverse={true}
             top="Create Game"
             side="back"
-            half={{ first: "Create", second: "Game" }}
+            title={{ first: "Create", second: "Game" }}
           />
         </TouchableOpacity>
 
@@ -25,7 +25,7 @@ const AllGames = () => {
             notReverse={true}
             top="Search Game"
             side="back"
-            half={{ first: "Find", second: "Game" }}
+            title={{ first: "Find", second: "Game" }}
           />
         </TouchableOpacity>
 
@@ -37,7 +37,8 @@ const AllGames = () => {
           <CardFront
             notReverse={true}
             side="back"
-            half={{ first: "All", second: "Games" }}
+            top="All Games"
+            title={{ first: "All", second: "Games" }}
           />
         </TouchableOpacity>
 
@@ -49,7 +50,8 @@ const AllGames = () => {
           <CardFront
             notReverse={true}
             side="back"
-            half={{ first: "Started", second: "Games" }}
+            top="Started Games"
+            title={{ first: "Started", second: "Games" }}
           />
         </TouchableOpacity>
 
@@ -61,7 +63,8 @@ const AllGames = () => {
           <CardFront
             notReverse={true}
             side="back"
-            half={{ first: "Unstarted", second: "Games" }}
+            top="Unstarted Game"
+            title={{ first: "Unstarted", second: "Games" }}
           />
         </TouchableOpacity>
       </View>
