@@ -387,7 +387,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { useFonts } from "expo-font";
-import { LinearGradient } from "expo-linear-gradient"; // Optional for gradient background
+import { LinearGradient } from "expo-linear-gradient"; 
 
 const CardFront = ({ title }) => {
   const { width } = Dimensions.get("window");

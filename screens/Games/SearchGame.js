@@ -26,8 +26,10 @@ const SearchGame = () => {
 
   // SEARCH FOR A GAME
   const handleSearchGame = () => {
+    setError("");
     dispatch(findGameByName(gameName)).then((game) => {
-      game.payload === null
+        console.log("GAMMME: ", game)
+      game.error
         ? setError("Can't find that game...")
         : setFoundGame(game.payload);
     });
@@ -54,8 +56,6 @@ const SearchGame = () => {
             <Text style={styles.searchButtonText}>Search Game</Text>
           </TouchableOpacity>
         </View>
-
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
       </View>
 
       {foundGame && foundGame.name ? (
@@ -67,7 +67,7 @@ const SearchGame = () => {
           <CardFront
             notReverse={true}
             side={"back"}
-            half={{
+            title={{
               first: `${
                 foundGame.name.length < 20
                   ? foundGame.name
@@ -84,7 +84,7 @@ const SearchGame = () => {
           />
         </TouchableOpacity>
       ) : null}
-
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <TouchableOpacity
         style={styles.homeButton}
         onPress={() => navigation.navigate("Home")}
