@@ -256,18 +256,27 @@
 
 
 
-import React from "react";
+import React, {useEffect} from "react";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+
 import Buttons from "../../Buttons";
 
 // STORE
-import { selectAllScores } from "../../redux/scores";
+import {
+  selectAllScores,
+  fetchAllGameScores,
+  fetchPlayerRequests,
+  selectPlayerRequests
+} from "../../redux/scores";
+
+ import { RealTimeDB } from "../../Firebase/FirebaseConfig";
+ import { ref, push, onValue, set, off } from "firebase/database";
 
 const ScoreCard = ({
   userId,
@@ -278,13 +287,72 @@ const ScoreCard = ({
   handleDeclineRequest,
   handleAcceptRequest,
 }) => {
+      const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
+const playerRequests = useSelector(selectPlayerRequests);
+useEffect(()=>{
+console.log("THESE SCORES: ", scores)
+}, [scores])
+
+  useEffect(() => {
+    // Reference to score card event in Firebase
+    // const scoreCardRef = ref(RealTimeDB, `games/${game.name}/score_card`);
+
+    // const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
+    //   const data = snapshot.val();
+    //   if (data) {
+    //     setTempScoreCard(data.tempScoreCardMessages);
+    //   }
+    // });
+
+    // Reference to start game event in Firebase
+    // const startGameRef = ref(RealTimeDB, `games/${game.name}/start_game`);
+
+    // const startGameListener = onValue(startGameRef, (snapshot) => {
+    //   const data = snapshot.val();
+    //   if (data && data.room === game.name) {
+    //     dispatch(fetchSingleGame(gameId));
+    //   }
+    // });
+
+    // Reference to join requests event in Firebase
+    const joinRequestsRef = ref(RealTimeDB, `games/${game.name}/join_requests`);
+
+    const joinRequestsListener = onValue(joinRequestsRef, (snapshot) => {
+      const requests = snapshot.val();
+      console.log("REQUESRSSS: ", requests)
+      if (requests) {
+        // Loop over the requests and handle each one
+        Object.values(requests).forEach((request) => {
+          if (request.room === game.name) {
+              console.log("dispatch");
+            // dispatch(fetchAllGameScores(game.id));
+               dispatch(fetchPlayerRequests(game.id));
+          }
+        });
+      }
+    });
+
+    // Reference to play again event in Firebase
+    // const playAgainRef = ref(RealTimeDB, `games/${game.name}/play_again`);
+
+    // const playAgainListener = onValue(playAgainRef, (snapshot) => {
+    //   const data = snapshot.val();
+    //   if (data && data.room === game.name) {
+    //     dispatch(fetchSingleGame(data.gameId));
+    //   }
+    // });
+
+    //Unsubscribe from all Firebase listeners
+    return () => {
+    //   off(scoreCardRef, scoreCardListener);
+    //   off(startGameRef, startGameListener);
+      off(joinRequestsRef, joinRequestsListener);
+    //   off(playAgainRef, playAgainListener);
+    };
+  }, [game.name, game.id, dispatch]);
 
 
-  console.log(
-    "userScore",
- userScore
-  );
   return (
     <View style={styles.container}>
       {/* Game Name */}
@@ -346,6 +414,24 @@ const ScoreCard = ({
               </View>
             ))}
       </ScrollView>
+      <View>
+        {playerRequests &&
+          playerRequests.map((request) => (
+            <View key={request.id}>
+              <Text>{request.user.username}</Text>
+              <Buttons
+                name="Accept"
+                func={() => handleAcceptRequest(request.userId)}
+                small={true}
+              />
+              <Buttons
+                name="Decline"
+                func={() => handleDeclineRequest(request.userId)}
+                small={true}
+              />
+            </View>
+          ))}
+      </View>
 
       {/* If Game Owner and Game Not Started: Player Requests */}
       {game.ownerId === userId && !game.started && (

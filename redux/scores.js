@@ -1,7 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { FireBaseDB } from "../Firebase/FirebaseConfig";
-import { addDoc, collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import { FireBaseDB, RealTimeDB } from "../Firebase/FirebaseConfig";
+import {
+  addDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -10,25 +18,42 @@ const api = axios?.create({
   },
 });
 
-
 // GET ALL GAME'S SCORES
 export const fetchAllGameScores = createAsyncThunk(
   "allScores",
   async (gameId, { rejectWithValue }) => {
     try {
+      const scoresRef = collection(FireBaseDB, "scores");
 
-      const scoresRef = collection(FireBaseDB, 'scores');
+      const q = query(scoresRef, where("gameId", "==", gameId));
 
-      const q = query(scoresRef, where('gameId', '==', gameId));
-      
       const querySnapshot = await getDocs(q);
 
-      const scores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const scores = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-      return scores;  
+      return scores;
     } catch (error) {
       console.log("ERROR IN FETCH ALL SCORES THUNK: ", error);
-      return rejectWithValue(error.message);  // Reject with error message
+      return rejectWithValue(error.message); // Reject with error message
+    }
+  }
+);
+
+export const fetchPlayerRequests = createAsyncThunk(
+  "fetchPlayerRequests",
+  async (gameId, { rejectWithValue }) => {
+    try {
+      const joinRequestsRef = ref(RealTimeDB, `games/${gameId}/join_requests`);
+      const snapshot = await get(joinRequestsRef);
+      const requests = snapshot.val();
+
+      return requests ? Object.values(requests) : [];
+    } catch (error) {
+      console.error("Error fetching player requests: ", error);
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -64,7 +89,7 @@ export const createScore = createAsyncThunk(
       });
 
       return {
-        id: docRef.id, 
+        id: docRef.id,
         score,
         accepted,
         turn,
@@ -79,27 +104,23 @@ export const createScore = createAsyncThunk(
   }
 );
 
-
 // EDIT SCORE
 export const editScore = createAsyncThunk("editScore", async (score) => {
-
   try {
     const scoreRef = doc(FireBaseDB, "scores", score.scoreId);
-  
-    
+
     await updateDoc(scoreRef, {
       accepted: score.accepted,
       gameId: score.gameId,
       userId: score.userId,
       turnNum: score.turnNum,
     });
-    
+
     return score;
   } catch (err) {
     console.log("Error in editScore:", err);
   }
 });
-
 
 // ADD POINT TO SCORE
 export const addPoint = createAsyncThunk(
@@ -140,13 +161,10 @@ export const subtract3Points = createAsyncThunk(
   "subtract3Points",
   async ({ userId, gameId }) => {
     try {
-      const { data } = await api.put(
-        `/api/scores/${userId}/subtract3Points`,
-        {
-          userId,
-          gameId,
-        }
-      );
+      const { data } = await api.put(`/api/scores/${userId}/subtract3Points`, {
+        userId,
+        gameId,
+      });
       return data;
     } catch (err) {
       console.log(err);
@@ -164,35 +182,87 @@ export const deleteScore = createAsyncThunk("deleteScore", async (score) => {
   }
 });
 
+// const allScoresSlice = createSlice({
+//   name: "allScores",
+//   initialState: [],
+//   reducers: {},
+//   extraReducers: (builder) => {
+//     builder.addCase(fetchAllGameScores.fulfilled, (state, action) => {
+//       console.log("ACTION PAY:L ", action.payload);
+//       return action.payload;
+//     }),
+//       builder.addCase(fetchPlayerRequests.fulfilled, (state, action) => {
+//         console.log("ACTION PAY:L ", action.payload);
+//         return action.payload;
+//       }),
+//       builder.addCase(createScore.fulfilled, (state, action) => {
+//         state.push(action.payload);
+//       }),
+//       builder.addCase(editScore.fulfilled, (state, action) => {
+//         state.push(action.payload);
+//       }),
+//       builder.addCase(addPoint.fulfilled, (state, action) => {
+//         state.push(action.payload);
+//       }),
+//       builder.addCase(add3Points.fulfilled, (state, action) => {
+//         state.push(action.payload);
+//       }),
+//       builder.addCase(subtract3Points.fulfilled, (state, action) => {
+//         state.push(action.payload);
+//       });
+//   },
+// });
+
+// export const selectAllScores = (state) => {
+//   return state.allScores;
+// };
+// export const playerRequests = (state) => {
+//   return state.requests;
+// };
+
+// export default allScoresSlice.reducer;
+
 const allScoresSlice = createSlice({
   name: "allScores",
-  initialState: [],
+  initialState: {
+    scores: [],
+    playerRequests: [],
+  },
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchAllGameScores.fulfilled, (state, action) => {
-        console.log("ACTION PAY:L ", action.payload)
-    return action.payload;
-    }),
-      builder.addCase(createScore.fulfilled, (state, action) => {
-        state.push(action.payload);
-      }),
-      builder.addCase(editScore.fulfilled, (state, action) => {
-        state.push(action.payload);
-      }),
-      builder.addCase(addPoint.fulfilled, (state, action) => {
-        state.push(action.payload);
-      }),
-      builder.addCase(add3Points.fulfilled, (state, action) => {
-        state.push(action.payload);
-      }),
-      builder.addCase(subtract3Points.fulfilled, (state, action) => {
-        state.push(action.payload);
+    builder
+      .addCase(fetchAllGameScores.fulfilled, (state, action) => {
+        console.log("ACTION PAYLOAD - Scores: ", action.payload);
+        state.scores = action.payload; // Update only the scores part of the state
+      })
+      .addCase(fetchPlayerRequests.fulfilled, (state, action) => {
+        console.log("ACTION PAYLOAD - Player Requests: ", action.payload);
+        state.playerRequests = action.payload; // Update only the player requests part of the state
+      })
+      .addCase(createScore.fulfilled, (state, action) => {
+        state.scores.push(action.payload);
+      })
+      .addCase(editScore.fulfilled, (state, action) => {
+        state.scores.push(action.payload);
+      })
+      .addCase(addPoint.fulfilled, (state, action) => {
+        state.scores.push(action.payload);
+      })
+      .addCase(add3Points.fulfilled, (state, action) => {
+        state.scores.push(action.payload);
+      })
+      .addCase(subtract3Points.fulfilled, (state, action) => {
+        state.scores.push(action.payload);
       });
   },
 });
 
 export const selectAllScores = (state) => {
-  return state.allScores;
+  return state.allScores.scores; // Select only the scores
+};
+
+export const selectPlayerRequests = (state) => {
+  return state.allScores.playerRequests; // Select only the player requests
 };
 
 export default allScoresSlice.reducer;

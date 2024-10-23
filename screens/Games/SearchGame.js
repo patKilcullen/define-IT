@@ -28,7 +28,7 @@ const SearchGame = () => {
   const handleSearchGame = () => {
     setError("");
     dispatch(findGameByName(gameName)).then((game) => {
-        console.log("GAMMME: ", game)
+
       game.error
         ? setError("Can't find that game...")
         : setFoundGame(game.payload);

@@ -105,10 +105,13 @@ const { user } = useContext(UserContext);
           gameId: game.id,
           accepted: true,
         })
-
+        // editScore()
       )
       .then((editScoreRes) => {
-
+        // clientSocket.emit("send_ask_to_join", {
+        //   room: game.name,
+        //   userName: username,
+        // });
           const joinRequestsRef = ref(
             RealTimeDB,
             `games/${game.name}/join_requests`
@@ -130,6 +133,30 @@ const { user } = useContext(UserContext);
     dispatch(fetchAllGameScores(gameId));
   };
 
+  // Ask to join the game
+//   const handleAskJoin = () => {
+
+//     dispatch(
+//       createScore({
+//         score: 0,
+//         accepted: false,
+//         turn: false,
+//         turnNum: null,
+//         gameId: gameId,
+//         userId: user?.uid,
+//         displayName: user.displayName
+//       })
+//     );
+//     // clientSocket.emit("send_ask_to_join", {
+//     //   room: game.name,
+//     //   userName: username,
+//     // });
+//     const joinRequestsRef = ref(RealTimeDB, `games/${game.name}/join_requests`);
+//     push(joinRequestsRef, {
+//       room: game.name,
+//       userName: username,
+//     });
+//   };
 const handleAskJoin = () => {
   dispatch(
     createScore({
@@ -175,6 +202,55 @@ const handleAskJoin = () => {
       setTempScoreCard(tempScoreCardTurn);
     }
   }, [tempScoreCardTurn]);
+
+//   useEffect(() => {
+//     setTempScoreCard(tempScoreCardTurn);
+//   }, [tempScoreCardTurn]);
+
+  // SOCKET: Receive and emit events
+//   useEffect(() => {
+//     clientSocket.on("receive_score_card", ({ tempScoreCardMessages }) => {
+//       setTempScoreCard(tempScoreCardMessages);
+//     });
+
+//     clientSocket.on("receive_start_game", ({ room, userName }) => {
+//       dispatch(fetchSingleGame(gameId));
+//     });
+
+//     // clientSocket.on("recieve_ask_to_join", (room) => {
+//     //   if (room === game.name) {
+//     //     dispatch(fetchAllGameScores(gameId));
+//     //   }
+//     // });
+//      const joinRequestsRef = ref(RealTimeDB, `games/${game.name}/join_requests`);
+
+//        onValue(joinRequestsRef, (snapshot) => {
+//          const requests = snapshot.val();
+
+//          if (requests) {
+//            // Loop over the requests and handle each one
+//            Object.values(requests).forEach((request) => {
+//              if (request.room === game.name) {
+//                // If the room matches, dispatch your action to fetch scores
+//                dispatch(fetchAllGameScores(gameId));
+//              }
+//            });
+//          }
+//        })
+
+//     clientSocket.on("receive_play_again", ({ room, gameId }) => {
+//       if (room === game.name) {
+//         dispatch(fetchSingleGame(gameId));
+//       }
+//     });
+
+//     return () => {
+//       clientSocket.off("receive_score_card");
+//       clientSocket.off("receive_start_game");
+//       clientSocket.off("recieve_ask_to_join");
+//       clientSocket.off("receive_play_again");
+//     };
+//   }, [clientSocket, game, gameId]);
 
 
 useEffect(() => {
@@ -233,7 +309,30 @@ useEffect(() => {
 }, [game.name, gameId, dispatch]);
 
   
+// NECESSARY with FIREBASE?
+  // Join the room when the game or userScore changes
+//   useEffect(() => {
+//     if (userScore) {
+//       clientSocket.emit("join_room", { room: game.name, userName: username });
+//     }
+//   }, [game, userScore]);
+useEffect(() => {
+  const playersRef = ref(RealTimeDB, `games/${game.name}/players`);
 
+  // Listen for player joins in the room
+  const playersListener = onValue(playersRef, (snapshot) => {
+    const players = snapshot.val();
+    if (players) {
+      console.log("Players in the room:", players);
+      // Update state or trigger an action based on the players in the room
+    }
+  });
+
+  // Cleanup the listener on unmount
+  return () => {
+    off(playersRef, playersListener);
+  };
+}, [game.name]);
 
   // Tied game check
   const checkIfTied = () => {
