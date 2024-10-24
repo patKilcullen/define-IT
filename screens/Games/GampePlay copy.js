@@ -27,7 +27,7 @@ import { selectSingleGame } from "../../redux/singleGame.js";
 
 // Components
 import Timer from "./Timer";
-import CardFront from "../CardFront.js";
+import CardFront from "../Cards/CardBack.js";
 import Buttons from "../../Buttons.js";
 
 // SOCKET
@@ -69,7 +69,7 @@ const GamePlay = ({
   const [moveOffScreen, setMoveOffScreen] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
 
-//   GET PLAYERS TURN NUMBER
+  //   GET PLAYERS TURN NUMBER
   useEffect(() => {
     if (game && game.scores) {
       setPlayerTurn(game.scores.filter((score) => score.turnNum === game.turn));
@@ -79,7 +79,7 @@ const GamePlay = ({
     }
   }, []);
 
-// GET WORD
+  // GET WORD
   const handleGetWord = () => {
     word ? setMoveOffScreen(true) : null;
     word ? setFlip(false) : null;
@@ -318,9 +318,7 @@ const GamePlay = ({
             def={definition}
             handleChooseWord={handleChooseWord}
           /> */}
-          <CardFront
-            title={{first: "boder", second: "boy"}}
-          />
+          <CardFront title={{ first: "boder", second: "boy" }} />
         </View>
 
         {/* Choose Word Button */}

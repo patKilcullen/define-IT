@@ -121,6 +121,7 @@ const gamePlaySlice = createSlice({
       state.fakeDefinitions.push(action.payload);
     },
     addRealDefinition(state, action) {
+        console.log("ADD READDDDDDDLLLLLLL: ", action.payload);
       state.definition = action.payload;
     },
 

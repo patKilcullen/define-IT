@@ -14,7 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { findGameByName } from "../../redux/singleGame";
 
 // Components
-import CardFront from "../CardFront";
+import CardFront from "../Cards/CardBack";
 
 const SearchGame = () => {
   const [gameName, setGameName] = useState("");
@@ -28,7 +28,6 @@ const SearchGame = () => {
   const handleSearchGame = () => {
     setError("");
     dispatch(findGameByName(gameName)).then((game) => {
-
       game.error
         ? setError("Can't find that game...")
         : setFoundGame(game.payload);

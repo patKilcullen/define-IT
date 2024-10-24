@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 
 // SLICES/STATE REDUCERS
 import {
@@ -14,17 +9,14 @@ import {
   selectWord,
 } from "../../redux/gameplay";
 import { addPoint } from "../../redux/scores";
-import {
-  editGameTurn,
-  selectSingleGame,
-} from "../../redux/singleGame";
+import { editGameTurn, selectSingleGame } from "../../redux/singleGame";
 
 // SOCKET
 import { SocketContext } from "../../socketProvider";
 
 // COMPONENTS
 import TempScoreCard from "../../screens/scores/TempScoreCard";
-const CardFront = React.lazy(() => import("../CardFront"));
+const CardFront = React.lazy(() => import("../Cards/CardBack.js"));
 
 import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";

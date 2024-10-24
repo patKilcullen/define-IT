@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 
 // SLICES/STATE REDUCERS, ETC.
 // import { fetchSingleUser } from "../users/singleUserSlice";
@@ -9,14 +15,14 @@ import { fetchSingleUser } from "../../redux/users";
 
 // COMPONENTS
 // import Navbar from "../navbar/Navbar"; // Adapt Navbar to React Native or remove if not necessary
-// Ensure CardFront is a React Native component
-import CardFront from "../CardFront";
+// Ensure CardBack is a React Native component
+import CardBack from "../Cards/CardBack";
 
 import { UserContext } from "../../UserContext";
 const UserGames = () => {
   const [displayGames, setDisplayGames] = useState([]);
-//   const userId = useSelector((state) => state.auth.me.id);
-const { user } = useContext(UserContext); 
+  //   const userId = useSelector((state) => state.auth.me.id);
+  const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const route = useRoute();
   const navigation = useNavigation();
@@ -25,10 +31,9 @@ const { user } = useContext(UserContext);
 
   // Fetch and filter games based on the route params
   useEffect(() => {
-
     if (games === "all-games") {
-        console.log("USAAA")
-    let user = fetchSingleUser(user.uid);
+      console.log("USAAA");
+      let user = fetchSingleUser(user.uid);
 
       dispatch(fetchSingleUser(user.uid)).then((res) => {
         setDisplayGames(res.payload.games);
@@ -62,7 +67,7 @@ const { user } = useContext(UserContext);
                   navigation.navigate("SingleGame", { id: game.id })
                 }
               >
-                <CardFront
+                <CardBack
                   notReverse={true}
                   side="back"
                   half={{

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 // COMPONENTS
-import CardFront from "./CardFront"; // Ensure CardFront is implemented for React Native
+import CardBack from "./Cards/CardBack"; // Ensure CardBack is implemented for React Native
 
 const AllGames = () => {
   const navigation = useNavigation();
@@ -12,7 +12,7 @@ const AllGames = () => {
     <View style={styles.container}>
       <View style={styles.cardsContainer}>
         <TouchableOpacity onPress={() => navigation.navigate("CreateGame")}>
-          <CardFront
+          <CardBack
             notReverse={true}
             top="Create Game"
             side="back"
@@ -21,7 +21,7 @@ const AllGames = () => {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate("SearchGame")}>
-          <CardFront
+          <CardBack
             notReverse={true}
             top="Search Game"
             side="back"
@@ -34,7 +34,7 @@ const AllGames = () => {
             navigation.navigate("UserGames", { type: "all-games" })
           }
         >
-          <CardFront
+          <CardBack
             notReverse={true}
             side="back"
             top="All Games"
@@ -47,7 +47,7 @@ const AllGames = () => {
             navigation.navigate("UserGames", { type: "started-games" })
           }
         >
-          <CardFront
+          <CardBack
             notReverse={true}
             side="back"
             top="Started Games"
@@ -60,7 +60,7 @@ const AllGames = () => {
             navigation.navigate("UserGames", { type: "unstarted-games" })
           }
         >
-          <CardFront
+          <CardBack
             notReverse={true}
             side="back"
             top="Pending Games"

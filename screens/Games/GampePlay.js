@@ -1,12 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, StyleSheet, ScrollView, Animated } from "react-native";
 
 // SLICES/STATE REDUCERS
 import {
@@ -27,11 +21,10 @@ import { selectSingleGame } from "../../redux/singleGame.js";
 
 // Components
 import Timer from "./Timer";
-import CardFront from "../CardFront.js";
+import CardBack from "../Cards/CardBack.js";
 import Buttons from "../../Buttons.js";
 
-// SOCKET
-import { SocketContext } from "../../socketProvider";
+
 import { UserContext } from "../../UserContext.js";
 
 import { ref, set, onValue } from "firebase/database";
@@ -39,6 +32,8 @@ import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
 import { balderdashWords } from "../../Words.js";
 
+import CardFront from "../Cards/CardFront.js";
+import GuessCard from "../Cards/GuessCard.js";
 const GamePlay = ({
   setReloadFlip,
   reloadFlip,
@@ -58,6 +53,9 @@ const GamePlay = ({
   // Component state
   const [word, setWord] = useState("");
   const [definition, setDefinition] = useState("");
+const [guessDef, setGuessDef] = useState(false)
+
+
   const [timer, setTimer] = useState(false);
   const [choseWord, setChoseWord] = useState(false);
   const [playerTurn, setPlayerTurn] = useState("");
@@ -67,7 +65,33 @@ const GamePlay = ({
   const [moveOffScreen, setMoveOffScreen] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
 
-//   GET PLAYERS TURN NUMBER
+
+// FLIP
+    // const [flipAnimation] = useState(new Animated.Value(1));
+//      const flipAnimation = useRef(new Animated.Value(0).current);
+//    const [isFlipped, setIsFlipped] = useState(false);
+
+//    const handleFlip = () => {
+//      if (!isFlipped) {
+//        Animated.timing(flipAnimation, {
+//          toValue: 180,
+//          duration: 800,
+//          useNativeDriver: true,
+//        }).start(() => {
+//          setIsFlipped(true);
+//        });
+//      } else {
+//        Animated.timing(flipAnimation, {
+//          toValue: 0,
+//          duration: 800,
+//          useNativeDriver: true,
+//        }).start(() => {
+//          setIsFlipped(false);
+//        });
+//      }
+//    };
+
+  //   GET PLAYERS TURN NUMBER
   useEffect(() => {
     if (game && game.scores) {
       setPlayerTurn(game.scores.filter((score) => score.turnNum === game.turn));
@@ -77,29 +101,29 @@ const GamePlay = ({
     }
   }, []);
 
-// GET WORD
+  // GET WORD
   const handleGetWord = () => {
-    word ? setMoveOffScreen(true) : null;
-    word ? setFlip(false) : null;
+    // word ? setMoveOffScreen(true) : null;
+    // word ? setFlip(false) : null;
 
-    setTimeout(
-      () => {
-        word ? setMoveOffScreen(false) : null;
-        setFlipSide("back");
+    // setTimeout(
+    //   () => {
+    //     word ? setMoveOffScreen(false) : null;
+    //     setFlipSide("back");
 
-        setTimeout(
-          () => {
-            setFlip(true);
-            setFlipSide("front");
-          },
-          word ? 500 : 0
-        );
-      },
-      word ? 1000 : 0
-    );
+    //     setTimeout(
+    //       () => {
+    //         setFlip(true);
+    //         setFlipSide("front");
+    //       },
+    //       word ? 500 : 0
+    //     );
+    //   },
+    //   word ? 1000 : 0
+    // );
 
-    dispatch(clearFakeDefs());
-    dispatch(clearTempScoreCardMessages());
+    // dispatch(clearFakeDefs());
+    // dispatch(clearTempScoreCardMessages());
 
     let newWord =
       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
@@ -109,6 +133,7 @@ const GamePlay = ({
     dispatch(addDefinition({ real: newWord.definition }));
     setFlipSide("front");
     setWordToDb(false);
+    setGuessDef(true)
   };
 
   // GET FAKE WORDS   called in handleChooseWord function,
@@ -121,7 +146,6 @@ const GamePlay = ({
       count++;
     }
   };
-
 
   const handleChooseWord = () => {
     dispatch(addRealDefinition(definition));
@@ -149,7 +173,7 @@ const GamePlay = ({
     // Listen for word data (receive_word)
     const wordListener = onValue(wordRef, (snapshot) => {
       const data = snapshot.val();
-
+console.log("DATA IN WORKD LISTNETER: ", data)
       if (data && data.playerTurnName !== username && data.room === gameName) {
         dispatch(setWordState(data?.word || ""));
         dispatch(addRealDefinition(data.definition));
@@ -157,6 +181,7 @@ const GamePlay = ({
         setWord(data.word);
         setFlip(true);
         setFlipSide("front");
+     
       }
     });
 
@@ -227,45 +252,19 @@ const GamePlay = ({
 
         {/* Main Card Component */}
         <View style={styles.cardContainer}>
-          {/* <CardFront notReverse={true} side={"back"} baseCard={true} /> */}
+          {game && userScore && game.turn !== userScore.turnNum ? (
+            <GuessCard
+              word={word}
+              definition={definition}
+              flip={flip}
+            ></GuessCard>
+          ) : null}
 
-          {/* Card Flipping Info */}
-          {/* <CardFront
-            moveOffScreen={moveOffScreen}
-            flip={!flip}
-            side={"back"}
-            bottomCard={bottomCard}
-          top={null}
-          /> */}
-          {/* <CardFront
-            moveOffScreen={moveOffScreen}
-            checkIfTied={checkIfTied}
-            top={word || ""}
-            bottom={definition}
-            side={flipSide}
-            flip={flip}
-            timer={timer}
-            game={game}
-            username={username}
-            userId={userId}
-            userScore={userScore}
-            gameName={gameName}
-            gameId={game.id}
-            playerTurnName={playerTurnName}
-            definition={definition}
-            reloadScores={reloadScores}
-            setDefinition={setDefinition}
-            setWord={setWord}
-            setTimer={setTimer}
-            setChoseWord={setChoseWord}
-            flippable={true}
-            //
-            def={definition}
-            handleChooseWord={handleChooseWord}
-          /> */}
-          <CardFront
-            title={{first: "Balder", second: "Dash"}}
-          />
+          {game && userScore && game.turn === userScore.turnNum ? (
+            <CardFront word={word} definition={definition}></CardFront>
+          ) : null}
+
+          <CardBack title={{ first: "Balder", second: "Dash" }} flip={flip} />
         </View>
 
         {/* Choose Word Button */}
@@ -276,23 +275,6 @@ const GamePlay = ({
             pulse={"pulse"}
           />
         ) : null}
-
-        {/* Add New Word/Definition to Database */}
-        {/* {definition && !choseWord && wordToDb === false ? (
-          <Buttons
-            name={"Add word to database"}
-            func={handleAddNewWord}
-            pulse={"pulse"}
-          />
-        ) : null}
-
-        {definition && !choseWord ? (
-          <Buttons
-            name={"TEST OPENAI FUNC CALL"}
-            func={handleTestFuncCall}
-            pulse={"pulse"}
-          />
-        ) : null} */}
       </ScrollView>
     </View>
   );
