@@ -3,6 +3,11 @@ import axios from "axios";
 import defaultDefs from "./defaultFakeDefs";
 import { balderdashWords } from "../Words";
 
+
+import {  RealTimeDB } from "../Firebase/FirebaseConfig";
+
+import { ref, set} from "firebase/database";
+
 const api = axios?.create({
   baseURL: "http://localhost:8080",
   headers: {
@@ -69,6 +74,27 @@ export const getFakeDefinitions = createAsyncThunk(
     }
   }
 );
+
+
+// START GAME
+export const startGame = ({game, user}) => {
+    console.log("GAME: ", game, "user", user)
+  const gameStartRef = ref(RealTimeDB, `games/${game.id}/start_game`);
+console.log("REF HIT: ", gameStartRef);
+  // Equivalent of "emit" - Writing the start game event to Firebase
+  set(gameStartRef, {
+    room: game.name,
+    userName: user.displayName,
+    // startedAt: new Date().toISOString(), // Optional: Timestamp of when the game was started
+  })
+    .then(() => {
+      console.log("Game start event successfully sent to Firebase.");
+    })
+    .catch((error) => {
+      console.error("Error sending start game event to Firebase:", error);
+    });
+};
+    
 
 const initialState = {
   word: "",

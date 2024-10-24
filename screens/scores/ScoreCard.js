@@ -299,12 +299,12 @@ const playerRequests = useSelector(selectPlayerRequests);
 
     const joinRequestsListener = onValue(joinRequestsRef, (snapshot) => {
       const requests = snapshot.val();
-      console.log("REQUESRSSS: ", requests)
+   
       if (requests) {
         // Loop over the requests and handle each one
         Object.values(requests).forEach((request) => {
           if (request.room === game.name) {
-              console.log("dispatch");
+            
             // dispatch(fetchAllGameScores(game.id));
                dispatch(fetchPlayerRequests(game.id));
           }

@@ -12,9 +12,6 @@ const api = axios?.create({
 
 
 
-
-    
-
 // CREATE GAME
 export const createGame = createAsyncThunk(
   "createGame",
@@ -118,10 +115,12 @@ export const fetchAllGames = createAsyncThunk(
 // });
 // GET SINGLE GAME
 export const fetchSingleGame = createAsyncThunk("singleGame", async (id, { rejectWithValue }) => {
+    console.log("FETCH SINGLE: ", id)
   try {
     const gameRef = doc(FireBaseDB, 'games', id);  // Reference to the document
     const gameDoc = await getDoc(gameRef);
-
+console.log("GAMEDIC data: ", gameDoc.data());
+console.log("GAMEDIC: ID ", gameDoc.id);
     if (gameDoc.exists()) {
       return { id: gameDoc.id, ...gameDoc.data() };  // Return game data with its ID
     } else {

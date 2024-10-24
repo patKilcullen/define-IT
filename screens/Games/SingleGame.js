@@ -4,7 +4,12 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { View, Text, TouchableOpacity, StyleSheet , ScrollView} from "react-native";
 
 // SLICES/STATE REDUCERS
-import { selectSingleGame, fetchSingleGame, editGame } from "../../redux/singleGame";
+import {
+  selectSingleGame,
+  fetchSingleGame,
+  editGame,
+  
+} from "../../redux/singleGame";
 import {
   selectAllScores,
   fetchAllGameScores,
@@ -23,6 +28,7 @@ import {
   clearTempScoreCardMessages,
   selectWord,
   selectRealDefinition,
+  startGame,
 } from "../../redux/gameplay";
 
 // SOCKET
@@ -178,12 +184,17 @@ const handleAskJoin = () => {
   // Start the game
   const handleStartGame = () => {
     dispatch(editGame({ id: game.id, started: true })).then(() => {
+ console.log("HERE 1 ");
       dispatch(fetchSingleGame(gameId));
-    });
-    clientSocket.emit("send_start_game", {
-      room: game.name,
-      userName: user.displayName,
-    });
+    }).then(()=>{
+        console.log("HERE 2 ")
+       dispatch(startGame({ game, user })); 
+    })
+   
+    // clientSocket.emit("send_start_game", {
+    //   room: game.name,
+    //   userName: user.displayName,
+    // });
   };
 
   // Set tempScoreCard when tempScoreCardTurn changes
@@ -206,12 +217,14 @@ useEffect(() => {
   });
 
   // Reference to start game event in Firebase
-  const startGameRef = ref(RealTimeDB, `games/${game.name}/start_game`);
+  const startGameRef = ref(RealTimeDB, `games/${game.id}/start_game`);
 
   const startGameListener = onValue(startGameRef, (snapshot) => {
+    console.log("START INETER : ", snapshot);
     const data = snapshot.val();
+    console.log("START INETER : ", data);
     if (data && data.room === game.name) {
-      dispatch(fetchSingleGame(gameId)); 
+      dispatch(fetchSingleGame(game.id)); 
     }
   });
 
@@ -269,7 +282,7 @@ useEffect(() => {
   return (
     <View style={styles.card}>
       <ScrollView>
-        {showTempScoreCard && (
+        {/* {showTempScoreCard && (
           <TempScoreCard
             reloadScores={reloadScores}
             prevGameTurn={prevGameTurn}
@@ -283,7 +296,7 @@ useEffect(() => {
             tempScoreCard={tempScoreCard}
             showTiedGame={showTiedGame}
           />
-        )}
+        )} */}
 
         {showFinalCard && <FinalCard game={game} userScore={userScore} />}
 
@@ -300,8 +313,8 @@ useEffect(() => {
         {(game.started === true && game.ownerId === user?.uid) ||
         (game.started === true && userScore) ? (
           <GamePlay
-            setShowTempScoreCard={setShowTempScoreCard}
-            setReloadFlip={setReloadFlip}
+            setShowTempScoreCard={setShowTempScoreCard}//
+            setReloadFlip={setReloadFlip}//
             reloadFlip={reloadFlip}
             userId={user?.uid}
             game={game}

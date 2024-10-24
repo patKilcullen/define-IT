@@ -20,7 +20,7 @@ import {
   clearTempScoreCardMessages,
   addRealDefinition,
 } from "../../redux/gameplay.js";
-import { addNewWord } from "../../redux/words";
+// import { addNewWord } from "../../redux/words";
 import { selectMe } from "../../redux/auth";
 import { selectSingleGame } from "../../redux/singleGame.js";
 // import { testAIFunc } from "./openAISlice";
@@ -54,6 +54,8 @@ const GamePlay = ({
   const gameName = game.name;
   const { user } = useContext(UserContext);
   const username = user.displayName;
+  // SOCKET
+  const clientSocket = useContext(SocketContext);
 
   // Component state
   const [word, setWord] = useState("");
@@ -121,7 +123,27 @@ const GamePlay = ({
       count++;
     }
   };
+  //   const handleChooseWord = () => {
+  //     dispatch(addRealDefinition(definition));
+  //     handleGetFakeWords();
+  //     clientSocket.emit("send_word", {
+  //       word: word,
+  //       definition: definition,
+  //       room: gameName,
+  //       playerTurnName: username,
+  //     });
+  //     setTimer(true);
+  //     setChoseWord(true);
+  //   };
 
+  //   const handles = () => {
+  //     dispatch(clearFakeWords());
+  //     let count = 0;
+  //     while (count < 5) {
+  //       dispatch(getFakeWords());
+  //       count++;
+  //     }
+  //   };
 
   const handleChooseWord = () => {
     dispatch(addRealDefinition(definition));
@@ -136,6 +158,39 @@ const GamePlay = ({
     setChoseWord(true);
   };
 
+  // const handleAddNewWord = () => {
+  //   setWordToDb(true);
+  //   dispatch(addNewWord({ word: word, definition: definition }));
+  // };
+
+  //   useEffect(() => {
+  //     clientSocket.on(
+  //       "receive_word",
+  //       ({ word, definition, room, playerTurnName }) => {
+  //         if (playerTurnName !== username && room === gameName) {
+  //           dispatch(setWordState(word));
+  //           dispatch(addRealDefinition(definition));
+  //           setPlayerTurnName(playerTurnName);
+  //           setWord(word);
+  //           setFlip(true);
+  //           setFlipSide("front");
+  //         }
+  //       }
+  //     );
+
+  //     clientSocket.on("receive_start_countdown", (room) => {
+  //       room === gameName ? setTimer(true) : setTimer(false);
+  //     });
+
+  //     clientSocket.on(
+  //       "receive_player_fake_def",
+  //       ({ playerDef, room, userId, playerTurnName }) => {
+  //         if (room === gameName && playerTurnName === username) {
+  //           dispatch(addDefinition({ [userId]: playerDef }));
+  //         }
+  //       }
+  //     );
+  //   }, [clientSocket, game]);
   useEffect(() => {
     const wordRef = ref(RealTimeDB, `games/${gameName}/word`);
     const countdownRef = ref(RealTimeDB, `games/${gameName}/countdown`);
@@ -163,7 +218,7 @@ const GamePlay = ({
     // Listen for countdown start (receive_start_countdown)
     const countdownListener = onValue(countdownRef, (snapshot) => {
       const room = snapshot.val();
-      console.log("CountDOEN: ", room, gameName);
+      console.log("CountDOEN: ", rroom, gameName);
       setTimer(room === gameName);
     });
 
@@ -264,7 +319,7 @@ const GamePlay = ({
             handleChooseWord={handleChooseWord}
           /> */}
           <CardFront
-            title={{first: "Balder", second: "Dash"}}
+            title={{first: "boder", second: "boy"}}
           />
         </View>
 
@@ -284,9 +339,9 @@ const GamePlay = ({
             func={handleAddNewWord}
             pulse={"pulse"}
           />
-        ) : null}
+        ) : null} */}
 
-        {definition && !choseWord ? (
+        {/* {definition && !choseWord ? (
           <Buttons
             name={"TEST OPENAI FUNC CALL"}
             func={handleTestFuncCall}
