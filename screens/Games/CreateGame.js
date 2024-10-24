@@ -218,6 +218,7 @@ import { useFonts } from "expo-font";
 
 const CreateGame = () => {
   const { user } = useContext(UserContext);
+  console.log("USAAA: ", user.displayName)
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -261,7 +262,7 @@ const CreateGame = () => {
             turnNum: 1,
             gameId: res.payload.id,
             userId: user.uid,
-            userName: user.displayName,
+            userName: user.displayName || user.email,
           })
         ).then((res) => {
           navigation.navigate("SingleGame", { id: res.payload.gameId });

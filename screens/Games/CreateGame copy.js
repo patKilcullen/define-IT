@@ -15,6 +15,7 @@ import { UserContext } from "../../UserContext";
 
 const CreateGame = () => {
   const { user } = useContext(UserContext);
+  console.log("USER: ", user)
 
   //   const userId = useSelector((state) => state.auth.me.id);
   const [gameName, setGameName] = useState("");
@@ -52,7 +53,7 @@ const CreateGame = () => {
             turnNum: 1,
             gameId: res.payload.id,
             userId: user.uid,
-            userName: user.displayName,
+            userName: user.displayName || user.email,
           })
         ).then((res) => {
           navigation.navigate("SingleGame", { id: res.payload.gameId });

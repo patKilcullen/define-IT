@@ -340,7 +340,7 @@ console.log(
 
       {/* User's Score and Rounds Left */}
       <View style={styles.scoresContainer}>
-        {userScore && (
+        {/* {userScore && (
           <View style={styles.scoreSection}>
             <Text style={styles.label}>Score:</Text>
             <Text style={styles.score}>{userScore.score}</Text>
@@ -348,7 +348,7 @@ console.log(
               {userScore.score === 1 ? "pt" : "pts"}
             </Text>
           </View>
-        )}
+        )} */}
 
         {game && game.rounds && game.roundsLeft && (
           <View style={styles.roundSection}>
@@ -360,22 +360,19 @@ console.log(
         )}
       </View>
 
-      {/* Other Players' Scores */}
+      {/* Players' Scores */}
       <ScrollView style={styles.playersContainer}>
         <Text style={styles.sectionTitle}>Players</Text>
         {scores &&
           scores
             .filter(
-              (score) =>
-                score !== undefined &&
-                score !== null &&
-                score.accepted &&
-                score.userId !== userId
+              (score) => score !== undefined && score !== null && score.accepted
+              // && score.userId !== userId
             ) // Filt
             .map((user) => (
               <View key={user?.user?.id} style={styles.playerScore}>
                 <Text style={styles.playerName}>
-                  {user?.displayName || null}:
+                  {user?.displayName || user?.email || "unknown"}:
                 </Text>
                 <Text style={styles.playerScoreValue}>{user.score}</Text>
                 <Text style={styles.points}>
@@ -396,7 +393,7 @@ console.log(
 
       {game.ownerId === userId && !game.started && (
         <View style={styles.requestsContainer}>
-          <Text style={styles.sectionTitle}>3 Player Requests</Text>
+          <Text style={styles.sectionTitle}>Player Requests</Text>
           {playerRequests &&
             playerRequests
               .filter((request) => request.accepted === false)

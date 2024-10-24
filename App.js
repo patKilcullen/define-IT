@@ -41,7 +41,7 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-const screenWidth = Dimensions.get("window").width;
+
   return (
     <SocketProvider>
       <Provider store={store}>

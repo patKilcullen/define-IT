@@ -14,6 +14,8 @@ import {
   acceptJoinRequestByScoreId,
   fetchPlayerRequests,
   selectPlayerRequests,
+  clearScores,
+  clearPlayerRequests,
 } from "../../redux/scores";
 
 import {
@@ -154,7 +156,7 @@ const handleAskJoin = () => {
     })
   ).then((res)=>{
     console.log("SCORE RES: ", res.payload);
-    // TODO ROOM NOT NECESSARY...
+    // TODO ROOM NOT NECESSARY???
     const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
     push(joinRequestsRef, {
       room: game.name,
@@ -255,6 +257,15 @@ useEffect(() => {
   const checkIfTied = () => {
     setShowTiedGame(true);
   };
+
+  useEffect(() => {
+    // Cleanup function that runs when the component is unmounted
+    return () => {
+      dispatch(clearScores()); // Clear scores from Redux store
+      dispatch(clearPlayerRequests()); // Clear player requests from Redux store
+      // Alternatively, use dispatch(clearAll()) to clear both in one go
+    };
+  }, [dispatch]);
 
   return (
     <View style={styles.card}>
