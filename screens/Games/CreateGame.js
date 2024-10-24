@@ -262,7 +262,7 @@ const CreateGame = () => {
             turnNum: 1,
             gameId: res.payload.id,
             userId: user.uid,
-            userName: user.displayName || user.email,
+            displayName: user.displayName || user.email,
           })
         ).then((res) => {
           navigation.navigate("SingleGame", { id: res.payload.gameId });

@@ -74,7 +74,6 @@ setState((state) => !state)
 // SOCKET
 const clientSocket = useContext(SocketContext);
 
-
   const userScore = scores.find((score) => score?.userId === user?.uid);
 
   const word = useSelector(selectWord);
@@ -120,7 +119,7 @@ console.log("HELP: game: ", game)
       dispatch(
         editScore({
           scoreId: scoreId,
-          userId: userId,
+        //  userId: userId,
           turnNum: res.payload.numPlayers,
           gameId: game.id,
           accepted: true,

@@ -290,15 +290,8 @@ const ScoreCard = ({
       const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
 const playerRequests = useSelector(selectPlayerRequests);
-useEffect(() => {
-  console.log("THESE playerRequests: ", playerRequests);
 
-console.log(
-  "FILTERED: ",
-  playerRequests.filter((request) => request.accepted === false)
-);  
-}, [playerRequests]);
-
+// console.log("USERSCORE: ", userScore)
   useEffect(() => {
   
     // Reference to join requests event in Firebase
@@ -328,7 +321,6 @@ console.log(
   }, [game.name, game.id, dispatch]);
 
 
-  
 
   return (
     <View style={styles.container}>
@@ -362,7 +354,7 @@ console.log(
 
       {/* Players' Scores */}
       <ScrollView style={styles.playersContainer}>
-        <Text style={styles.sectionTitle}>Players</Text>
+        <Text style={styles.sectionTitle}>Players:</Text>
         {scores &&
           scores
             .filter(
@@ -372,8 +364,9 @@ console.log(
             .map((user) => (
               <View key={user?.user?.id} style={styles.playerScore}>
                 <Text style={styles.playerName}>
-                  {user?.displayName || user?.email || "unknown"}:
+                  {user?.displayName || user?.userName || user?.email || "unknown"}:
                 </Text>
+                
                 <Text style={styles.playerScoreValue}>{user.score}</Text>
                 <Text style={styles.points}>
                   {user.score === 1 ? "pt" : "pts"}
@@ -391,9 +384,10 @@ console.log(
             ))}
       </ScrollView>
 
+{/* PLAYER REQUESTS */}
       {game.ownerId === userId && !game.started && (
         <View style={styles.requestsContainer}>
-          <Text style={styles.sectionTitle}>Player Requests</Text>
+          {playerRequests.length > 0 && <Text style={styles.sectionTitle}>Player Requests: </Text>}
           {playerRequests &&
             playerRequests
               .filter((request) => request.accepted === false)
@@ -405,12 +399,7 @@ console.log(
                   <Text style={styles.requestPlayerName}>
                     {request.userName || "Unnamed"}:
                   </Text>
-                  <Text style={styles.requestPlayerName}>
-                    {"accept: " + request.accepted}:
-                  </Text>
-                  <Text style={styles.requestPlayerName}>
-                    {"room: " + request.room}:
-                  </Text>
+                  
                   <Buttons
                     name={"Accept"}
                     func={() =>

@@ -199,7 +199,7 @@ export const editScore = createAsyncThunk("editScore", async (score) => {
     await updateDoc(scoreRef, {
       accepted: score.accepted,
       gameId: score.gameId,
-      userId: score.userId,
+    //   userId: score.userId,
       turnNum: score.turnNum,
     });
 
@@ -332,11 +332,9 @@ const allScoresSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllGameScores.fulfilled, (state, action) => {
-        // console.log("ACTION PAYLOAD - Scores: ", action.payload);
         state.scores = action.payload; // Update only the scores part of the state
       })
       .addCase(fetchPlayerRequests.fulfilled, (state, action) => {
-        console.log("ACTION PAYLOAD - Player Requests: ", action.payload);
         state.playerRequests = action.payload; // Update only the player requests part of the state
       })
       .addCase(createScore.fulfilled, (state, action) => {
