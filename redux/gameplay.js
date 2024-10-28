@@ -118,6 +118,7 @@ const gamePlaySlice = createSlice({
       state.fakeWords = [];
     },
     addDefinition(state, action) {
+        console.log("action.payload: ", action.payload);
       state.fakeDefinitions.push(action.payload);
     },
     addRealDefinition(state, action) {
@@ -125,6 +126,7 @@ const gamePlaySlice = createSlice({
     },
 
     addPlayerFakeDef(state, action) {
+        console.log("PLAYER FAKE ACTION : ", action.payload);
       state.playerFakeDef = action.payload;
     },
     // NEEDED?
@@ -161,7 +163,11 @@ const gamePlaySlice = createSlice({
         state.fakeWords.push(action.payload);
       })
       .addCase("/getFakeDefinitions/fulfilled", (state, action) => {
-        state.fakeDefinitions.push({ fake: action.payload });
+         state.fakeDefinitions.push({ type : "fake", definition: action.payload });
+            // state.fakeDefinitions.push({
+            //   fake: 
+            //    action.payload,
+            // });
         state.fakeDefinitions = randomizeArray(state.fakeDefinitions);
         console.log("state.fakeDefinitions: ", state.fakeDefinitions);
       });

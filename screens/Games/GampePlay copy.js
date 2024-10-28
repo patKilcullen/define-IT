@@ -108,7 +108,7 @@ const GamePlay = ({
 
     setWord(newWord?.word);
     setDefinition(newWord.definition);
-    dispatch(addDefinition({ real: newWord.definition }));
+    dispatch(addDefinition({type:  "real", definition:  newWord.definition }));
     setFlipSide("front");
     setWordToDb(false);
   };
@@ -227,7 +227,7 @@ const GamePlay = ({
       const data = snapshot.val();
 
       if (data && data.room === gameName && data.playerTurnName === username) {
-        dispatch(addDefinition({ [data.userId]: data.playerDef }));
+        dispatch(addDefinition({type: [data.userId], definition: data.playerDef }));
       }
     });
 

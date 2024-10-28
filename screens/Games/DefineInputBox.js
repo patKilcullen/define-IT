@@ -7,6 +7,7 @@ import {
   Text,
   StyleSheet,
   KeyboardAvoidingView,
+  Button
 } from "react-native";
 // SOCKET
 import { SocketContext } from "../../socketProvider";
@@ -36,8 +37,9 @@ const DefInputBox = ({
 
   // Sends player's fake definition to the player whose turn it is via a socket
   const handleEnterFakeDef = (e) => {
+     console.log("PLAYER DEF: DEFINT INTPUT", playerDef);
     e.preventDefault();
-    console.log("PLAYER DEF: ", playerDef)
+
     dispatch(addPlayerFakeDef(playerDef));
 
     set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
@@ -66,7 +68,7 @@ const DefInputBox = ({
               onChangeText={(text) => setPlayerDef(text)}
             />
             <TouchableOpacity
-              style={styles.submitButton}
+              style={styles.submitTouchableOpacity}
               onPress={handleEnterFakeDef}
             >
               <Text style={styles.submitText}>Submit Definition</Text>

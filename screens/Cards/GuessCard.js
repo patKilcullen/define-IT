@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -16,14 +16,28 @@ import { createGame } from "../../redux/singleGame";
 import { createScore } from "../../redux/scores";
 import { UserContext } from "../../UserContext";
 import { useFonts } from "expo-font";
+import { addPlayerFakeDef} from "../../redux/gameplay"
+import { ref, set, onValue } from "firebase/database";
+import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
-const GuessCard = ({ word, definition, flip }) => {
+const GuessCard = ({ word, definition, flip, gameName, userId }) => {
   const { user } = useContext(UserContext);
-  
+    const [seeInput, setSeeInput] = useState(true);
+
+    const [playerDef, setPlayerDef] = useState("");
+
+      const inputRef = useRef();
+
+      // Set focus on input box
+      useEffect(() => {
+        inputRef.current.focus();
+      }, []);
+
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const [gameName, setGameName] = useState("");
+  
   const [rounds, setRounds] = useState(1);
   const [error, setError] = useState("");
 
@@ -38,46 +52,64 @@ const GuessCard = ({ word, definition, flip }) => {
   //     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"),
   //   });
 
+  const [flipAnimation] = useState(new Animated.Value(0));
+  // const flipAnimation = useRef(new Animated.Value(0).current);
+  const [isFlipped, setIsFlipped] = useState(false);
 
-   const [flipAnimation] = useState(new Animated.Value(0));
-   // const flipAnimation = useRef(new Animated.Value(0).current);
-   const [isFlipped, setIsFlipped] = useState(false);
+  const handleFlip = () => {
+    console.log("HANDLE FLIP @");
+    if (!isFlipped) {
+      Animated.timing(flipAnimation, {
+        toValue: 180,
+        duration: 800,
+        useNativeDriver: true, // Set to false for unsupported properties
+      }).start(() => {
+        setIsFlipped(true);
+      });
+    } else {
+      Animated.timing(flipAnimation, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true, // Set to false for unsupported properties
+      }).start(() => {
+        setIsFlipped(false);
+      });
+    }
+  };
+  const frontInterpolate = flipAnimation.interpolate({
+    inputRange: [0, 180],
+    outputRange: ["0deg", "180deg"],
+  });
 
-   const handleFlip = () => {
-console.log("HANDLE FLIP @")
-     if (!isFlipped) {
-       Animated.timing(flipAnimation, {
-         toValue: 180,
-         duration: 800,
-         useNativeDriver: true, // Set to false for unsupported properties
-       }).start(() => {
-         setIsFlipped(true);
-       });
-     } else {
-       Animated.timing(flipAnimation, {
-         toValue: 0,
-         duration: 800,
-         useNativeDriver: true, // Set to false for unsupported properties
-       }).start(() => {
-         setIsFlipped(false);
-       });
-     }
-   };
-   const frontInterpolate = flipAnimation.interpolate({
-     inputRange: [0, 180],
-     outputRange: ["0deg", "180deg"],
-   });
+  const animatedStyle = {
+    transform: [{ rotateY: frontInterpolate }],
+  };
 
-   const animatedStyle = {
-     transform: [{ rotateY: frontInterpolate }],
-   };
+  useEffect(() => {
+    if (flip) {
+      handleFlip();
+    }
+  }, [flip]);
 
-   useEffect(()=>{
-if(flip){
-    handleFlip()
-}
-   },[flip])
 
+
+  // Sends player's fake definition to the player whose turn it is via a socket
+  const handleEnterFakeDef = (e) => {
+
+    e.preventDefault();
+
+    dispatch(addPlayerFakeDef(playerDef));
+console.log("playerDefplayerDef: ", playerDef);
+    set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
+      playerDef,
+    //   room: gameName,
+      userId,
+    //  playerId,
+    });
+    setSeeInput(false);
+    setPlayerDef("");
+    // showBackOfCard("back");
+  };
   return (
     // <Animated.View style={[styles.container, animatedStyle]}>
     <Animated.View style={styles.container}>
@@ -91,16 +123,26 @@ if(flip){
               <Text style={styles.topText}>{word}</Text>
             </View>
             <View style={styles.bottomPortion}>
-              <TextInput
-                style={[styles.textInput, { textAlignVertical: "top" }]}
-                placeholder="Enter your definition"
-                multiline={true}
-                numberOfLines={4}
-              />
+              {seeInput && (
+                <View>
+                  <TextInput
+                    style={[styles.textInput, { textAlignVertical: "top" }]}
+                    placeholder="Enter your definition"
+                    multiline={true}
+                    numberOfLines={4}
+                    value={playerDef}
+                    onChangeText={(text) => setPlayerDef(text)}
+                    ref={inputRef}
+                  />
 
-              <TouchableOpacity style={styles.button}>
-                <Text>Submit</Text>
-              </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleEnterFakeDef}
+                  >
+                    <Text>Submit</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </View>
         </LinearGradient>

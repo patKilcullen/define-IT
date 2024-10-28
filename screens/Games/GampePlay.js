@@ -14,6 +14,8 @@ import {
   clearTempScoreCardMessages,
   addRealDefinition,
   getFakeDefinitions,
+  selectFakeDefinitions,
+  selectRealDefinition,
 } from "../../redux/gameplay.js";
 import { addNewWord } from "../../redux/words";
 import { selectMe } from "../../redux/auth";
@@ -24,7 +26,7 @@ import { selectSingleGame } from "../../redux/singleGame.js";
 import Timer from "./Timer";
 import CardBack from "../Cards/CardBack.js";
 import Buttons from "../../Buttons.js";
-
+import GuessDefs from "./GuessDefs.js";
 
 import { UserContext } from "../../UserContext.js";
 
@@ -62,18 +64,22 @@ const [defInput, setDefInput] = useState(false);
   const [wordToDb, setWordToDb] = useState(false);
   const [moveOffScreen, setMoveOffScreen] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(10);
+    const [playGame, setPlayGame] = useState(false);
 
 
   //   GET PLAYERS TURN NUMBER
-//   useEffect(() => {
-//     if (game && game.scores) {
-//       setPlayerTurn(game.scores.filter((score) => score.turnNum === game.turn));
-//     }
-//     if (playerTurn) {
-//       setPlayerTurnName(playerTurn[0].user.username);
-//     }
-//   }, []);
+  useEffect(() => {
+      console.log("gamr score: ", game.turn);
+    if (game && game.scores) {
+      
+      setPlayerTurn(game.scores.filter((score) => score.turnNum === game.turn));
+    }
+    if (playerTurn) {
+      setPlayerTurnName(playerTurn[0].user.username);
+    }
+  }, []);
+
 
   // GET WORD
   const handleGetWord = () => {
@@ -82,7 +88,7 @@ const [defInput, setDefInput] = useState(false);
 
     setWord(newWord?.word);
     setDefinition(newWord.definition);
-    dispatch(addDefinition({ real: newWord.definition }));
+    dispatch(addDefinition({type: "real", definition:  newWord.definition }));
  
   };
 
@@ -129,7 +135,10 @@ const [defInput, setDefInput] = useState(false);
       `games/${gameName}/fake_player_definition`
     );
       const countdownNumRef= ref(RealTimeDB, `games/${gameName}/countdownNum`);
-
+const playerDefRef = ref(
+  RealTimeDB,
+  `games/${gameName}/fake__player_definition`
+);
     //   const dispatch = useDispatch();
 3
     // Listen for word data (receive_word)
@@ -157,23 +166,26 @@ console.log("WORD LISTENER: ", data ? data : "fiuu");
     });
     const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
       const data = snapshot.val();
-console.log("Countdown nume listere: ", data)
       if (data && userId !== data.playerTurnId) {
         setCountdown(data.countdown)
         if(data.countdown === 0){
             setDefInput(false)
+            setPlayGame(true)
         }
       }
-      //   setTimer(room === gameName);
+  
     });
 
     // Listen for player fake definitions (receive_player_fake_def)
-    const fakeDefListener = onValue(fakeDefRef, (snapshot) => {
+    const fakeDefListener = onValue(playerDefRef, (snapshot) => {
       const data = snapshot.val();
-
-      if (data && data.room === gameName && data.playerTurnName === username) {
-        dispatch(addDefinition({ [data.userId]: data.playerDef }));
+      if (data) {
+       
+        dispatch(addDefinition({type: [data.userId], definition:  data.playerDef }));
       }
+      //   if (data && data.room === gameName && data.playerTurnName === username) {
+      //     dispatch(addDefinition({ [data.userId]: data.playerDef }));
+      //   }
     });
 
     // Cleanup function to unsubscribe listeners on unmount
@@ -211,7 +223,7 @@ if(timer){
       } else if (countdown === 0) {
        console.log("Countdown 0: ", userId)
         //  handleGetFakeDefs();
-        // setPlayGame(true);
+         setPlayGame(true);
         setDefInput(false);
         // showBackOfCard("front");
         // false;
@@ -232,42 +244,56 @@ if(timer){
   return (
     <View style={styles.container}>
       <ScrollView>
-        <Text>
-          Countdown: {countdown}, Timer: {timer}
-        </Text>
-        {/* Get Word Button - only visible if it's the player's turn */}
-        {game && userScore && game.turn === userScore.turnNum ? (
-          <Buttons
-            name={!word ? "Get Word" : "Get Another Word"}
-            func={handleGetWord}
-            pulse={!word || !word.length ? "pulse" : null}
-          />
-        ) : null}
+        {!playGame ? (
+          <View>
+            <Text>
+              Countdown: {countdown}, Timer: {timer}
+            </Text>
+            {/* Get Word Button - only visible if it's the player's turn */}
+            {game && userScore && game.turn === userScore.turnNum ? (
+              <Buttons
+                name={!word ? "Get Word" : "Get Another Word"}
+                func={handleGetWord}
+                pulse={!word || !word.length ? "pulse" : null}
+              />
+            ) : null}
 
-        {/* Main Card Component */}
-        <View style={styles.cardContainer}>
-          {/* {defInput && userScore.turnNum !== game.turn && userScore.accepted ===  true ? */}
-          {defInput ? (
-            <GuessCard
-              word={word}
-              definition={definition}
-              flip={flip}
-            ></GuessCard>
-          ) : null}
-          {game && userScore && game.turn === userScore.turnNum ? (
-            <CardFront word={word} definition={definition}></CardFront>
-          ) : null}
-          <CardBack title={{ first: "Balder", second: "Dash" }} flip={flip} />
-        </View>
+            {/* Main Card Component */}
+            <View style={styles.cardContainer}>
+              {/* {defInput && userScore.turnNum !== game.turn && userScore.accepted ===  true ? */}
+              {defInput ? (
+                <GuessCard
+                  word={word}
+                  definition={definition}
+                  flip={flip}
+                  userId={userId}
+                  gameName={game.name}
+                ></GuessCard>
+              ) : null}
 
-        {/* Choose Word Button */}
-        {definition && !choseWord ? (
-          <Buttons
-            name={"Choose Word"}
-            func={handleChooseWord}
-            pulse={"pulse"}
-          />
-        ) : null}
+              {game && userScore && game.turn === userScore.turnNum ? (
+                <CardFront word={word} definition={definition}></CardFront>
+              ) : null}
+              <CardBack
+                title={{ first: "Balder", second: "Dash" }}
+                flip={flip}
+              />
+            </View>
+
+            {/* Choose Word Button */}
+            {definition && !choseWord ? (
+              <Buttons
+                name={"Choose Word"}
+                func={handleChooseWord}
+                pulse={"pulse"}
+              />
+            ) : null}
+          </View>
+        ) : (
+            <GuessDefs
+            word={word}
+            />
+        )}
       </ScrollView>
     </View>
   );

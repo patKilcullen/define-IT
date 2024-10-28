@@ -129,7 +129,7 @@ const SingleGame = () => {
           accepted: true,
         })
       ).then(async (editScoreRes) => {
-        console.log("HEL: P: ", scoreId);
+ 
         dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
 
         dispatch(fetchSingleGame(gameId));
@@ -217,9 +217,8 @@ const SingleGame = () => {
     const startGameRef = ref(RealTimeDB, `games/${game.id}/start_game`);
 
     const startGameListener = onValue(startGameRef, (snapshot) => {
-      console.log("START INETER : ", snapshot);
       const data = snapshot.val();
-      console.log("START INETER : ", data);
+ 
       if (data && data.room === game.name) {
         dispatch(fetchSingleGame(game.id));
       }
