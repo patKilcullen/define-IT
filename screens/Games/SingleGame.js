@@ -26,6 +26,7 @@ import {
   selectPlayerRequests,
   clearScores,
   clearPlayerRequests,
+  getUserScore,
 } from "../../redux/scores";
 
 import {
@@ -77,7 +78,10 @@ const SingleGame = () => {
     setState((state) => !state);
   }, [playerRequests]);
   // SOCKET
-  const clientSocket = useContext(SocketContext);
+
+
+
+   
 
   const userScore = scores.find((score) => score?.userId === user?.uid);
 

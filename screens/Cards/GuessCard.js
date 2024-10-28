@@ -20,7 +20,7 @@ import { addPlayerFakeDef} from "../../redux/gameplay"
 import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
-const GuessCard = ({ word, definition, flip, gameName, userId }) => {
+const GuessCard = ({ word, definition, flip, gameName, userId,}) => {
   const { user } = useContext(UserContext);
     const [seeInput, setSeeInput] = useState(true);
 

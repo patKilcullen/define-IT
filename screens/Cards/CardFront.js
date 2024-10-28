@@ -16,7 +16,13 @@ import { createScore } from "../../redux/scores";
 import { UserContext } from "../../UserContext";
 import { useFonts } from "expo-font";
 
-const CardFront = ({word, definition}) => {
+const CardFront = ({
+  word,
+  definition,
+  guessDefs,
+  handleChooseDef,
+  guessedDef,
+}) => {
   const { user } = useContext(UserContext);
 
   const dispatch = useDispatch();
@@ -32,13 +38,11 @@ const CardFront = ({word, definition}) => {
   const textFontSize = width * 0.15;
 
   // Load the custom font
-//   const [fontsLoaded] = useFonts({
-//     // CustomFont: require("../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
-//     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"),
-//   });
-
- 
-  
+  //   const [fontsLoaded] = useFonts({
+  //     // CustomFont: require("../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
+  //     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"),
+  //   });
+console.log("GUIES: ", guessDefs === undefined);
   return (
     <View style={styles.container}>
       <View style={styles.cardsContainer}>
@@ -46,13 +50,35 @@ const CardFront = ({word, definition}) => {
           colors={["#88ebe6", "#283330"]}
           style={[styles.card, { height: cardHeight, width: cardWidth }]}
         >
-          <View style={styles.innerCard}>
+          <View
+            style={
+              guessDefs === undefined
+                ? styles.innerCard
+                : styles.innerCardGuessDef
+            }
+          >
             <View style={styles.topPortion}>
               <Text style={styles.topText}>{word}</Text>
             </View>
             <View style={styles.bottomPortion}>
-              <Text style={styles.bottomText}>{definition}</Text>
+              <Text
+                style={
+                  guessDefs === undefined
+                    ? styles.bottomText
+                    : styles.bottomTextguessDef
+                }
+              >
+                {definition}
+              </Text>
             </View>
+            {guessDefs && (
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => handleChooseDef(guessedDef)}
+              >
+                <Text>Choose Definition</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </LinearGradient>
       </View>
@@ -78,11 +104,18 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   bottomText: {
-    marginTop: 20,
+    marginTop: 10,
     fontSize: 20,
     fontWeight: "bold",
-    
-    width: "100%"
+
+    width: "100%",
+  },
+  bottomTextguessDef: {
+    marginTop: -100,
+    fontSize: 20,
+    fontWeight: "bold",
+
+    width: "100%",
   },
   bottomPortion: {
     padding: 10,
@@ -120,6 +153,16 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     justifyContent: "flex-start",
+    alignItems: "center",
+    borderRadius: 40,
+    borderColor: "black",
+    borderWidth: 5,
+    backgroundColor: "#e6e8dc",
+  },
+  innerCardGuessDef: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "space-between",
     alignItems: "center",
     borderRadius: 40,
     borderColor: "black",
@@ -173,7 +216,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderColor: "black",
     borderWidth: 2,
-    alignItems: "center",
   },
   buttonText: {
     fontSize: 20,

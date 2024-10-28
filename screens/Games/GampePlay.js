@@ -17,6 +17,7 @@ import {
   selectFakeDefinitions,
   selectRealDefinition,
 } from "../../redux/gameplay.js";
+import { getUserScore, fetchAllGameScores } from "../../redux/scores.js";
 import { addNewWord } from "../../redux/words";
 import { selectMe } from "../../redux/auth";
 import { selectSingleGame } from "../../redux/singleGame.js";
@@ -70,7 +71,7 @@ const [defInput, setDefInput] = useState(false);
 
   //   GET PLAYERS TURN NUMBER
   useEffect(() => {
-      console.log("gamr score: ", game.turn);
+
     if (game && game.scores) {
       
       setPlayerTurn(game.scores.filter((score) => score.turnNum === game.turn));
@@ -239,7 +240,12 @@ if(timer){
 
 
 
-
+const handleGetScore = ()=>{
+    dispatch(getUserScore({gameId: game.id, userId})).then((res)=>{
+        console.log("RES GER SCORE: ", res.payload[0].id)
+    })
+   
+}
 
   return (
     <View style={styles.container}>
@@ -249,6 +255,7 @@ if(timer){
             <Text>
               Countdown: {countdown}, Timer: {timer}
             </Text>
+          
             {/* Get Word Button - only visible if it's the player's turn */}
             {game && userScore && game.turn === userScore.turnNum ? (
               <Buttons
@@ -257,7 +264,6 @@ if(timer){
                 pulse={!word || !word.length ? "pulse" : null}
               />
             ) : null}
-
             {/* Main Card Component */}
             <View style={styles.cardContainer}>
               {/* {defInput && userScore.turnNum !== game.turn && userScore.accepted ===  true ? */}
@@ -279,7 +285,6 @@ if(timer){
                 flip={flip}
               />
             </View>
-
             {/* Choose Word Button */}
             {definition && !choseWord ? (
               <Buttons
@@ -290,11 +295,14 @@ if(timer){
             ) : null}
           </View>
         ) : (
+            // GUESS DEFINTIONS CARDS
           <View style={styles.container}>
-    
             <View style={styles.guessDef}>
               <View style={styles.cardContainer}>
-                <GuessDefs word={word} />
+                <GuessDefs word={word}
+                userScore={userScore} 
+                userId={userId}
+                gameId={game.id}/>
               </View>
             </View>
           </View>

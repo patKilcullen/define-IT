@@ -20,6 +20,9 @@ const api = axios?.create({
   },
 });
 
+
+
+
 // GET ALL GAME'S SCORES
 export const fetchAllGameScores = createAsyncThunk(
   "allScores",
@@ -28,6 +31,28 @@ export const fetchAllGameScores = createAsyncThunk(
       const scoresRef = collection(FireBaseDB, "scores");
 
       const q = query(scoresRef, where("gameId", "==", gameId));
+
+      const querySnapshot = await getDocs(q);
+
+      const scores = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      return scores;
+    } catch (error) {
+      console.log("ERROR IN FETCH ALL SCORES THUNK: ", error);
+      return rejectWithValue(error.message); // Reject with error message
+    }
+  }
+);
+export const getUserScore = createAsyncThunk(
+  "userScore",
+  async ({gameId, userId}, { rejectWithValue }) => {
+    try {
+      const scoresRef = collection(FireBaseDB, "scores");
+
+      const q = query(scoresRef, where("gameId", "==", gameId, "userId", "==", userId));
 
       const querySnapshot = await getDocs(q);
 
@@ -314,6 +339,7 @@ const allScoresSlice = createSlice({
   initialState: {
     scores: [],
     playerRequests: [],
+    userScore: {},
   },
   reducers: {
     // Clear scores reducer
@@ -328,9 +354,16 @@ const allScoresSlice = createSlice({
       state.scores = [];
       state.playerRequests = [];
     },
+    // Clear scores reducer
+    clearUserScore(state) {
+      state.userScore = {}; // Reset scores array
+    },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getUserScore.fulfilled, (state, action) => {
+        state.scores.push(action.payload);
+      })
       .addCase(fetchAllGameScores.fulfilled, (state, action) => {
         state.scores = action.payload; // Update only the scores part of the state
       })
