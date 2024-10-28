@@ -37,9 +37,10 @@ const DefInputBox = ({
   // Sends player's fake definition to the player whose turn it is via a socket
   const handleEnterFakeDef = (e) => {
     e.preventDefault();
+    console.log("PLAYER DEF: ", playerDef)
     dispatch(addPlayerFakeDef(playerDef));
 
-    set(ref(RealTimeDB, `games/${gameName}/fake__playe_definition`), {
+    set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
       playerDef,
       room: gameName,
       userId,

@@ -218,7 +218,7 @@ const GamePlay = ({
     // Listen for countdown start (receive_start_countdown)
     const countdownListener = onValue(countdownRef, (snapshot) => {
       const room = snapshot.val();
-      console.log("CountDOEN: ", rroom, gameName);
+     
       setTimer(room === gameName);
     });
 

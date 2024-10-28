@@ -79,7 +79,8 @@ if(flip){
    },[flip])
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
+    // <Animated.View style={[styles.container, animatedStyle]}>
+    <Animated.View style={styles.container}>
       <View style={styles.cardsContainer}>
         <LinearGradient
           colors={["#88ebe6", "#283330"]}

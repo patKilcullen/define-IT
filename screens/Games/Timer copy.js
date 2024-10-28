@@ -25,28 +25,24 @@ const Timer = ({
   //   showBackOfCard,
   //   makeHidden,
   game,
-//   username,
-//   userId,
-//   userScore,
-//   gameName,
-//   gameId,
-//   playerTurnName,
-//   reloadScores,
-//   setDefinition,
-//   setWord,
-//   setTimer,
-//   setChoseWord,
-//   top,
-  defInput,
-  setDefInput,
-  startCountdown
+  username,
+  userId,
+  userScore,
+  gameName,
+  gameId,
+  playerTurnName,
+  reloadScores,
+  setDefinition,
+  setWord,
+  setTimer,
+  setChoseWord,
+  top,
 }) => {
   // COMPONENT STATE
   const [countdown, setCountdown] = useState(12);
-//   const [defInput, setDefInput] = useState(false);
+  const [defInput, setDefInput] = useState(false);
   const [playGame, setPlayGame] = useState(false);
 
-  
   const clientSocket = useContext(SocketContext);
   const dispatch = useDispatch();
 
@@ -61,57 +57,37 @@ const Timer = ({
   };
 
   // Timer logic: Countdown, DefInput visibility, and triggering the GuessDefs component
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       if (countdown > 0) {
-//         setDefInput(true);
-//         setCountdown(countdown - 1);
-//       } else if (countdown === 0) {
-//         handleGetFakeDefinitions();
-//         setPlayGame(true);
-//         setDefInput(false);
-//         // showBackOfCard("front");
-//         false;
-//       } else {
-//         setDefInput(false);
-//       }
-//     }, 1000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (countdown > 0) {
+        setDefInput(true);
+        setCountdown(countdown - 1);
+      } else if (countdown === 0) {
+        handleGetFakeDefinitions();
+        setPlayGame(true);
+        setDefInput(false);
+        // showBackOfCard("front");
+        false;
+      } else {
+        setDefInput(false);
+      }
+    }, 1000);
 
-//     return () => clearTimeout(timer);
-//   }, [countdown]);
- useEffect(() => {
-    console.log("TIMER USER EFFECT")
-   const timer = setTimeout(() => {
-     if (countdown > 0) {
-       setDefInput(true);
-       setCountdown((countdown) => countdown - 1);
-     } else if (countdown === 0) {
-       handleGetFakeDefinitions();
-       setPlayGame(true);
-       setDefInput(false);
-       // showBackOfCard("front");
-       false;
-     } else {
-       setDefInput(false);
-     }
-   }, 1000);
-
-   return () => clearTimeout(timer);
- }, [startCountdown]);
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   // Emit socket event to start countdown when the component mounts
-//   useEffect(() => {
-//     console.log("GAME NAME USER EFFECT: ", game.name);
-//     // clientSocket.emit("start_countdown", { gameName });
-//     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
-//   }, []);
+  useEffect(() => {
+    // clientSocket.emit("start_countdown", { gameName });
+    set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
+  }, []);
 
   // When playGame becomes true, hide the previous styles to show guessDefs
-//   useEffect(() => {
-//     if (playGame) {
-//       //   makeHidden();
-//     }
-//   }, [playGame]);
+  useEffect(() => {
+    if (playGame) {
+      //   makeHidden();
+    }
+  }, [playGame]);
 
   return (
     <View style={styles.container}>
