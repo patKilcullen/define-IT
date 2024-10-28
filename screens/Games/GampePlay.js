@@ -113,7 +113,7 @@ const [defInput, setDefInput] = useState(false);
 
   const handleChooseWord = () => {
      set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
-    dispatch(addRealDefinition(definition));
+    dispatch(addRealDefinition({type: "real", definition: definition}));
     handleGetFakeDefs();
     set(ref(RealTimeDB, `games/${gameName}/word`), {
       word: word,
@@ -150,7 +150,7 @@ console.log("WORD LISTENER: ", data ? data : "fiuu");
            if (data) {
                  setDefInput(true);
         dispatch(setWordState(data?.word || ""));
-        dispatch(addRealDefinition(data.definition));
+        dispatch(addRealDefinition({ type: "real", definition: data.definition }));
         setPlayerTurnName(data.playerTurnName);
         setWord(data.word);
     //  setTimer(true);
@@ -290,9 +290,14 @@ if(timer){
             ) : null}
           </View>
         ) : (
-            <GuessDefs
-            word={word}
-            />
+          <View style={styles.container}>
+    
+            <View style={styles.guessDef}>
+              <View style={styles.cardContainer}>
+                <GuessDefs word={word} />
+              </View>
+            </View>
+          </View>
         )}
       </ScrollView>
     </View>
@@ -311,6 +316,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
+  guessDef: {
+    marginLeft: -13
+  }
 });
 
 export default GamePlay;
