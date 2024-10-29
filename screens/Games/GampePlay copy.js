@@ -20,7 +20,7 @@ import {
   clearTempScoreCardMessages,
   addRealDefinition,
 } from "../../redux/gameplay.js";
-// import { addNewWord } from "../../redux/words";
+
 import { selectMe } from "../../redux/auth";
 import { selectSingleGame } from "../../redux/singleGame.js";
 // import { testAIFunc } from "./openAISlice";

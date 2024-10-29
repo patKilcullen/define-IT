@@ -105,13 +105,13 @@ const CardFront = React.lazy(() => import("../Cards/CardFront.js"));
 import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
-const GuessDefs = ({gameId,  userScore, gameName}) => {
+const GuessDefs = ({gameId,  userScore, gameName, setPlayGame, playGame}) => {
      const { user } = useContext(UserContext);
      userId = user.uid
   const [combinedDefs, setCombinedDefs] = useState([]);
   const [defList, setDefList] = useState(false);
   const [guessed, setGuessed] = useState(false);
-  const [countdown, setCountdown] = useState(10);
+  const [countdown, setCountdown] = useState(5);
 
   const dispatch = useDispatch();
   const word = useSelector(selectWord);
@@ -145,13 +145,13 @@ const GuessDefs = ({gameId,  userScore, gameName}) => {
     } else {
      
       dispatch(addPoint({ userId, gameId })).then((res) => {
-        console.log("RESSS: ", res.meta.arg.userId)
+       
         message = `${user.displayName} guessed ${res.payload.user.user.displayName}'s fake definition... ${res.payload.user.user.displayName} gets 1 point!!`;
       });
     }
 
     if (singleGame.turn === userScore.turnNum) {
-        console.log("GET HERE???????")
+      
       dispatch(addTempScoreCardMessage(message));
        const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
 
@@ -187,14 +187,20 @@ const GuessDefs = ({gameId,  userScore, gameName}) => {
 
 
     useEffect(() => {
-
-
       const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+   const fakeDefsRef = ref(RealTimeDB, `games/${gameName}/fake_definitions`);
+      // Listen for fake definitions (replaces clientSocket.on('receive_fake_defs'))
+      const fakeDefsListener = onValue(fakeDefsRef, (snapshot) => {
+        const data = snapshot.val();
+
+        // if (data) {
+        //   setFakeDefs(data.fakeDefinitions);
+        // }
+      });
 
       // Listen for score card information (replaces clientSocket.on('receive_score_card_info'))
       const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
         const data = snapshot.val();
-console.log("GATER: ", data)
         if (
           data &&
           data.room === gameName &&
@@ -206,10 +212,41 @@ console.log("GATER: ", data)
 
       // Cleanup function to remove Firebase listeners on component unmount
       return () => {
-        // fakeDefsListener();
+         fakeDefsListener();
         scoreCardListener();
       };
     }, [gameId, userScore, dispatch]);
+
+
+
+
+    //   useEffect(() => {
+    //     const timer = setTimeout(async () => {
+    //       if (countdown > 0) {
+    //         // setDefList(true);
+    //         setCountdown(countdown - 1);
+    //       } else if (countdown === 0) {
+          
+    //         // setDefList(false);
+    //         // handleChangeGameTurn();
+    //         // reloadScores();
+    //         // setDefinition("");
+    //         // setWord("");
+    //         // setGuessed(false);
+    //         // setDefList(null);
+    //         setFakeDefs([]);
+    //         // setTimer(false);
+    //         setPlayGame(false);
+    //         // setChoseWord(false);
+    //         // dispatch(clearFakeWords());
+    //         // makeHidden();
+    //       }
+    //     }, 1000);
+
+    //     // Cleanup the timer when the component unmounts
+    //     // NEED?
+    //     return () => clearTimeout(timer);
+    //   }, [countdown]);
 
   return (
     <View style={styles.container}>

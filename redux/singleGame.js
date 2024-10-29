@@ -1,7 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import {FireBaseDB} from '../Firebase/FirebaseConfig'
-import {addDoc, collection, doc, getDoc, query, where, getDocs, updateDoc, arrayUnion}  from 'firebase/firestore'
+import { FireBaseDB } from "../Firebase/FirebaseConfig";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -9,8 +19,6 @@ const api = axios?.create({
     "Content-Type": "application/json",
   },
 });
-
-
 
 // CREATE GAME
 export const createGame = createAsyncThunk(
@@ -44,9 +52,8 @@ export const createGame = createAsyncThunk(
         publicX: publicX || false,
         numPlayers: numPlayers || 1,
         turn: turn || "",
-        players: [userId]
+        players: [userId],
       });
-    
 
       return {
         id: docRef.id, // Returning the document ID
@@ -68,27 +75,21 @@ export const createGame = createAsyncThunk(
   }
 );
 
-
 // FIND GAME BY NAME
 export const fetchAllGames = createAsyncThunk(
   "findGameByName",
   async (user, { rejectWithValue }) => {
     try {
-      // Reference to the "games" collection
       const gamesRef = collection(FireBaseDB, "games");
 
-      // Query to find games where the "name" field matches gameName
       const q = query(gamesRef, where("", "==", gameName));
 
-      // Get all documents matching the query
       const querySnapshot = await getDocs(q);
 
-      // Check if we got any results
       if (querySnapshot.empty) {
         throw new Error(`No game found with name: ${gameName}`);
       }
 
-      // Extract the data from the document(s)
       const games = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -103,62 +104,46 @@ export const fetchAllGames = createAsyncThunk(
   }
 );
 
-
-// // // GET SIGNLE GAME
-// export const fetchSingleGame = createAsyncThunk("singleGame", async (id) => {
-//   try {
-//     const { data } = await api.get(`/api/games/${id}`);
-//     return data;
-//   } catch (error) {
-//     console.log("ERROR IN SINGLE GAME THUNK: ", error);
-//   }
-// });
 // GET SINGLE GAME
-export const fetchSingleGame = createAsyncThunk("singleGame", async (id, { rejectWithValue }) => {
+export const fetchSingleGame = createAsyncThunk(
+  "singleGame",
+  async (id, { rejectWithValue }) => {
+    try {
+      const gameRef = doc(FireBaseDB, "games", id); // Reference to the document
+      const gameDoc = await getDoc(gameRef);
 
-  try {
-    const gameRef = doc(FireBaseDB, 'games', id);  // Reference to the document
-    const gameDoc = await getDoc(gameRef);
-
-    if (gameDoc.exists()) {
-      return { id: gameDoc.id, ...gameDoc.data() };  // Return game data with its ID
-    } else {
-      throw new Error("Game not found");
+      if (gameDoc.exists()) {
+        return { id: gameDoc.id, ...gameDoc.data() }; // Return game data with its ID
+      } else {
+        throw new Error("Game not found");
+      }
+    } catch (error) {
+      console.log("ERROR IN SINGLE GAME THUNK: ", error);
+      return rejectWithValue(error.message); // Reject with error message
     }
-  } catch (error) {
-    console.log("ERROR IN SINGLE GAME THUNK: ", error);
-    return rejectWithValue(error.message);  // Reject with error message
   }
-});
-
-
+);
 
 // FIND GAME BY NAME
 export const findGameByName = createAsyncThunk(
   "findGameByName",
   async (gameName, { rejectWithValue }) => {
     try {
-      
       const gamesRef = collection(FireBaseDB, "games");
 
-   
       const q = query(gamesRef, where("name", "==", gameName));
-
 
       const querySnapshot = await getDocs(q);
 
-      // Check if we got any results
       if (querySnapshot.empty) {
         throw new Error(`No game found with name: ${gameName}`);
       }
 
-      // Extract the data from the documents
       const games = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      // Return the first game found (or all games, if needed)
       return games.length > 0 ? games[0] : null;
     } catch (error) {
       console.log("ERROR IN FIND GAME BY NAME THUNK: ", error);
@@ -167,25 +152,20 @@ export const findGameByName = createAsyncThunk(
   }
 );
 
-
-
 // EDIT GAME
 export const editGame = createAsyncThunk("editGame", async (game) => {
   try {
-    console.log("HHHHHH: ", game)
     const gameRef = doc(FireBaseDB, "games", game.id);
-    
 
     const updateData = {
       ...game,
     };
 
-// add players if needed
+    // add players if needed
     if (game.addPlayers) {
       updateData.players = arrayUnion({ user: game.userId, score: 0 });
       updateData.players2 = arrayUnion({ user: game.userId, score: 0 });
     }
-
 
     await updateDoc(gameRef, updateData);
 
@@ -194,9 +174,6 @@ export const editGame = createAsyncThunk("editGame", async (game) => {
     console.log(err);
   }
 });
-
-
-
 
 // EDIT GAME TURN
 export const editGameTurn = createAsyncThunk(
@@ -214,8 +191,6 @@ export const editGameTurn = createAsyncThunk(
     }
   }
 );
-
-
 
 const singleGameSlice = createSlice({
   name: "singleGame",

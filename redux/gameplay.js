@@ -161,10 +161,6 @@ const gamePlaySlice = createSlice({
       })
       .addCase("/getFakeDefinitions/fulfilled", (state, action) => {
          state.fakeDefinitions.push({ type : "fake", definition: action.payload });
-            // state.fakeDefinitions.push({
-            //   fake: 
-            //    action.payload,
-            // });
         state.fakeDefinitions = randomizeArray(state.fakeDefinitions);
         console.log("state.fakeDefinitions: ", state.fakeDefinitions);
       });

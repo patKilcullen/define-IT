@@ -9,10 +9,9 @@ import {
   getDocs,
   updateDoc,
   doc,
-  Firestore,
 } from "firebase/firestore";
 
- import { ref, get, orderByChild, equalTo, update } from "firebase/database";
+import { ref, get, orderByChild, equalTo, update } from "firebase/database";
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -20,9 +19,6 @@ const api = axios?.create({
     "Content-Type": "application/json",
   },
 });
-
-
-
 
 // GET ALL GAME'S SCORES
 export const fetchAllGameScores = createAsyncThunk(
@@ -47,13 +43,18 @@ export const fetchAllGameScores = createAsyncThunk(
     }
   }
 );
+
+// GET USER SCORE
 export const getUserScore = createAsyncThunk(
   "userScore",
-  async ({gameId, userId}, { rejectWithValue }) => {
+  async ({ gameId, userId }, { rejectWithValue }) => {
     try {
       const scoresRef = collection(FireBaseDB, "scores");
 
-      const q = query(scoresRef, where("gameId", "==", gameId, "userId", "==", userId));
+      const q = query(
+        scoresRef,
+        where("gameId", "==", gameId, "userId", "==", userId)
+      );
 
       const querySnapshot = await getDocs(q);
 
@@ -70,6 +71,7 @@ export const getUserScore = createAsyncThunk(
   }
 );
 
+// FETCH PLAYER REQUESTS
 export const fetchPlayerRequests = createAsyncThunk(
   "fetchPlayerRequests",
   async (gameId, { rejectWithValue }) => {
@@ -85,49 +87,11 @@ export const fetchPlayerRequests = createAsyncThunk(
     }
   }
 );
-// Update the request using scoreId
-// export const acceptJoinRequestByScoreId = async ({game, scoreId}) => {
-   
-//   try {
-//        console.log("GAMEID: ", game.id);
-//        console.log("scoreId: ", scoreId);
 
-//         const joinRequestsRef = ref(
-//           RealTimeDB,
-//           `games/${game.id}/join_requests`
-//         );
-//     // const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests/${scoreId}`);
-// console.log("joinRequestsRef: ", joinRequestsRef);
-//     // Query the requests where scoreId matches
-//     const queryRef = query(joinRequestsRef, orderByChild('scoreId'));
-//     console.log("queryRef: ", queryRef);
-//     const snapshot = await get(queryRef);
-// console.log("snapshot.val(): ", snapshot.val());
-//     if (snapshot.exists()) {
-//       // Find the key (requestId) for the request
-//       const requestKey = Object.keys(snapshot.val())[0];
-//          console.log("requeyKey: ", requestKey);
-//       const requestRef = ref(RealTimeDB, `games/${game.id}/join_requests/${requestKey}`);
-
-//       // Update the request to set accepted to true
-//       await update(requestRef, {
-//         accepted: true,
-//       });
-
-//       console.log("Join request successfully accepted.");
-//     } else {
-//       console.error("No matching request found for scoreId:", scoreId);
-//     }
-//   } catch (error) {
-//     console.error("Error updating join request by scoreId:", error);
-//   }
-// };
+// ACCEPT REQUEST TO JOIN
 export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
   try {
-
-
     const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
-  
 
     // Query the requests where scoreId matches
     const queryRef = query(joinRequestsRef, orderByChild("scoreId"));
@@ -139,7 +103,6 @@ export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
     if (snapshot.exists()) {
       const requests = snapshot.val();
 
-      // Find the correct request where scoreId matches
       const matchingRequestKey = Object.keys(requests).find(
         (key) => requests[key].scoreId === scoreId
       );
@@ -152,7 +115,6 @@ export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
           `games/${game.id}/join_requests/${matchingRequestKey}`
         );
 
-        // Update the request to set accepted to true
         await update(requestRef, {
           accepted: true,
         });
@@ -168,7 +130,6 @@ export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
     console.error("Error updating join request by scoreId:", error);
   }
 };
-
 
 // GET HIGHEST SCORE IN GAME
 export const fetchHighestGameScores = createAsyncThunk(
@@ -224,7 +185,7 @@ export const editScore = createAsyncThunk("editScore", async (score) => {
     await updateDoc(scoreRef, {
       accepted: score.accepted,
       gameId: score.gameId,
-    //   userId: score.userId,
+      //   userId: score.userId,
       turnNum: score.turnNum,
     });
 
@@ -234,70 +195,7 @@ export const editScore = createAsyncThunk("editScore", async (score) => {
   }
 });
 
-// ADD POINT TO SCORE
-// export const addPoint = createAsyncThunk(
-//   "addPoint",
-//   async ({ userId, gameId }) => {
-//     try {
-//       const { data } = await api.put(`/api/scores/${userId}/addPoint`, {
-//         userId,
-//         gameId,
-//       });
-
-//       return data;
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   }
-// ); 
-// const scoresRef = collection(FireBaseDB, "scores");
-
-//       const q = query(scoresRef, where("gameId", "==", gameId, "userId", "==", userId));
-
-//       const querySnapshot = await getDocs(q);
-
-//       const scores = querySnapshot.docs.map((doc) => ({
-//         id: doc.id,
-//         ...doc.data(),
-//       }));
-
-
-// export const addPoint = createAsyncThunk(
-//   "scores/addPoint",
-//   async ({ userId, gameId }, { rejectWithValue }) => {
-//     try {
-//       // Reference to the specific score document by userId and gameId
-
-//        const scoreDocRef = collection(FireBaseDB, "scores");
-
-   
-//  const q = query(
-//    scoreDocRef,
-//    where("gameId", "==", gameId, "userId", "==", userId)
-//  );
-//       const querySnapshot = await getDocs(q);
-//       if (querySnapshot) {
-
-//         const currentScore = querySnapshot.score
-//         console.log("CSCOER: ", currentScore)
-//         // Increment score by 1
-//         const newScore = currentScore + 1;
-
-//         // Update score in Firestore
-//         await updateDoc(querySnapshot, { score: newScore });
-
-//         console.log("Score updated successfully:", newScore);
-//         return { userId, gameId, score: newScore };
-//       } else {
-//         console.error("Score document not found.");
-//         return rejectWithValue("Score document not found.");
-//       }
-//     } catch (err) {
-//       console.error("Error updating score:", err);
-//       return rejectWithValue("Failed to add point to score");
-//     }
-//   }
-// );
+// APP POINT TO SCORE
 export const addPoint = createAsyncThunk(
   "scores/addPoint",
   async ({ userId, gameId }, { rejectWithValue }) => {
@@ -315,16 +213,11 @@ export const addPoint = createAsyncThunk(
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        // Assuming there should only be one document that matches the query
         const doc = querySnapshot.docs[0];
         const currentScore = doc.data().score;
 
-        console.log("Current Score:", currentScore);
-
-        // Increment score by 1
         const newScore = currentScore + 1;
 
-        // Update score in Firestore
         await updateDoc(doc.ref, { score: newScore });
 
         console.log("Score updated successfully:", newScore);
@@ -339,38 +232,6 @@ export const addPoint = createAsyncThunk(
     }
   }
 );
-
-// export const addPoint = createAsyncThunk(
-//   "scores/addPoint",
-//   async ({ userId, gameId }, { rejectWithValue }) => {
-//     try {
-//       // Reference to the specific score document by userId and gameId
-//   const scoresRef = collection(FireBaseDB, "scores");
-//       console.log("scoreDocRef: ", scoreDocRef);
-//       // Fetch current score data
-//       const scoreSnapshot = await getDoc(scoreDocRef);
-
-//       if (scoreSnapshot.exists()) {
-//         const currentScore = scoreSnapshot.data().score || 0;
-
-//         // Increment score by 1
-//         const newScore = currentScore + 1;
-
-//         // Update score in Firestore
-//         await updateDoc(scoreDocRef, { score: newScore });
-
-//         console.log("Score updated successfully:", newScore);
-//         return { userId, gameId, score: newScore };
-//       } else {
-//         console.error("Score document not found.");
-//         return rejectWithValue("Score document not found.");
-//       }
-//     } catch (err) {
-//       console.error("Error updating score:", err);
-//       return rejectWithValue("Failed to add point to score");
-//     }
-//   }
-// );
 
 // ADD POINT TO SCORE
 export const add3Points = createAsyncThunk(
@@ -415,46 +276,6 @@ export const deleteScore = createAsyncThunk("deleteScore", async (score) => {
   }
 });
 
-// const allScoresSlice = createSlice({
-//   name: "allScores",
-//   initialState: [],
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder.addCase(fetchAllGameScores.fulfilled, (state, action) => {
-//       console.log("ACTION PAY:L ", action.payload);
-//       return action.payload;
-//     }),
-//       builder.addCase(fetchPlayerRequests.fulfilled, (state, action) => {
-//         console.log("ACTION PAY:L ", action.payload);
-//         return action.payload;
-//       }),
-//       builder.addCase(createScore.fulfilled, (state, action) => {
-//         state.push(action.payload);
-//       }),
-//       builder.addCase(editScore.fulfilled, (state, action) => {
-//         state.push(action.payload);
-//       }),
-//       builder.addCase(addPoint.fulfilled, (state, action) => {
-//         state.push(action.payload);
-//       }),
-//       builder.addCase(add3Points.fulfilled, (state, action) => {
-//         state.push(action.payload);
-//       }),
-//       builder.addCase(subtract3Points.fulfilled, (state, action) => {
-//         state.push(action.payload);
-//       });
-//   },
-// });
-
-// export const selectAllScores = (state) => {
-//   return state.allScores;
-// };
-// export const playerRequests = (state) => {
-//   return state.requests;
-// };
-
-// export default allScoresSlice.reducer;
-
 const allScoresSlice = createSlice({
   name: "allScores",
   initialState: {
@@ -463,21 +284,18 @@ const allScoresSlice = createSlice({
     userScore: {},
   },
   reducers: {
-    // Clear scores reducer
     clearScores(state) {
-      state.scores = []; // Reset scores array
+      state.scores = [];
     },
-    // Clear player requests reducer
     clearPlayerRequests(state) {
-      state.playerRequests = []; // Reset player requests array
+      state.playerRequests = [];
     },
     clearAll(state) {
       state.scores = [];
       state.playerRequests = [];
     },
-    // Clear scores reducer
     clearUserScore(state) {
-      state.userScore = {}; // Reset scores array
+      state.userScore = {};
     },
   },
   extraReducers: (builder) => {
@@ -486,10 +304,10 @@ const allScoresSlice = createSlice({
         state.scores.push(action.payload);
       })
       .addCase(fetchAllGameScores.fulfilled, (state, action) => {
-        state.scores = action.payload; // Update only the scores part of the state
+        state.scores = action.payload;
       })
       .addCase(fetchPlayerRequests.fulfilled, (state, action) => {
-        state.playerRequests = action.payload; // Update only the player requests part of the state
+        state.playerRequests = action.payload;
       })
       .addCase(createScore.fulfilled, (state, action) => {
         state.scores.push(action.payload);
@@ -509,17 +327,15 @@ const allScoresSlice = createSlice({
   },
 });
 
-
-// Action creators generated by createSlice
-export const { clearScores, clearPlayerRequests, clearAll } = allScoresSlice.actions;
-
+export const { clearScores, clearPlayerRequests, clearAll } =
+  allScoresSlice.actions;
 
 export const selectAllScores = (state) => {
-  return state.allScores.scores; // Select only the scores
+  return state.allScores.scores;
 };
 
 export const selectPlayerRequests = (state) => {
-  return state.allScores.playerRequests; // Select only the player requests
+  return state.allScores.playerRequests;
 };
 
 export default allScoresSlice.reducer;

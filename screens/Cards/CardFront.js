@@ -1,20 +1,13 @@
-import React, { useState, useContext } from "react";
+import React from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  KeyboardAvoidingView,
 } from "react-native";
-import { useDispatch } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { createGame } from "../../redux/singleGame";
-import { createScore } from "../../redux/scores";
-import { UserContext } from "../../UserContext";
-import { useFonts } from "expo-font";
+
 
 const CardFront = ({
   word,
@@ -23,25 +16,9 @@ const CardFront = ({
   handleChooseDef,
   guessedDef,
 }) => {
-  const { user } = useContext(UserContext);
-
-  const dispatch = useDispatch();
-  const navigation = useNavigation();
-
-  const [gameName, setGameName] = useState("");
-  const [rounds, setRounds] = useState(1);
-  const [error, setError] = useState("");
-
   const { width } = Dimensions.get("window");
   const cardHeight = width * 1.5;
   const cardWidth = width * 0.9;
-  const textFontSize = width * 0.15;
-
-  // Load the custom font
-  //   const [fontsLoaded] = useFonts({
-  //     // CustomFont: require("../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
-  //     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"),
-  //   });
 
   return (
     <View style={styles.container}>

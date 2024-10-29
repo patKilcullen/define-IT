@@ -231,11 +231,6 @@ const CreateGame = () => {
   const cardWidth = width * 0.9;
   const textFontSize = width * 0.15;
 
-  // Load the custom font
-  const [fontsLoaded] = useFonts({
-    // CustomFont: require("../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
-    CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"),
-  });
 
   const handleCreateGame = () => {
     if (!isNaN(rounds) && rounds > 0) {

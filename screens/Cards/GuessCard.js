@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -6,58 +6,38 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  KeyboardAvoidingView,
-  Animated
+  Animated,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { createGame } from "../../redux/singleGame";
-import { createScore } from "../../redux/scores";
-import { UserContext } from "../../UserContext";
-import { useFonts } from "expo-font";
-import { addPlayerFakeDef} from "../../redux/gameplay"
-import { ref, set, onValue } from "firebase/database";
+import { addPlayerFakeDef } from "../../redux/gameplay";
+import { ref, set } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
-const GuessCard = ({ word, definition, flip, gameName, userId,}) => {
-  const { user } = useContext(UserContext);
-    const [seeInput, setSeeInput] = useState(true);
+const GuessCard = ({ word, flip, gameName, userId }) => {
+  const [seeInput, setSeeInput] = useState(true);
 
-    const [playerDef, setPlayerDef] = useState("");
+  const [playerDef, setPlayerDef] = useState("");
 
-      const inputRef = useRef();
+  const inputRef = useRef();
 
-      // Set focus on input box
-      useEffect(() => {
-        inputRef.current.focus();
-      }, []);
-
+  // Set focus on input box
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   const dispatch = useDispatch();
-  const navigation = useNavigation();
-
-  
-  const [rounds, setRounds] = useState(1);
-  const [error, setError] = useState("");
 
   const { width } = Dimensions.get("window");
   const cardHeight = width * 1.5;
   const cardWidth = width * 0.9;
   const textFontSize = width * 0.15;
 
-  // Load the custom font
-  //   const [fontsLoaded] = useFonts({
-  //     // CustomFont: require("../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
-  //     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"),
-  //   });
-
   const [flipAnimation] = useState(new Animated.Value(0));
   // const flipAnimation = useRef(new Animated.Value(0).current);
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleFlip = () => {
-    console.log("HANDLE FLIP @");
     if (!isFlipped) {
       Animated.timing(flipAnimation, {
         toValue: 180,
@@ -91,24 +71,18 @@ const GuessCard = ({ word, definition, flip, gameName, userId,}) => {
     }
   }, [flip]);
 
-
-
   // Sends player's fake definition to the player whose turn it is via a socket
   const handleEnterFakeDef = (e) => {
-
     e.preventDefault();
 
     dispatch(addPlayerFakeDef(playerDef));
-console.log("playerDefplayerDef: ", playerDef);
+
     set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
       playerDef,
-    //   room: gameName,
       userId,
-    //  playerId,
     });
     setSeeInput(false);
     setPlayerDef("");
-    // showBackOfCard("back");
   };
   return (
     // <Animated.View style={[styles.container, animatedStyle]}>
@@ -256,7 +230,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     // marginBottom: 20,
     fontSize: 18,
-    height:"65%"
+    height: "65%",
   },
   button: {
     backgroundColor: "#88ebe6",
