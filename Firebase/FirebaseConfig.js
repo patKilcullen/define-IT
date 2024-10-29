@@ -26,11 +26,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const FirebaseApp = initializeApp(firebaseConfig);
-// export const FirebaseAuth = getAuth(FirebaseApp);
 export const FireBaseDB = getFirestore(FirebaseApp)
-
 export const RealTimeDB = getDatabase(FirebaseApp);
 // // const analytics = getAnalytics(app);
+
 export const FirebaseAuth = initializeAuth(FirebaseApp, {
   persistence: getReactNativePersistence(AsyncStorage),
 });

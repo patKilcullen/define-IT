@@ -9,6 +9,7 @@ import {
   getDocs,
   updateDoc,
   doc,
+  Firestore,
 } from "firebase/firestore";
 
  import { ref, get, orderByChild, equalTo, update } from "firebase/database";
@@ -123,11 +124,10 @@ export const fetchPlayerRequests = createAsyncThunk(
 // };
 export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
   try {
-    console.log("GAMEID: ", game.id);
-    console.log("scoreId: ", scoreId);
+
 
     const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
-    console.log("joinRequestsRef: ", joinRequestsRef);
+  
 
     // Query the requests where scoreId matches
     const queryRef = query(joinRequestsRef, orderByChild("scoreId"));
@@ -235,21 +235,142 @@ export const editScore = createAsyncThunk("editScore", async (score) => {
 });
 
 // ADD POINT TO SCORE
-export const addPoint = createAsyncThunk(
-  "addPoint",
-  async ({ userId, gameId }) => {
-    try {
-      const { data } = await api.put(`/api/scores/${userId}/addPoint`, {
-        userId,
-        gameId,
-      });
+// export const addPoint = createAsyncThunk(
+//   "addPoint",
+//   async ({ userId, gameId }) => {
+//     try {
+//       const { data } = await api.put(`/api/scores/${userId}/addPoint`, {
+//         userId,
+//         gameId,
+//       });
 
-      return data;
+//       return data;
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   }
+// ); 
+// const scoresRef = collection(FireBaseDB, "scores");
+
+//       const q = query(scoresRef, where("gameId", "==", gameId, "userId", "==", userId));
+
+//       const querySnapshot = await getDocs(q);
+
+//       const scores = querySnapshot.docs.map((doc) => ({
+//         id: doc.id,
+//         ...doc.data(),
+//       }));
+
+
+// export const addPoint = createAsyncThunk(
+//   "scores/addPoint",
+//   async ({ userId, gameId }, { rejectWithValue }) => {
+//     try {
+//       // Reference to the specific score document by userId and gameId
+
+//        const scoreDocRef = collection(FireBaseDB, "scores");
+
+   
+//  const q = query(
+//    scoreDocRef,
+//    where("gameId", "==", gameId, "userId", "==", userId)
+//  );
+//       const querySnapshot = await getDocs(q);
+//       if (querySnapshot) {
+
+//         const currentScore = querySnapshot.score
+//         console.log("CSCOER: ", currentScore)
+//         // Increment score by 1
+//         const newScore = currentScore + 1;
+
+//         // Update score in Firestore
+//         await updateDoc(querySnapshot, { score: newScore });
+
+//         console.log("Score updated successfully:", newScore);
+//         return { userId, gameId, score: newScore };
+//       } else {
+//         console.error("Score document not found.");
+//         return rejectWithValue("Score document not found.");
+//       }
+//     } catch (err) {
+//       console.error("Error updating score:", err);
+//       return rejectWithValue("Failed to add point to score");
+//     }
+//   }
+// );
+export const addPoint = createAsyncThunk(
+  "scores/addPoint",
+  async ({ userId, gameId }, { rejectWithValue }) => {
+    try {
+      // Reference to the specific scores collection
+      const scoreDocRef = collection(FireBaseDB, "scores");
+
+      // Query to find the document with matching gameId and userId
+      const q = query(
+        scoreDocRef,
+        where("gameId", "==", gameId),
+        where("userId", "==", userId)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Assuming there should only be one document that matches the query
+        const doc = querySnapshot.docs[0];
+        const currentScore = doc.data().score;
+
+        console.log("Current Score:", currentScore);
+
+        // Increment score by 1
+        const newScore = currentScore + 1;
+
+        // Update score in Firestore
+        await updateDoc(doc.ref, { score: newScore });
+
+        console.log("Score updated successfully:", newScore);
+        return { userId, gameId, score: newScore };
+      } else {
+        console.error("Score document not found.");
+        return rejectWithValue("Score document not found.");
+      }
     } catch (err) {
-      console.log(err);
+      console.error("Error updating score:", err);
+      return rejectWithValue("Failed to add point to score");
     }
   }
 );
+
+// export const addPoint = createAsyncThunk(
+//   "scores/addPoint",
+//   async ({ userId, gameId }, { rejectWithValue }) => {
+//     try {
+//       // Reference to the specific score document by userId and gameId
+//   const scoresRef = collection(FireBaseDB, "scores");
+//       console.log("scoreDocRef: ", scoreDocRef);
+//       // Fetch current score data
+//       const scoreSnapshot = await getDoc(scoreDocRef);
+
+//       if (scoreSnapshot.exists()) {
+//         const currentScore = scoreSnapshot.data().score || 0;
+
+//         // Increment score by 1
+//         const newScore = currentScore + 1;
+
+//         // Update score in Firestore
+//         await updateDoc(scoreDocRef, { score: newScore });
+
+//         console.log("Score updated successfully:", newScore);
+//         return { userId, gameId, score: newScore };
+//       } else {
+//         console.error("Score document not found.");
+//         return rejectWithValue("Score document not found.");
+//       }
+//     } catch (err) {
+//       console.error("Error updating score:", err);
+//       return rejectWithValue("Failed to add point to score");
+//     }
+//   }
+// );
 
 // ADD POINT TO SCORE
 export const add3Points = createAsyncThunk(

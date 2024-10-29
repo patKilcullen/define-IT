@@ -65,7 +65,7 @@ const [defInput, setDefInput] = useState(false);
   const [wordToDb, setWordToDb] = useState(false);
   const [moveOffScreen, setMoveOffScreen] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
-  const [countdown, setCountdown] = useState(10);
+  const [countdown, setCountdown] = useState(1);
     const [playGame, setPlayGame] = useState(false);
 
 
@@ -255,7 +255,7 @@ const handleGetScore = ()=>{
             <Text>
               Countdown: {countdown}, Timer: {timer}
             </Text>
-          
+
             {/* Get Word Button - only visible if it's the player's turn */}
             {game && userScore && game.turn === userScore.turnNum ? (
               <Buttons
@@ -295,14 +295,17 @@ const handleGetScore = ()=>{
             ) : null}
           </View>
         ) : (
-            // GUESS DEFINTIONS CARDS
+          // GUESS DEFINTIONS CARDS
           <View style={styles.container}>
             <View style={styles.guessDef}>
               <View style={styles.cardContainer}>
-                <GuessDefs word={word}
-                userScore={userScore} 
-                userId={userId}
-                gameId={game.id}/>
+                <GuessDefs
+                  word={word}
+                  userScore={userScore}
+                  userId={userId}
+                  gameId={game.id}
+                  gameName={gameName}
+                />
               </View>
             </View>
           </View>

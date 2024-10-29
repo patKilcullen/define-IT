@@ -42,7 +42,7 @@ const CardFront = ({
   //     // CustomFont: require("../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
   //     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"),
   //   });
-console.log("GUIES: ", guessDefs === undefined);
+
   return (
     <View style={styles.container}>
       <View style={styles.cardsContainer}>

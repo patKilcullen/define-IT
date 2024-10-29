@@ -105,9 +105,9 @@ const CardFront = React.lazy(() => import("../Cards/CardFront.js"));
 import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
-const GuessDefs = ({gameId,  userScore}) => {
+const GuessDefs = ({gameId,  userScore, gameName}) => {
      const { user } = useContext(UserContext);
-     userId = user.id
+     userId = user.uid
   const [combinedDefs, setCombinedDefs] = useState([]);
   const [defList, setDefList] = useState(false);
   const [guessed, setGuessed] = useState(false);
@@ -124,7 +124,8 @@ const GuessDefs = ({gameId,  userScore}) => {
 
   useEffect(() => {
     // Randomly insert `real` into `fakeDefs`
-    const randomIndex = Math.floor(Math.random() * (fakeDefs.length + 1));
+    // const randomIndex = Math.floor(Math.random() * (fakeDefs.length + 1));
+        const randomIndex = 0;
     const definitions = [...fakeDefs];
     definitions.splice(randomIndex, 0, realDef); // Insert `real` at the random index
     setCombinedDefs(definitions);
@@ -142,7 +143,9 @@ const GuessDefs = ({gameId,  userScore}) => {
       message = `${user.displayName} guessed the CORRECT answer and gets 1 point!`;
       dispatch(addPoint({ userId, gameId }));
     } else {
+     
       dispatch(addPoint({ userId, gameId })).then((res) => {
+        console.log("RESSS: ", res.meta.arg.userId)
         message = `${user.displayName} guessed ${res.payload.user.user.displayName}'s fake definition... ${res.payload.user.user.displayName} gets 1 point!!`;
       });
     }
@@ -150,14 +153,15 @@ const GuessDefs = ({gameId,  userScore}) => {
     if (singleGame.turn === userScore.turnNum) {
       dispatch(addTempScoreCardMessage(message));
     } else {
-      const scoreCardRef = ref(RealTimeDB, `games/${gameName}/score_card_info`);
+       const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
 
-      // Send scorecard information to Firebase
+
       set(scoreCardRef, {
         gameName: gameName,
-        playerTurnName: playerTurnName,
+        // playerTurnName: playerTurnName,
         message: message,
-      })
+      }
+    )
         .then(() => {
           console.log("Scorecard information sent to Firebase successfully");
         })
@@ -169,6 +173,57 @@ const GuessDefs = ({gameId,  userScore}) => {
         });
     }
   };
+
+
+  const initializeScoreCardInfo = async () => {
+    const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+
+    // Check if score_card_info already exists
+    const snapshot = await get(scoreCardRef);
+
+    if (!snapshot.exists()) {
+      // Set default values if score_card_info is not initialized
+      await set(scoreCardRef, {
+        gameName: gameName,
+        message: "Game has started!",
+        room: gameName,
+      })
+        .then(() => {
+          console.log("Scorecard information initialized in Firebase");
+        })
+        .catch((error) => {
+          console.error("Error initializing scorecard information:", error);
+        });
+    } else {
+      console.log("Scorecard information already exists");
+    }
+  };
+
+    useEffect(() => {
+
+
+      const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+
+      // Listen for score card information (replaces clientSocket.on('receive_score_card_info'))
+      const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
+        const data = snapshot.val();
+        console.log("DATERRRRR: ", data)
+        if (
+          data &&
+          data.room === gameName &&
+          singleGame.turn === userScore.turnNum
+        ) {
+          dispatch(addTempScoreCardMessage(data.message)); // Dispatch the score card message
+        }
+      });
+
+      // Cleanup function to remove Firebase listeners on component unmount
+      return () => {
+        // fakeDefsListener();
+        scoreCardListener();
+      };
+    }, [gameId, userScore, dispatch]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.timerText}>Time: {countdown}</Text>
