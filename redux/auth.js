@@ -40,28 +40,8 @@ export const me = createAsyncThunk("auth/me", async (username, thunkAPI) => {
   }
 });
 
-// export const authenticate = createAsyncThunk(
-//   "auth/authenticate",
-//   async ({ username, password, method }, thunkAPI) => {
-//     try {
-//       const res = await api.post(`/auth/${method}`, { username, password });
 
-//       // Store the token using AsyncStorage
-//       await AsyncStorage.setItem(username || TOKEN, res.data.token);
-
-//       // Dispatch the 'me' thunk with the username to load user data
-//       thunkAPI.dispatch(me(username));
-//     } catch (err) {
-//       if (err.response && err.response.data) {
-//         return thunkAPI.rejectWithValue(err.response.data);
-//       } else {
-//         return "There was an issue with your request.";
-//       }
-//     }
-//   }
-// );
-
-
+// AUTHENTICATE
 export const authenticate = createAsyncThunk(
   "auth/authenticate",
   async ({ username, password, method }, thunkAPI) => {
@@ -71,8 +51,6 @@ export const authenticate = createAsyncThunk(
         username,
         passwordr
       );
-
-      console.log("RES IN AUTH: ", res)
       // Store the token using AsyncStorage
       await AsyncStorage.setItem(username || TOKEN, res.data.token);
 

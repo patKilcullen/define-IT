@@ -151,7 +151,17 @@ const GuessDefs = ({gameId,  userScore, gameName}) => {
     }
 
     if (singleGame.turn === userScore.turnNum) {
+        console.log("GET HERE???????")
       dispatch(addTempScoreCardMessage(message));
+       const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+
+
+      set(scoreCardRef, {
+        gameName: gameName,
+        // playerTurnName: playerTurnName,
+        message: message,
+      })
+
     } else {
        const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
 
@@ -175,29 +185,6 @@ const GuessDefs = ({gameId,  userScore, gameName}) => {
   };
 
 
-  const initializeScoreCardInfo = async () => {
-    const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
-
-    // Check if score_card_info already exists
-    const snapshot = await get(scoreCardRef);
-
-    if (!snapshot.exists()) {
-      // Set default values if score_card_info is not initialized
-      await set(scoreCardRef, {
-        gameName: gameName,
-        message: "Game has started!",
-        room: gameName,
-      })
-        .then(() => {
-          console.log("Scorecard information initialized in Firebase");
-        })
-        .catch((error) => {
-          console.error("Error initializing scorecard information:", error);
-        });
-    } else {
-      console.log("Scorecard information already exists");
-    }
-  };
 
     useEffect(() => {
 
@@ -207,7 +194,7 @@ const GuessDefs = ({gameId,  userScore, gameName}) => {
       // Listen for score card information (replaces clientSocket.on('receive_score_card_info'))
       const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
         const data = snapshot.val();
-        console.log("DATERRRRR: ", data)
+console.log("GATER: ", data)
         if (
           data &&
           data.room === gameName &&

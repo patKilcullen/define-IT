@@ -276,36 +276,49 @@ const SingleGame = () => {
     };
   }, [dispatch]);
 
+
+
   return (
     <View style={styles.card}>
       <ScrollView>
-        {/* {showTempScoreCard && (
+        {showTempScoreCard ? (
+            
           <TempScoreCard
             reloadScores={reloadScores}
-            prevGameTurn={prevGameTurn}
+            // prevGameTurn={prevGameTurn}
+             userScore={userScore}
+             game={game}
+             gameName={game.name}
+             setShowTempScoreCard={setShowTempScoreCard}
+            // /setReloadFlip={setReloadFlip}
+             word={word}
+            definition={definition.definition}
+            tempScoreCard={tempScoreCard}
+            // showTiedGame={showTiedGame}
+          />
+       ) : <ScoreCard
+            userId={user?.uid}
             userScore={userScore}
             game={game}
-            gameName={game.name}
-            setShowTempScoreCard={setShowTempScoreCard}
-            setReloadFlip={setReloadFlip}
-            word={word}
-            definition={definition}
-            tempScoreCard={tempScoreCard}
-            showTiedGame={showTiedGame}
-          />
-        )} */}
+            handleAskJoin={handleAskJoin}
+            handleStartGame={handleStartGame}
+            handleDeclineRequest={handleDeclineRequest}
+            handleAcceptRequest={handleAcceptRequest}
+          /> }
 
         {showFinalCard && <FinalCard game={game} userScore={userScore} />}
 
-        <ScoreCard
-          userId={user?.uid}
-          userScore={userScore}
-          game={game}
-          handleAskJoin={handleAskJoin}
-          handleStartGame={handleStartGame}
-          handleDeclineRequest={handleDeclineRequest}
-          handleAcceptRequest={handleAcceptRequest}
-        />
+        {/* {!showTempScoreCard && (
+          <ScoreCard
+            userId={user?.uid}
+            userScore={userScore}
+            game={game}
+            handleAskJoin={handleAskJoin}
+            handleStartGame={handleStartGame}
+            handleDeclineRequest={handleDeclineRequest}
+            handleAcceptRequest={handleAcceptRequest}
+          />
+        )} */}
 
         {(game.started === true && game.ownerId === user?.uid) ||
         (game.started === true && userScore) ? (

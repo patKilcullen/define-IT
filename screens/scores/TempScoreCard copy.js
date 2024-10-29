@@ -92,7 +92,7 @@ const TempScoreCard = ({
     //   }, 1500);
     // });
   };
-console.log("TEMP")
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (countdown > 0 && !pause) {
@@ -100,7 +100,7 @@ console.log("TEMP")
       } else if (countdown === 0) {
         dispatch(clearTempScoreCardMessages());
         setShowTempScoreCard(false);
-        // game.roundsLeft !== 0 ? setReloadFlip(true) : null;
+        game.roundsLeft !== 0 ? setReloadFlip(true) : null;
       }
     }, 1000);
 
@@ -144,29 +144,29 @@ console.log("TEMP")
                 The definition of {word} is... {definition}
               </Text>
               <ScrollView>
-                {/* {tempScoreCard && tempScoreCard.length
+                {tempScoreCard && tempScoreCard.length
                   ? tempScoreCard.map((message, index) => (
                       <View key={index}>
                         <Text style={styles.text}>{message}</Text>
                       </View>
                     ))
-                  : null} */}
+                  : null}
               </ScrollView>
               {message ? (
                 <Text style={styles.text}>***MESSAGE: {message}</Text>
               ) : null}
-              {/* {showTiedGame ? (
+              {showTiedGame ? (
                 <Text style={styles.tiedText}>TIED GAME... keep playing!</Text>
-              ) : null} */}
+              ) : null}
             </View>
-            {/* {showChallengeButton &&
+            {showChallengeButton &&
             userScore.turnNum !== prevGameTurn.current ? (
               <Buttons
                 name="Challenge"
                 func={handleTogglePause}
                 pulse="pulse"
               />
-            ) : null} */}
+            ) : null}
           </View>
         </View>
       ) : (
@@ -175,7 +175,7 @@ console.log("TEMP")
             <View style={styles.topSection}>
               <Text style={styles.title}>CHALLENGED!</Text>
             </View>
-            {/* <View style={styles.content}>
+            <View style={styles.content}>
               <Text style={styles.text}>
                 {challenge.userName} challenges that {challenge.playerFakeDef}{" "}
                 is a fitting definition of {word}
@@ -183,7 +183,7 @@ console.log("TEMP")
               <ScrollView>
                 <Text style={styles.text}>{aiResponse}</Text>
               </ScrollView>
-            </View> */}
+            </View>
           </View>
         </View>
       )}
@@ -196,9 +196,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    zIndex:9999999999,
-    height: 500,
-    // marginTop: -300
   },
   card: {
     flex: 1,
