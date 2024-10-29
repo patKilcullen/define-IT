@@ -46,53 +46,7 @@ const TempScoreCard = ({
   const clientSocket = useContext(SocketContext);
 
   const me = useSelector(selectMe);
-  const userName = me.username;
-  const userId = me.id;
-  const gameId = game.id;
-  const playerFakeDef = useSelector(selectPlayerFakeDef);
 
-  const handleTogglePause = () => {
-    // setShowChallengeButton(false);
-    // setPause(!pause);
-
-    // setChallenge({ userName, playerFakeDef });
-    // clientSocket.emit("send_pause_tempScoreCard_countdown", {
-    //   gameName,
-    //   userName,
-    //   playerFakeDef: playerFakeDef,
-    // });
-
-    // dispatch(askAI({ word, definition: playerFakeDef })).then((res) => {
-    //   clientSocket.emit("send_ask_ai_answer", {
-    //     room: gameName,
-    //     answer: res.payload,
-    //     message:
-    //       res.payload.toLowerCase() === "yes" || res.payload.includes("yes")
-    //         ? `AI says ${userName} wrote a CORRECT definition, ${userName} gets 3 points!`
-    //         : `AI says ${userName} wrote an INCORRECT definition, ${userName} LOSES 3 points!`,
-    //   }
-    //   );
-    //   setTimeout(() => {
-    //     setAiResponse(res.payload);
-    //     setMessage(
-    //       res.payload.toLowerCase() === "yes" || res.payload.includes("yes")
-    //         ? `AI says ${userName} wrote a CORRECT definition, ${userName} gets 3 points!`
-    //         : `AI says ${userName} wrote an INCORRECT definition, ${userName} LOSES 3 points!`
-    //     );
-    //     if (
-    //       res.payload.toLowerCase() === "yes" ||
-    //       res.payload.includes("yes")
-    //     ) {
-    //       dispatch(add3Points({ userId, gameId })).then(() => reloadScores());
-    //     } else {
-    //       dispatch(subtract3Points({ userId, gameId })).then(() =>
-    //         reloadScores()
-    //       );
-    //     }
-    //   }, 1500);
-    // });
-  };
-console.log("TEMP")
   useEffect(() => {
     const timer = setTimeout(() => {
       if (countdown > 0 && !pause) {
@@ -196,9 +150,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    zIndex:9999999999,
+    zIndex: 9999999999,
     height: 500,
-    // marginTop: -300
   },
   card: {
     flex: 1,

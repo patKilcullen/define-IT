@@ -304,8 +304,6 @@ const playerRequests = useSelector(selectPlayerRequests);
         // Loop over the requests and handle each one
         Object.values(requests).forEach((request) => {
           if (request.room === game.name) {
-            
-            // dispatch(fetchAllGameScores(game.id));
                dispatch(fetchPlayerRequests(game.id));
           }
         });
