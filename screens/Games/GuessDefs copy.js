@@ -142,14 +142,14 @@ const GuessDefs = ({
 
   // ReadTimeDB to handle fake definitions and score information
   useEffect(() => {
-    // Reference to the location where fake definitions will be stored in Firebase
+    // Reference to the location where info store
     const fakeDefsRef = ref(RealTimeDB, `games/${gameName}/fake_definitions`);
     const scoreCardRef = ref(RealTimeDB, `games/${gameName}/score_card_info`);
 
-    // Emit fake definitions to Firebase (similar to sending data via Socket.io)
+    // Emit fake defs to Firebase
     set(fakeDefsRef, { fakeDefinitions, gameName });
 
-    // Listen for fake definitions (replaces clientSocket.on('receive_fake_defs'))
+    // Listen for fake defs
     const fakeDefsListener = onValue(fakeDefsRef, (snapshot) => {
       const data = snapshot.val();
 

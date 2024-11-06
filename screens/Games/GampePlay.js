@@ -283,9 +283,17 @@
 // });
 
 // export default GamePlay;
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  Button, 
+  Animated
+} from "react-native";
 
 // Redux State and Actions
 import {
@@ -475,6 +483,38 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
     }
   }, [timer, countdown]);
 
+  let flipRef = useRef(null);
+
+  const handleFlip = () => {
+    if (flipRef.current) {
+      flipRef.current.flipCard();
+    }
+  };
+  // const handleFlip = () => {
+  //   if (flipRef.current && flipRef.current.flipCard) {
+  //     flipRef.current.flipCard(); // This should trigger the flip
+  //   }
+  // };
+
+  const flipAnim = useRef(new Animated.Value(1)).current;
+
+  const [isFlipped, setIsFlipped] = useState(true);
+
+  const flipCard = () => {
+    setIsFlipped((prev) => !prev);
+
+    // Determine flip direction
+    const flipToValue = isFlipped ? 0 : 1;
+
+    // Animate the flip
+    Animated.timing(flipAnim, {
+      toValue: flipToValue,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  };
+    
+
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -484,7 +524,9 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
             <Text>
               Countdown: {countdown}, Timer: {timer}
             </Text>
-            <Buttons name={"TEMOP SSPCR"} func={reloadScores} />
+
+            {/* TEST TEMP SCORE CARD */}
+            {/* <Buttons name={"TEMP SCORE CARD TEST"} func={reloadScores} /> */}
 
             {/* Button to get a word if it's the player's turn */}
             {game && userScore && game.turn === userScore.turnNum ? (
@@ -494,6 +536,9 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                 pulse={!word || !word.length ? "pulse" : null}
               />
             ) : null}
+            <TouchableOpacity style={styles.button} onPress={flipCard}>
+              <Text>flipy</Text>
+            </TouchableOpacity>
 
             {/* Display GuessCard and CardFront components based on conditions */}
             <View style={styles.cardContainer}>
@@ -507,11 +552,20 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                 />
               ) : null}
               {game && userScore && game.turn === userScore.turnNum ? (
-                <CardFront word={word} definition={definition} />
+                <CardFront
+                  word={word}
+                  definition={definition}
+                  //   flipRef={flipRef}
+                  flipAnim={flipAnim}
+                />
               ) : null}
+              <TouchableOpacity style={styles.button} onPress={flipCard}>
+                <Text>flipy2</Text>
+              </TouchableOpacity>
               <CardBack
                 title={{ first: "Balder", second: "Dash" }}
-                flip={flip}
+                // flip={flip}
+                flipAnim={flipAnim}
               />
             </View>
 
@@ -560,6 +614,14 @@ const styles = StyleSheet.create({
   },
   guessDef: {
     marginLeft: -13,
+  },
+  button: {
+    backgroundColor: "#88ebe6",
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 25,
+    borderColor: "black",
+    borderWidth: 2,
   },
 });
 

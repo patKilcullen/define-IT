@@ -22,7 +22,6 @@
 // }) => {
 //   const scores = useSelector(selectAllScores);
 
-
 //   console.log(
 //     "game.ownerId !== userId && !game.started && userScore === undefined : ",
 //     game.ownerId, userId, !game.started, userScore === undefined
@@ -156,9 +155,6 @@
 //   );
 // };
 
-
-
-
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
@@ -254,15 +250,8 @@
 
 // export default ScoreCard;
 
-
-
-import React, {useEffect} from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import Buttons from "../../Buttons";
@@ -270,13 +259,12 @@ import Buttons from "../../Buttons";
 // STORE
 import {
   selectAllScores,
-  fetchAllGameScores,
   fetchPlayerRequests,
-  selectPlayerRequests
+  selectPlayerRequests,
 } from "../../redux/scores";
 
- import { RealTimeDB } from "../../Firebase/FirebaseConfig";
- import { ref, push, onValue, set, off } from "firebase/database";
+import { RealTimeDB } from "../../Firebase/FirebaseConfig";
+import { ref, push, onValue, set, off } from "firebase/database";
 
 const ScoreCard = ({
   userId,
@@ -287,38 +275,32 @@ const ScoreCard = ({
   handleDeclineRequest,
   handleAcceptRequest,
 }) => {
-      const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
-const playerRequests = useSelector(selectPlayerRequests);
+  const playerRequests = useSelector(selectPlayerRequests);
 
-// console.log("USERSCORE: ", userScore)
+  // console.log("USERSCORE: ", userScore)
   useEffect(() => {
-  
     // Reference to join requests event in Firebase
     const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
 
     const joinRequestsListener = onValue(joinRequestsRef, (snapshot) => {
       const requests = snapshot.val();
-   
+
       if (requests) {
         // Loop over the requests and handle each one
         Object.values(requests).forEach((request) => {
           if (request.room === game.name) {
-               dispatch(fetchPlayerRequests(game.id));
+            dispatch(fetchPlayerRequests(game.id));
           }
         });
       }
     });
 
-
     return () => {
-   
       off(joinRequestsRef, joinRequestsListener);
-   
     };
   }, [game.name, game.id, dispatch]);
-
-
 
   return (
     <View style={styles.container}>
@@ -362,9 +344,13 @@ const playerRequests = useSelector(selectPlayerRequests);
             .map((user) => (
               <View key={user?.user?.id} style={styles.playerScore}>
                 <Text style={styles.playerName}>
-                  {user?.displayName || user?.userName || user?.email || "unknown"}:
+                  {user?.displayName ||
+                    user?.userName ||
+                    user?.email ||
+                    "unknown"}
+                  :
                 </Text>
-                
+
                 <Text style={styles.playerScoreValue}>{user.score}</Text>
                 <Text style={styles.points}>
                   {user.score === 1 ? "pt" : "pts"}
@@ -382,10 +368,12 @@ const playerRequests = useSelector(selectPlayerRequests);
             ))}
       </ScrollView>
 
-{/* PLAYER REQUESTS */}
+      {/* PLAYER REQUESTS */}
       {game.ownerId === userId && !game.started && (
         <View style={styles.requestsContainer}>
-          {playerRequests.length > 0 && <Text style={styles.sectionTitle}>Player Requests: </Text>}
+          {playerRequests.length > 0 && (
+            <Text style={styles.sectionTitle}>Player Requests: </Text>
+          )}
           {playerRequests &&
             playerRequests
               .filter((request) => request.accepted === false)
@@ -397,7 +385,7 @@ const playerRequests = useSelector(selectPlayerRequests);
                   <Text style={styles.requestPlayerName}>
                     {request.userName || "Unnamed"}:
                   </Text>
-                  
+
                   <Buttons
                     name={"Accept"}
                     func={() =>
@@ -449,9 +437,6 @@ const playerRequests = useSelector(selectPlayerRequests);
     </View>
   );
 };
-
-
-
 
 const styles = StyleSheet.create({
   container: {

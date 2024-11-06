@@ -1,12 +1,14 @@
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Animated
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+
 
 
 const CardFront = ({
@@ -15,53 +17,244 @@ const CardFront = ({
   guessDefs,
   handleChooseDef,
   guessedDef,
+flipAnim
 }) => {
   const { width } = Dimensions.get("window");
   const cardHeight = width * 1.5;
   const cardWidth = width * 0.9;
 
+
+
+  // Interpolate rotation for front and back flip
+  const rotateY = flipAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "180deg"],
+  });
+
+    console.log("FORNT: ", flipAnim);
   return (
     <View style={styles.container}>
       <View style={styles.cardsContainer}>
-        <LinearGradient
-          colors={["#88ebe6", "#283330"]}
-          style={[styles.card, { height: cardHeight, width: cardWidth }]}
-        >
-          <View
-            style={
-              guessDefs === undefined
-                ? styles.innerCard
-                : styles.innerCardGuessDef
-            }
+
+
+        <Animated.View style={[{ transform: [{ rotateY }] }]}>
+          <LinearGradient
+            colors={["#88ebe6", "#283330"]}
+            style={[styles.card, { height: cardHeight, width: cardWidth }]}
           >
-            <View style={styles.topPortion}>
-              <Text style={styles.topText}>{word}</Text>
+            <View
+              style={
+                guessDefs === undefined
+                  ? styles.innerCard
+                  : styles.innerCardGuessDef
+              }
+            >
+              <View style={styles.topPortion}>
+                <Text style={styles.topText}>{word}</Text>
+              </View>
+              <View style={styles.bottomPortion}>
+                <Text
+                  style={
+                    guessDefs === undefined
+                      ? styles.bottomText
+                      : styles.bottomTextguessDef
+                  }
+                >
+                  {definition}
+                </Text>
+              </View>
+              {guessDefs && (
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => handleChooseDef(guessedDef)}
+                >
+                  <Text>Choose Definition</Text>
+                </TouchableOpacity>
+              )}
             </View>
-            <View style={styles.bottomPortion}>
-              <Text
-                style={
-                  guessDefs === undefined
-                    ? styles.bottomText
-                    : styles.bottomTextguessDef
-                }
-              >
-                {definition}
-              </Text>
-            </View>
-            {guessDefs && (
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => handleChooseDef(guessedDef)}
-              >
-                <Text>Choose Definition</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </LinearGradient>
+          </LinearGradient>
+        </Animated.View>
       </View>
     </View>
   );
 };
+
+// import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
+// import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated } from "react-native";
+// import { LinearGradient } from "expo-linear-gradient";
+
+// const CardFront = forwardRef(({
+//   word,
+//   definition,
+//   guessDefs,
+//   handleChooseDef,
+//   guessedDef,
+// }, ref) => {
+//   const { width } = Dimensions.get("window");
+//   const cardHeight = width * 1.5;
+//   const cardWidth = width * 0.9;
+
+//   // FLIP
+//   const flipAnim = useRef(new Animated.Value(0)).current;
+//   const [isFlipped, setIsFlipped] = useState(false);
+
+// //   const flipCard = () => {
+// //     setIsFlipped((prev) => !prev);
+// //     const flipToValue = isFlipped ? 0 : 1;
+
+// //     Animated.timing(flipAnim, {
+// //       toValue: flipToValue,
+// //       duration: 800,
+// //       useNativeDriver: true,
+// //     }).start();
+// //   };
+// const flipCard = () => {
+//     console.log("FLIP CARD")
+//   const flipToValue = isFlipped ? 0 : 1; // Determine flip direction based on current state
+
+//   // Start the animation
+//   Animated.timing(flipAnim, {
+//     toValue: flipToValue,
+//     duration: 800,
+//     useNativeDriver: true,
+//   }).start(() => {
+//     // Toggle the isFlipped state after animation completes
+//     setIsFlipped(!isFlipped);
+//   });
+// };
+
+//   // Expose flipCard to the parent component
+//   useImperativeHandle(ref, () => ({
+//     flipCard,
+//   }));
+
+//   const rotateY = flipAnim.interpolate({
+//     inputRange: [0, 1],
+//     outputRange: ["0deg", "180deg"],
+//   });
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.cardsContainer}>
+//         {/* <TouchableOpacity style={styles.button} onPress={flipCard} >
+//           <Text>flipy</Text>
+//         </TouchableOpacity> */}
+//         <Animated.View style={[{ transform: [{ rotateY }] }]}>
+//           <LinearGradient
+//             colors={["#88ebe6", "#283330"]}
+//             style={[styles.card, { height: cardHeight, width: cardWidth }]}
+//           >
+//                      <View
+//               style={
+//                 guessDefs === undefined
+//                   ? styles.innerCard
+//                   : styles.innerCardGuessDef
+//               }
+//             >
+//               <View style={styles.topPortion}>
+//                 <Text style={styles.topText}>{word}</Text>
+//               </View>
+//               <View style={styles.bottomPortion}>
+//                 <Text
+//                   style={
+//                     guessDefs === undefined
+//                       ? styles.bottomText
+//                       : styles.bottomTextguessDef
+//                   }
+//                 >
+//                   {definition}
+//                 </Text>
+//               </View>
+//               {guessDefs && (
+//                 <TouchableOpacity
+//                   style={styles.button}
+//                   onPress={() => handleChooseDef(guessedDef)}
+//                 >
+//                   <Text>Choose Definition</Text>
+//                 </TouchableOpacity>
+//               )}
+//             </View>
+//           </LinearGradient>
+//         </Animated.View>
+//       </View>
+//     </View>
+//   );
+// });
+
+// import React, { useRef, useState, forwardRef, useImperativeHandle } from "react";
+// import { View, Text, StyleSheet, Dimensions, Animated } from "react-native";
+// import { LinearGradient } from "expo-linear-gradient";
+
+// const CardFront = forwardRef(({ word, definition, guessDefs, handleChooseDef, guessedDef }, ref) => {
+//   const { width } = Dimensions.get("window");
+//   const cardHeight = width * 1.5;
+//   const cardWidth = width * 0.9;
+
+//   // FLIP
+//   const flipAnim = useRef(new Animated.Value(0)).current;
+//   const [isFlipped, setIsFlipped] = useState(false);
+
+//   const flipCard = () => {
+//     console.log("FLIPPPY: ", flipAnim)
+//     const flipToValue = isFlipped ? 0 : 1;
+
+//     Animated.timing(flipAnim, {
+//       toValue: flipToValue,
+//       duration: 800,
+//       useNativeDriver: true,
+//     }).start(() => {
+//       setIsFlipped(!isFlipped);
+//     });
+//   };
+
+//   // Expose flipCard to the parent component
+//   useImperativeHandle(ref, () => ({
+//     flipCard,
+   
+//   }));
+//     useImperativeHandle(ref, () => ({
+//       testRef: () => console.log("Ref is working in CardFront"),
+//     }));
+
+
+
+//   const rotateY = flipAnim.interpolate({
+//     inputRange: [0, 1],
+//     outputRange: ["0deg", "180deg"],
+//   });
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.cardsContainer}>
+//         <Animated.View style={[{ transform: [{ rotateY }] }]}>
+//           <LinearGradient
+//             colors={["#88ebe6", "#283330"]}
+//             style={[styles.card, { height: cardHeight, width: cardWidth }]}
+//           >
+//             <View style={guessDefs === undefined ? styles.innerCard : styles.innerCardGuessDef}>
+//               <View style={styles.topPortion}>
+//                 <Text style={styles.topText}>{word}</Text>
+//               </View>
+//               <View style={styles.bottomPortion}>
+//                 <Text style={guessDefs === undefined ? styles.bottomText : styles.bottomTextguessDef}>
+//                   {definition}
+//                 </Text>
+//               </View>
+//               {guessDefs && (
+//                 <TouchableOpacity style={styles.button} onPress={() => handleChooseDef(guessedDef)}>
+//                   <Text>Choose Definition</Text>
+//                 </TouchableOpacity>
+//               )}
+//             </View>
+//           </LinearGradient>
+//         </Animated.View>
+//       </View>
+//     </View>
+//   );
+// });
+
+
+
 
 const styles = StyleSheet.create({
   topPortion: {
@@ -108,6 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     marginTop: -10,
+
   },
 
   card: {
@@ -123,8 +317,9 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
     marginVertical: 10,
-    borderColor: "black",
+    borderColor: "green",
     borderWidth: 8,
+   
   },
   innerCard: {
     width: "100%",

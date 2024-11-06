@@ -16,7 +16,7 @@ import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
 const GuessCard = ({ word, flip, gameName, userId }) => {
   const [seeInput, setSeeInput] = useState(true);
-
+console.log("Guesss");
   const [playerDef, setPlayerDef] = useState("");
 
   const inputRef = useRef();
