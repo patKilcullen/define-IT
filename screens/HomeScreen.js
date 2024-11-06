@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "pink",
+    // backgroundColor: "pink",
   },
   title: {
     fontSize: 18,
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   scroll: {
     padding: 16,
-    backgroundColor: "pink",
+    // backgroundColor: "pink",
   },
   inner: {
     marginTop: 100,

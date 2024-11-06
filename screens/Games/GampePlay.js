@@ -353,11 +353,14 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
 
   // Select a random word and set definition
   const handleGetWord = () => {
+    console.log("HELLOOOOOOO")
+    flipCard();
     const newWord =
       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
     setWord(newWord?.word);
     setDefinition(newWord.definition);
     dispatch(addDefinition({ type: "real", definition: newWord.definition }));
+    
   };
 
   // Fetch fake definitions from API and store them in Firebase
@@ -483,18 +486,9 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
     }
   }, [timer, countdown]);
 
-  let flipRef = useRef(null);
 
-  const handleFlip = () => {
-    if (flipRef.current) {
-      flipRef.current.flipCard();
-    }
-  };
-  // const handleFlip = () => {
-  //   if (flipRef.current && flipRef.current.flipCard) {
-  //     flipRef.current.flipCard(); // This should trigger the flip
-  //   }
-  // };
+
+
 
   const flipAnim = useRef(new Animated.Value(1)).current;
 
@@ -527,7 +521,9 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
 
             {/* TEST TEMP SCORE CARD */}
             {/* <Buttons name={"TEMP SCORE CARD TEST"} func={reloadScores} /> */}
-
+            <TouchableOpacity style={styles.button} onPress={flipCard}>
+              <Text>flipy2</Text>
+            </TouchableOpacity>
             {/* Button to get a word if it's the player's turn */}
             {game && userScore && game.turn === userScore.turnNum ? (
               <Buttons
@@ -536,9 +532,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                 pulse={!word || !word.length ? "pulse" : null}
               />
             ) : null}
-            <TouchableOpacity style={styles.button} onPress={flipCard}>
-              <Text>flipy</Text>
-            </TouchableOpacity>
+            
 
             {/* Display GuessCard and CardFront components based on conditions */}
             <View style={styles.cardContainer}>
@@ -559,13 +553,12 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                   flipAnim={flipAnim}
                 />
               ) : null}
-              <TouchableOpacity style={styles.button} onPress={flipCard}>
-                <Text>flipy2</Text>
-              </TouchableOpacity>
+
               <CardBack
                 title={{ first: "Balder", second: "Dash" }}
                 // flip={flip}
                 flipAnim={flipAnim}
+                flippingCard={true}
               />
             </View>
 

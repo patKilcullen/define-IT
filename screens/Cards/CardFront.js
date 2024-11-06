@@ -31,13 +31,16 @@ flipAnim
     outputRange: ["0deg", "180deg"],
   });
 
-    console.log("FORNT: ", flipAnim);
+const opacity = flipAnim
+  ? flipAnim.interpolate({
+      inputRange: [0, 0.5, 0.5, 1], // Switch at 90 degrees (0.5)
+      outputRange: [1, 1, 0, 0], // Instantly invisible at halfway point
+    })
+  : 1;
   return (
     <View style={styles.container}>
       <View style={styles.cardsContainer}>
-
-
-        <Animated.View style={[{ transform: [{ rotateY }] }]}>
+        <Animated.View style={[{ transform: [{ rotateY }] }, { opacity }]}>
           <LinearGradient
             colors={["#88ebe6", "#283330"]}
             style={[styles.card, { height: cardHeight, width: cardWidth }]}
@@ -294,7 +297,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "pink",
+    // backgroundColor: "pink",
   },
   cardsContainer: {
     display: "flex",
@@ -317,7 +320,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
     marginVertical: 10,
-    borderColor: "green",
+
     borderWidth: 8,
    
   },
