@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Animated
+  Animated,
+  Modal
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -17,11 +18,15 @@ const CardFront = ({
   guessDefs,
   handleChooseDef,
   guessedDef,
-flipAnim
+flipAnim, 
+scaleAnim,
+isFlipping
 }) => {
-  const { width } = Dimensions.get("window");
+  const { width, height } = Dimensions.get("window");
   const cardHeight = width * 1.5;
   const cardWidth = width * 0.9;
+
+    const textFontSize = width * 0.15;
 
 
 
@@ -31,6 +36,16 @@ flipAnim
     outputRange: ["0deg", "180deg"],
   });
 
+//    const scale = scaleAnim.interpolate({
+//      inputRange: [0, 1],
+//      outputRange: [1, Dimensions.get("window").width / cardWidth], // Scale to fill screen
+//    });
+  const scale = scaleAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, height / cardHeight], // Adjusts to full-screen height
+  });
+
+
 const opacity = flipAnim
   ? flipAnim.interpolate({
       inputRange: [0, 0.5, 0.5, 1], // Switch at 90 degrees (0.5)
@@ -38,223 +53,109 @@ const opacity = flipAnim
     })
   : 1;
   return (
-    <View style={styles.container}>
-      <View style={styles.cardsContainer}>
-        <Animated.View style={[{ transform: [{ rotateY }] }, { opacity }]}>
-          <LinearGradient
-            colors={["#88ebe6", "#283330"]}
-            style={[styles.card, { height: cardHeight, width: cardWidth }]}
+    <>
+      <View style={styles.container}>
+        <View style={styles.cardsContainer}>
+          {/* <Modal visible={true} transparent={true} animationType="fade"> */}
+          <Animated.View
+            style={[{ transform: [{ rotateY }, { scale }] }, { opacity }]}
           >
-            <View
-              style={
-                guessDefs === undefined
-                  ? styles.innerCard
-                  : styles.innerCardGuessDef
-              }
+            <LinearGradient
+              colors={["#88ebe6", "#283330"]}
+              style={[styles.card, { height: cardHeight, width: cardWidth }]}
             >
-              <View style={styles.topPortion}>
-                <Text style={styles.topText}>{word}</Text>
+              <View
+                style={
+                  guessDefs === undefined
+                    ? styles.innerCard
+                    : styles.innerCardGuessDef
+                }
+              >
+                <View style={styles.topPortion}>
+                  <Text style={styles.topText}>{word}</Text>
+                </View>
+                <View style={styles.bottomPortion}>
+                  <Text
+                    style={
+                      guessDefs === undefined
+                        ? styles.bottomText
+                        : styles.bottomTextguessDef
+                    }
+                  >
+                    {definition}
+                  </Text>
+                </View>
+                {guessDefs && (
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleChooseDef(guessedDef)}
+                  >
+                    <Text>Choose Definition</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-              <View style={styles.bottomPortion}>
-                <Text
-                  style={
-                    guessDefs === undefined
-                      ? styles.bottomText
-                      : styles.bottomTextguessDef
-                  }
-                >
-                  {definition}
-                </Text>
-              </View>
-              {guessDefs && (
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleChooseDef(guessedDef)}
-                >
-                  <Text>Choose Definition</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </LinearGradient>
-        </Animated.View>
+            </LinearGradient>
+          </Animated.View>
+          {/* </Modal> */}
+        </View>
       </View>
-    </View>
+
+      {/* Full-Screen Modal for Flipping */}
+      {isFlipping && (
+        <Modal visible={isFlipping} transparent={true} animationType="fade">
+          <View style={styles.container}>
+            <View style={styles.cardsContainer}>
+              {/* <Modal visible={true} transparent={true} animationType="fade"> */}
+              <Animated.View
+                style={[{ transform: [{ rotateY }, { scale }] }, { opacity }]}
+              >
+                <LinearGradient
+                  colors={["#88ebe6", "#283330"]}
+                  style={[
+                    styles.card,
+                    { height: cardHeight, width: cardWidth },
+                  ]}
+                >
+                  <View
+                    style={
+                      guessDefs === undefined
+                        ? styles.innerCard
+                        : styles.innerCardGuessDef
+                    }
+                  >
+                    <View style={styles.topPortion}>
+                      <Text style={styles.topText}>{word}</Text>
+                    </View>
+                    <View style={styles.bottomPortion}>
+                      <Text
+                        style={
+                          guessDefs === undefined
+                            ? styles.bottomText
+                            : styles.bottomTextguessDef
+                        }
+                      >
+                        {definition}
+                      </Text>
+                    </View>
+                    {guessDefs && (
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => handleChooseDef(guessedDef)}
+                      >
+                        <Text>Choose Definition</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </LinearGradient>
+              </Animated.View>
+              {/* </Modal> */}
+            </View>
+          </View>
+        </Modal>
+      )}
+    </>
   );
 };
-
-// import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
-// import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated } from "react-native";
-// import { LinearGradient } from "expo-linear-gradient";
-
-// const CardFront = forwardRef(({
-//   word,
-//   definition,
-//   guessDefs,
-//   handleChooseDef,
-//   guessedDef,
-// }, ref) => {
-//   const { width } = Dimensions.get("window");
-//   const cardHeight = width * 1.5;
-//   const cardWidth = width * 0.9;
-
-//   // FLIP
-//   const flipAnim = useRef(new Animated.Value(0)).current;
-//   const [isFlipped, setIsFlipped] = useState(false);
-
-// //   const flipCard = () => {
-// //     setIsFlipped((prev) => !prev);
-// //     const flipToValue = isFlipped ? 0 : 1;
-
-// //     Animated.timing(flipAnim, {
-// //       toValue: flipToValue,
-// //       duration: 800,
-// //       useNativeDriver: true,
-// //     }).start();
-// //   };
-// const flipCard = () => {
-//     console.log("FLIP CARD")
-//   const flipToValue = isFlipped ? 0 : 1; // Determine flip direction based on current state
-
-//   // Start the animation
-//   Animated.timing(flipAnim, {
-//     toValue: flipToValue,
-//     duration: 800,
-//     useNativeDriver: true,
-//   }).start(() => {
-//     // Toggle the isFlipped state after animation completes
-//     setIsFlipped(!isFlipped);
-//   });
-// };
-
-//   // Expose flipCard to the parent component
-//   useImperativeHandle(ref, () => ({
-//     flipCard,
-//   }));
-
-//   const rotateY = flipAnim.interpolate({
-//     inputRange: [0, 1],
-//     outputRange: ["0deg", "180deg"],
-//   });
-
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.cardsContainer}>
-//         {/* <TouchableOpacity style={styles.button} onPress={flipCard} >
-//           <Text>flipy</Text>
-//         </TouchableOpacity> */}
-//         <Animated.View style={[{ transform: [{ rotateY }] }]}>
-//           <LinearGradient
-//             colors={["#88ebe6", "#283330"]}
-//             style={[styles.card, { height: cardHeight, width: cardWidth }]}
-//           >
-//                      <View
-//               style={
-//                 guessDefs === undefined
-//                   ? styles.innerCard
-//                   : styles.innerCardGuessDef
-//               }
-//             >
-//               <View style={styles.topPortion}>
-//                 <Text style={styles.topText}>{word}</Text>
-//               </View>
-//               <View style={styles.bottomPortion}>
-//                 <Text
-//                   style={
-//                     guessDefs === undefined
-//                       ? styles.bottomText
-//                       : styles.bottomTextguessDef
-//                   }
-//                 >
-//                   {definition}
-//                 </Text>
-//               </View>
-//               {guessDefs && (
-//                 <TouchableOpacity
-//                   style={styles.button}
-//                   onPress={() => handleChooseDef(guessedDef)}
-//                 >
-//                   <Text>Choose Definition</Text>
-//                 </TouchableOpacity>
-//               )}
-//             </View>
-//           </LinearGradient>
-//         </Animated.View>
-//       </View>
-//     </View>
-//   );
-// });
-
-// import React, { useRef, useState, forwardRef, useImperativeHandle } from "react";
-// import { View, Text, StyleSheet, Dimensions, Animated } from "react-native";
-// import { LinearGradient } from "expo-linear-gradient";
-
-// const CardFront = forwardRef(({ word, definition, guessDefs, handleChooseDef, guessedDef }, ref) => {
-//   const { width } = Dimensions.get("window");
-//   const cardHeight = width * 1.5;
-//   const cardWidth = width * 0.9;
-
-//   // FLIP
-//   const flipAnim = useRef(new Animated.Value(0)).current;
-//   const [isFlipped, setIsFlipped] = useState(false);
-
-//   const flipCard = () => {
-//     console.log("FLIPPPY: ", flipAnim)
-//     const flipToValue = isFlipped ? 0 : 1;
-
-//     Animated.timing(flipAnim, {
-//       toValue: flipToValue,
-//       duration: 800,
-//       useNativeDriver: true,
-//     }).start(() => {
-//       setIsFlipped(!isFlipped);
-//     });
-//   };
-
-//   // Expose flipCard to the parent component
-//   useImperativeHandle(ref, () => ({
-//     flipCard,
-   
-//   }));
-//     useImperativeHandle(ref, () => ({
-//       testRef: () => console.log("Ref is working in CardFront"),
-//     }));
-
-
-
-//   const rotateY = flipAnim.interpolate({
-//     inputRange: [0, 1],
-//     outputRange: ["0deg", "180deg"],
-//   });
-
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.cardsContainer}>
-//         <Animated.View style={[{ transform: [{ rotateY }] }]}>
-//           <LinearGradient
-//             colors={["#88ebe6", "#283330"]}
-//             style={[styles.card, { height: cardHeight, width: cardWidth }]}
-//           >
-//             <View style={guessDefs === undefined ? styles.innerCard : styles.innerCardGuessDef}>
-//               <View style={styles.topPortion}>
-//                 <Text style={styles.topText}>{word}</Text>
-//               </View>
-//               <View style={styles.bottomPortion}>
-//                 <Text style={guessDefs === undefined ? styles.bottomText : styles.bottomTextguessDef}>
-//                   {definition}
-//                 </Text>
-//               </View>
-//               {guessDefs && (
-//                 <TouchableOpacity style={styles.button} onPress={() => handleChooseDef(guessedDef)}>
-//                   <Text>Choose Definition</Text>
-//                 </TouchableOpacity>
-//               )}
-//             </View>
-//           </LinearGradient>
-//         </Animated.View>
-//       </View>
-//     </View>
-//   );
-// });
 
 
 
@@ -294,17 +195,22 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "100%",
   },
-  container: {
+  containerOLD: {
     flex: 1,
     justifyContent: "center",
     // backgroundColor: "pink",
+  },
+container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)", // Optional: Adds a semi-transparent overlay
   },
   cardsContainer: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     marginTop: -10,
-
   },
 
   card: {
@@ -322,7 +228,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
 
     borderWidth: 8,
-   
   },
   innerCard: {
     width: "100%",
@@ -415,3 +320,5 @@ const styles = StyleSheet.create({
 });
 
 export default CardFront;
+
+

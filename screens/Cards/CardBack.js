@@ -6,14 +6,14 @@ import {
   StyleSheet,
   Dimensions,
   Animated,
-
-
+Modal,
+View
 } from "react-native";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 
-const CardBack = ({ title, flipAnim, flippingCard }) => {
-  const { width } = Dimensions.get("window");
+const CardBack = ({ title, flipAnim, flippingCard, isFlipping }) => {
+  const { width, height } = Dimensions.get("window");
   const cardHeight = width * 1.5;
   const cardWidth = width * 0.9;
   const textFontSize = width * 0.15;
@@ -54,34 +54,80 @@ const opacity = flipAnim
     return null;
   }
 
+
+  const cardStyles = [
+    styles.card,
+    { transform: [{ rotateY }] },
+    { opacity },
+    {
+      height: isFlipping ? height : cardHeight,
+      width: isFlipping ? width : cardWidth,
+    },
+  ];
   return (
-    <Animated.View
-      style={[
-        styles.card,
-        { height: cardHeight, width: cardWidth, marginTop: flippingCard ? -575 : 0},
-        { transform: [{ rotateY }] },
-        { opacity },
-      ]}
-    >
-      <LinearGradient colors={["#88ebe6", "#283330"]} style={styles.innerCard}>
-        <Text
-          style={[
-            styles.titleText,
-            { fontFamily: "CustomFont", fontSize: textFontSize },
-          ]}
+    // <Modal visible={isFlipping} transparent={true} animationType="fade">
+    <>
+      <Animated.View
+        style={[
+          styles.card,
+          {
+            height: cardHeight,
+            width: cardWidth,
+            // marginTop: flippingCard ? -575 : 0
+          },
+          { transform: [{ rotateY }] },
+          { opacity },
+        ]}
+        // style={cardStyles}
+      >
+        <LinearGradient
+          colors={["#88ebe6", "#283330"]}
+          style={styles.innerCard}
         >
-          {title.first || ""}
-        </Text>
-        <Text
-          style={[
-            styles.subTitleText,
-            { fontFamily: "CustomFont", fontSize: textFontSize },
-          ]}
-        >
-          {title.second || ""}
-        </Text>
-      </LinearGradient>
-    </Animated.View>
+          <Text
+            style={[
+              styles.titleText,
+              { fontFamily: "CustomFont", fontSize: textFontSize },
+            ]}
+          >
+            {title.first || ""}
+          </Text>
+          <Text
+            style={[
+              styles.subTitleText,
+              { fontFamily: "CustomFont", fontSize: textFontSize },
+            ]}
+          >
+            {title.second || ""}
+          </Text>
+        </LinearGradient>
+      </Animated.View>
+        {/* Full-Screen Modal for Flipping */}
+      {isFlipping && (
+        <Modal visible={true} transparent={true} animationType="fade">
+          <View style={styles.modalContainer}>
+            <Animated.View
+              style={[
+                styles.card,
+                { height, width }, // Full-screen dimensions
+                { transform: [{ rotateY }] },
+                { opacity },
+              ]}
+            >
+              <LinearGradient colors={["#88ebe6", "#283330"]} style={styles.innerCard}>
+                <Text style={[styles.titleText, { fontSize: textFontSize }]}>
+                  {title.first || ""}
+                </Text>
+                <Text style={[styles.subTitleText, { fontSize: textFontSize }]}>
+                  {title.second || ""}
+                </Text>
+              </LinearGradient>
+            </Animated.View>
+          </View>
+        </Modal>
+      )}
+         </>
+    // </Modal>
   );
 };
 
@@ -106,7 +152,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderColor: "black",
     borderWidth: 8,
-   
   },
   innerCard: {
     padding: 20,
@@ -138,6 +183,12 @@ const styles = StyleSheet.create({
     transform: [{ rotate: "40deg" }],
     position: "absolute",
     bottom: "35%",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)", // Optional: Adds a semi-transparent overlay
   },
 });
 
