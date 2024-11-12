@@ -484,7 +484,6 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
             <Text>
               Countdown: {countdown}, Timer: {timer}
             </Text>
-            <Buttons name={"TEMOP SSPCR"} func={reloadScores} />
 
             {/* Button to get a word if it's the player's turn */}
             {game && userScore && game.turn === userScore.turnNum ? (
@@ -497,7 +496,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
 
             {/* Display GuessCard and CardFront components based on conditions */}
             <View style={styles.cardContainer}>
-              {defInput ? (
+              {defInput && playGame ? (
                 <GuessCard
                   word={word}
                   definition={definition}
@@ -509,10 +508,13 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
               {game && userScore && game.turn === userScore.turnNum ? (
                 <CardFront word={word} definition={definition} />
               ) : null}
-              <CardBack
-                title={{ first: "Balder", second: "Dash" }}
-                flip={flip}
-              />
+
+              <View style={styles.backCard}>
+                <CardBack
+                  title={{ first: "Balder", second: "Dash" }}
+                  flip={flip}
+                />
+              </View>
             </View>
 
             {/* Button to choose word once a word is set */}
@@ -560,6 +562,9 @@ const styles = StyleSheet.create({
   },
   guessDef: {
     marginLeft: -13,
+  },
+  backCard: {
+    marginTop: "0",
   },
 });
 
