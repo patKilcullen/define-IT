@@ -283,7 +283,7 @@
 // });
 
 // export default GamePlay;
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext, useRef, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   View,
@@ -291,9 +291,10 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  Button, 
+  Button,
   Animated,
-  Modal
+  Modal,
+  FlatList,
 } from "react-native";
 
 // Redux State and Actions
@@ -354,41 +355,38 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
 
   // Select a random word and set definition
   const handleGetWord = () => {
-   
     flipCard();
     const newWord =
       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
     setWord(newWord?.word);
     setDefinition(newWord.definition);
     dispatch(addDefinition({ type: "real", definition: newWord.definition }));
-    
   };
- 
-// const handleAnotherGetWord = () => {
-//   // First flip to hide the card
-//   Animated.timing(flipAnim, {
-//     toValue: 0,
-//     duration: 800,
-//     useNativeDriver: true,
-//   }).start(() => {
-//     // Fetch the word after the first flip completes
-//     const newWord =
-//       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
-//     setWord(newWord?.word);
-//     setDefinition(newWord.definition);
-//     dispatch(addDefinition({ type: "real", definition: newWord.definition }));
 
-//     // Flip back to show the card with the new word after a short delay
-//     setTimeout(() => {
-//       Animated.timing(flipAnim, {
-//         toValue: 1,
-//         duration: 800,
-//         useNativeDriver: true,
-//       }).start();
-//     }, 1000); // Small delay before flipping back, adjust if needed
-//   });
-// };
+  // const handleAnotherGetWord = () => {
+  //   // First flip to hide the card
+  //   Animated.timing(flipAnim, {
+  //     toValue: 0,
+  //     duration: 800,
+  //     useNativeDriver: true,
+  //   }).start(() => {
+  //     // Fetch the word after the first flip completes
+  //     const newWord =
+  //       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
+  //     setWord(newWord?.word);
+  //     setDefinition(newWord.definition);
+  //     dispatch(addDefinition({ type: "real", definition: newWord.definition }));
 
+  //     // Flip back to show the card with the new word after a short delay
+  //     setTimeout(() => {
+  //       Animated.timing(flipAnim, {
+  //         toValue: 1,
+  //         duration: 800,
+  //         useNativeDriver: true,
+  //       }).start();
+  //     }, 1000); // Small delay before flipping back, adjust if needed
+  //   });
+  // };
 
   // Fetch fake definitions from API and store them in Firebase
   const handleGetFakeDefs = () => {
@@ -513,45 +511,43 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
     }
   }, [timer, countdown]);
 
+    const flipAnim = useRef(new Animated.Value(1)).current;
+     const scaleAnim = useRef(new Animated.Value(0)).current;
 
 
-
-
-  const flipAnim = useRef(new Animated.Value(1)).current;
-   const scaleAnim = useRef(new Animated.Value(0)).current;
-  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [isFlipped, setIsFlipped] = useState(true);
-    const [isFlipping, setIsFlipping] = useState(false);
+  const [isFlipping, setIsFlipping] = useState(false);
 
-  const flipCard = () => {
-    setIsFlipping(true); // Show modal when flip starts
-    setIsFlipped((prev) => !prev);
+    const flipCard = () => {
+      setIsFlipping(true); // Show modal when flip starts
+      setIsFlipped((prev) => !prev);
 
-    // Determine flip direction
-    const flipToValue = isFlipped ? 0 : 1;
+      // Determine flip direction
+      const flipToValue = isFlipped ? 0 : 1;
 
-    const scaleToValue = isFlipped ? 1 : 0;
-    // Animate the flip
-    Animated.timing(flipAnim, {
-      toValue: flipToValue,
-      duration: 800,
-      useNativeDriver: true,
-    }).start();
+      const scaleToValue = isFlipped ? 1 : 0;
+      // Animate the flip
+      Animated.timing(flipAnim, {
+        toValue: flipToValue,
+        duration: 800,
+        useNativeDriver: true,
+      }).start();
 
-    Animated.timing(scaleAnim, {
-      toValue: 1, // Target scale
-      duration: 800, // Duration of the grow animation in milliseconds
-      useNativeDriver: true,
-    }).start();
-  };
-    
+      Animated.timing(scaleAnim, {
+        toValue: scaleToValue ,
+        // toValue: 1, // Target scale
+        duration: 800, // Duration of the grow animation in milliseconds
+        useNativeDriver: true,
+      }).start();
+    };
+
 
   return (
     <View style={styles.container}>
       {/* Modal for Full-Screen Card */}
 
-      <ScrollView>
+      <View>
         {/* Display gameplay or guess definitions based on playGame state */}
         {!playGame ? (
           <View>
@@ -575,7 +571,10 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
 
             {/* Display GuessCard and CardFront components based on conditions */}
             <View style={styles.cardContainer}>
-              {defInput ? (
+              {game &&
+              userScore &&
+              game.turn !== userScore.turnNum &&
+              defInput ? (
                 <GuessCard
                   word={word}
                   definition={definition}
@@ -585,30 +584,29 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                 />
               ) : null}
               {game && userScore && game.turn === userScore.turnNum ? (
-                // <Modal
-                //   visible={isModalVisible}
-                //   transparent={true}
-                //   animationType="fade"
-                // >
                 <CardFront
                   word={word}
                   definition={definition}
-                  //   flipRef={flipRef}
                   flipAnim={flipAnim}
                   scaleAnim={scaleAnim}
-                  //   style={StyleSheet.absoluteFill}
                   isFlipping={isFlipping}
                 />
               ) : // </Modal>
               null}
-              <View style={styles.backCard}>
+              <View
+                style={{
+                  marginTop:
+                    game && userScore && game.turn === userScore.turnNum
+                      ? "-172%"
+                      : 0,
+                }}
+              >
                 <CardBack
-                  title={{ first: "Balder", second: "Dash" }}
-                  // flip={flip}
-                  flipAnim={flipAnim}
-                  flippingCard={true}
-                  scaleAnim={scaleAnim}
-                  isFlipping={isFlipping}
+                  title={{ first: "Define", second: "IT!" }}
+                //   flipAnim={flipAnim}
+                //   flippingCard={true}
+                //   scaleAnim={scaleAnim}
+                //   isFlipping={isFlipping}
                 />
               </View>
             </View>
@@ -639,7 +637,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
             </View>
           </View>
         )}
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -668,9 +666,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 2,
   },
-  backCard: {
-    marginTop:  "-172%"
-  }
+
 });
 
 export default GamePlay;

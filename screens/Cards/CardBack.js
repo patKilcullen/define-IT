@@ -12,7 +12,7 @@ View
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 
-const CardBack = ({ title, flipAnim, flippingCard, isFlipping }) => {
+const CardBack = ({ title, flipAnim, flippingCard, isFlipping, scaleAnim }) => {
   const { width, height } = Dimensions.get("window");
   const cardHeight = width * 1.5;
   const cardWidth = width * 0.9;
@@ -27,24 +27,18 @@ const CardBack = ({ title, flipAnim, flippingCard, isFlipping }) => {
     : "0deg";
 
   // Interpolate opacity to make the card invisible when flipped
-  // const opacity = flipAnim
-  //   ? flipAnim.interpolate({
-  //       inputRange: [0, 1],
-  //       outputRange: [0, 1], // Opacity goes from 0 (invisible) to 1 (visible)
-  //     })
-  //   : 1;
-    // const opacity = flipAnim
-    //   ? flipAnim.interpolate({
-    //       inputRange: [0, 0.5, 1],
-    //       outputRange: [0, 0, 1], // Instant opacity change
-    //     })
-    //   : 1;
+
 const opacity = flipAnim
   ? flipAnim.interpolate({
       inputRange: [0, 0.5, 0.5, 1], // Switch at 90 degrees (0.5)
       outputRange: [0, 0, 1, 1], // Instantly invisible at halfway point
     })
   : 1;
+  const scale = scaleAnim ? scaleAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, height / cardHeight], // Adjusts to full-screen height
+  }): 1
+
   // Load the custom font
   const [fontsLoaded] = useFonts({
     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
@@ -53,68 +47,65 @@ const opacity = flipAnim
   if (!fontsLoaded) {
     return null;
   }
+console.log("IS FLIPPING: ", isFlipping)
 
-
-  const cardStyles = [
-    styles.card,
-    { transform: [{ rotateY }] },
-    { opacity },
-    {
-      height: isFlipping ? height : cardHeight,
-      width: isFlipping ? width : cardWidth,
-    },
-  ];
   return (
     // <Modal visible={isFlipping} transparent={true} animationType="fade">
     <>
-      <Animated.View
-        style={[
-          styles.card,
-          {
-            height: cardHeight,
-            width: cardWidth,
-            // marginTop: flippingCard ? -575 : 0
-          },
-          { transform: [{ rotateY }] },
-          { opacity },
-        ]}
-        // style={cardStyles}
-      >
-        <LinearGradient
-          colors={["#88ebe6", "#283330"]}
-          style={styles.innerCard}
+      {!isFlipping && (
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              height: cardHeight,
+              width: cardWidth,
+              //  marginTop: flippingCard ? -575 : 0
+            },
+            // { transform: [{ rotateY },{scale}] },
+            // { opacity },
+          ]}
+          // style={cardStyles}
         >
-          <Text
-            style={[
-              styles.titleText,
-              { fontFamily: "CustomFont", fontSize: textFontSize },
-            ]}
+          <LinearGradient
+            colors={["#88ebe6", "#283330"]}
+            style={styles.innerCard}
           >
-            {title.first || ""}
-          </Text>
-          <Text
-            style={[
-              styles.subTitleText,
-              { fontFamily: "CustomFont", fontSize: textFontSize },
-            ]}
-          >
-            {title.second || ""}
-          </Text>
-        </LinearGradient>
-      </Animated.View>
-        {/* Full-Screen Modal for Flipping */}
+            <Text
+              style={[
+                styles.titleText,
+                { fontFamily: "CustomFont", fontSize: textFontSize },
+              ]}
+            >
+              {title.first || ""}
+            </Text>
+            <Text
+              style={[
+                styles.subTitleText,
+                { fontFamily: "CustomFont", fontSize: textFontSize },
+              ]}
+            >
+              {title.second || ""}
+            </Text>
+          </LinearGradient>
+        </Animated.View>
+      )}
+      {/* Full-Screen Modal for Flipping */}
       {isFlipping && (
-        <Modal visible={true} transparent={true} animationType="fade">
+        <Modal visible={isFlipping} transparent={true} animationType="fade">
           <View style={styles.modalContainer}>
             <Animated.View
               style={[
                 styles.card,
                 { height, width }, // Full-screen dimensions
-                { transform: [{ rotateY }] },
+                { transform: [{ rotateY },{scale}] },
                 { opacity },
+        
               ]}
             >
-              <LinearGradient colors={["#88ebe6", "#283330"]} style={styles.innerCard}>
+              <LinearGradient
+                colors={["#88ebe6", "#283330"]}
+                style={styles.innerCard}
+              >
                 <Text style={[styles.titleText, { fontSize: textFontSize }]}>
                   {title.first || ""}
                 </Text>
@@ -126,7 +117,7 @@ const opacity = flipAnim
           </View>
         </Modal>
       )}
-         </>
+    </>
     // </Modal>
   );
 };
@@ -189,6 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)", // Optional: Adds a semi-transparent overlay
+ 
   },
 });
 

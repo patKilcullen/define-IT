@@ -31,19 +31,20 @@ isFlipping
 
 
   // Interpolate rotation for front and back flip
-  const rotateY = flipAnim.interpolate({
+  const rotateY = flipAnim
+    ? flipAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "180deg"],
-  });
+  }): "0deg"
 
 //    const scale = scaleAnim.interpolate({
 //      inputRange: [0, 1],
 //      outputRange: [1, Dimensions.get("window").width / cardWidth], // Scale to fill screen
 //    });
-  const scale = scaleAnim.interpolate({
+  const scale = scaleAnim ?  scaleAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [1, height / cardHeight], // Adjusts to full-screen height
-  });
+  }) : 1
 
 
 const opacity = flipAnim
@@ -54,58 +55,57 @@ const opacity = flipAnim
   : 1;
   return (
     <>
-      <View style={styles.container}>
-        <View style={styles.cardsContainer}>
-          {/* <Modal visible={true} transparent={true} animationType="fade"> */}
-          <Animated.View
-            style={[{ transform: [{ rotateY }, { scale }] }, { opacity }]}
-          >
-            <LinearGradient
-              colors={["#88ebe6", "#283330"]}
-              style={[styles.card, { height: cardHeight, width: cardWidth }]}
+      
+        <View style={styles.container}>
+          <View style={styles.cardsContainer}>
+            <Animated.View
+              style={[{ transform: [{ rotateY }, { scale }] }, { opacity }]}
             >
-              <View
-                style={
-                  guessDefs === undefined
-                    ? styles.innerCard
-                    : styles.innerCardGuessDef
-                }
+              <LinearGradient
+                colors={["#88ebe6", "#283330"]}
+                style={[styles.card, { height: cardHeight, width: cardWidth }]}
               >
-                <View style={styles.topPortion}>
-                  <Text style={styles.topText}>{word}</Text>
+                <View
+                  style={
+                    guessDefs === undefined
+                      ? styles.innerCard
+                      : styles.innerCardGuessDef
+                  }
+                >
+                  <View style={styles.topPortion}>
+                    <Text style={styles.topText}>{word}</Text>
+                  </View>
+                  <View style={styles.bottomPortion}>
+                    <Text
+                      style={
+                        guessDefs === undefined
+                          ? styles.bottomText
+                          : styles.bottomTextguessDef
+                      }
+                    >
+                      {definition}
+                    </Text>
+                  </View>
+                  {guessDefs && (
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => handleChooseDef(guessedDef)}
+                    >
+                      <Text>Choose Definition</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-                <View style={styles.bottomPortion}>
-                  <Text
-                    style={
-                      guessDefs === undefined
-                        ? styles.bottomText
-                        : styles.bottomTextguessDef
-                    }
-                  >
-                    {definition}
-                  </Text>
-                </View>
-                {guessDefs && (
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => handleChooseDef(guessedDef)}
-                  >
-                    <Text>Choose Definition</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </LinearGradient>
-          </Animated.View>
-          {/* </Modal> */}
+              </LinearGradient>
+            </Animated.View>
+          </View>
         </View>
-      </View>
+      
 
       {/* Full-Screen Modal for Flipping */}
       {isFlipping && (
         <Modal visible={isFlipping} transparent={true} animationType="fade">
           <View style={styles.container}>
-            <View style={styles.cardsContainer}>
-              {/* <Modal visible={true} transparent={true} animationType="fade"> */}
+            <View style={[styles.cardsContainer]}>
               <Animated.View
                 style={[{ transform: [{ rotateY }, { scale }] }, { opacity }]}
               >
@@ -148,7 +148,6 @@ const opacity = flipAnim
                   </View>
                 </LinearGradient>
               </Animated.View>
-              {/* </Modal> */}
             </View>
           </View>
         </Modal>
@@ -204,7 +203,8 @@ container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)", // Optional: Adds a semi-transparent overlay
+    backgroundColor: "rgba(0,0,0,0.5)",
+     // Optional: Adds a semi-transparent overlay
   },
   cardsContainer: {
     display: "flex",

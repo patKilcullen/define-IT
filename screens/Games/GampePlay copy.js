@@ -318,7 +318,7 @@ const GamePlay = ({
             def={definition}
             handleChooseWord={handleChooseWord}
           /> */}
-          <CardFront title={{ first: "boder", second: "boy" }} />
+        
         </View>
 
         {/* Choose Word Button */}
