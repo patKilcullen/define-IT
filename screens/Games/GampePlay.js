@@ -274,13 +274,12 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                 pulse={"pulse"}
               />
             ) : null} */}
-          
-              <Buttons
-                name={"Choose Word"}
-                func={handleChooseWord}
-                pulse={"pulse"}
-              />
-       
+
+            <Buttons
+              name={"Choose Word"}
+              func={handleChooseWord}
+              pulse={"pulse"}
+            />
           </View>
         ) : (
           // Display GuessDefs component when playGame is true
@@ -295,6 +294,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                   gameId={game.id}
                   gameName={gameName}
                   setPlayGame={setPlayGame}
+                  reloadScores={reloadScores}
                 />
               </View>
             </View>

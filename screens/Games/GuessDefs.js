@@ -195,7 +195,14 @@ const CardFront = React.lazy(() => import("../Cards/CardFront.js"));
 import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
-const GuessDefs = ({ gameId, userScore, gameName, setPlayGame, playGame }) => {
+const GuessDefs = ({
+  gameId,
+  userScore,
+  gameName,
+  setPlayGame,
+  playGame,
+  reloadScores,
+}) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
 
@@ -223,7 +230,7 @@ const GuessDefs = ({ gameId, userScore, gameName, setPlayGame, playGame }) => {
 
   // Handle the selection of a definition by the user
   const handleChooseDef = (def) => {
-    console.log("HNALE CHEOOSE DEF: ", def)
+    console.log("HNALE CHEOOSE DEF: ", def);
     setGuessed(true);
     let message;
 
@@ -279,16 +286,14 @@ const GuessDefs = ({ gameId, userScore, gameName, setPlayGame, playGame }) => {
     return () => scoreCardListener();
   }, [gameId, userScore, dispatch]);
 
-
   // Countdown timer for guessing phase
   useEffect(() => {
     const timer = setTimeout(() => {
-       
       if (countdown > 0) {
-   
         setCountdown(countdown - 1);
       } else if (countdown === 0) {
         setPlayGame(false);
+        reloadScores();
       }
     }, 1000);
 
