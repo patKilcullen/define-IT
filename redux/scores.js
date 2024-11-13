@@ -199,6 +199,7 @@ export const editScore = createAsyncThunk("editScore", async (score) => {
 export const addPoint = createAsyncThunk(
   "scores/addPoint",
   async ({ userId, gameId }, { rejectWithValue }) => {
+    console.log("ASS POIINT: ")
     try {
       // Reference to the specific scores collection
       const scoreDocRef = collection(FireBaseDB, "scores");

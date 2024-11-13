@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { View, StyleSheet, ScrollView, Text } from "react-native";
@@ -86,18 +85,18 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
     dispatch(addRealDefinition({ type: "real", definition }));
     handleGetFakeDefs();
-   
+
     setTimer(true);
     setChoseWord(true);
-    console.log("TWOOO");
+ 
     setDefInput(true);
-     set(ref(RealTimeDB, `games/${gameName}/word`), {
-       word,
-       definition,
-       room: game.name,
-       playerTurnName: user.displayName,
-       play: true,
-     });
+    set(ref(RealTimeDB, `games/${gameName}/word`), {
+      word,
+      definition,
+      room: game.name,
+      playerTurnName: user.displayName,
+      play: true,
+    });
   };
 
   // Firebase listeners for various game data
@@ -113,17 +112,17 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
     // Listener for receiving word
     const wordListener = onValue(wordRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("DATERRRRRR: ", data)
+
       if (data) {
-//  if(data.play){
-console.log("twwwEEEE");
- setDefInput(true);
-// }else {
-//      setDefInput(false);
-// }
-           
+        //  if(data.play){
+
+        setDefInput(true);
+        // }else {
+        //      setDefInput(false);
+        // }
+
         dispatch(clearFakeDefs());
-    
+
         dispatch(setWordState(data?.word || ""));
         dispatch(
           addRealDefinition({ type: "real", definition: data.definition })
@@ -133,44 +132,24 @@ console.log("twwwEEEE");
       }
     });
 
-
-
-console.log("DEF INPUT: ", defInput, defInput && game && userScore && game.turn !== userScore.turnNum )
+   
     // Listener for countdown timer
-    // const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
-    //   const data = snapshot.val();
-    //   console.log("DATA: ", data)
-    //   if (data && userId !== data.playerTurnId) {
-    //     setCountdown(data.countdown);
-    //     if (data.countdown === 0) {
-    //       setDefInput(false);
-    //       console.log("DIS 3");
-    //       setPlayGame(true);
-    //     }
-    //   }
-    // });
+    const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
+      const data = snapshot.val();
 
-        const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
-          const data = snapshot.val();
-         
-          
-          if (data && userId !== data.playerTurnId) {
-            if (data.countdown > 0) {
-              setCountdown(data.countdown);
-            }
-            if (data.countdown === 0 ) {
-                setCountdown(0)
-              setDefInput(false);
-               if (data.play === true) {
-               
-                setPlayGame(true);
-              }
-            }
+      if (data && userId !== data.playerTurnId) {
+        if (data.countdown > 0) {
+          setCountdown(data.countdown);
+        }
+        if (data.countdown === 0) {
+          setCountdown(0);
+          setDefInput(false);
+          if (data.play === true) {
+            setPlayGame(true);
           }
-        });
-           
-     
- 
+        }
+      }
+    });
 
     // Listener for player fake definitions
     const fakePlayerDefListener = onValue(playerDefRef, (snapshot) => {
@@ -207,43 +186,40 @@ console.log("DEF INPUT: ", defInput, defInput && game && userScore && game.turn 
     setFlipSide,
     setTimer,
   ]);
-  console.log("PLAY GAME: ", playGame, defInput)
+
 
   // Timer countdown effect for gameplay
   useEffect(() => {
     if (timer) {
-        console.log("DDDDDD", countdown )
+    
       setTimeout(() => {
         set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
           countdown,
           playerTurnId: userId,
-          play: true
+          play: true,
         });
         if (countdown > 0) {
-console.log("ONEEEE")
           setDefInput(true);
           setCountdown((countdown) => countdown - 1);
         } else if (countdown === 0) {
-             set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
-               playerTurnId: userId,
-               play: false,
-             });
-           
+          set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
+            playerTurnId: userId,
+            play: false,
+          });
+
           setPlayGame(true);
           setDefInput(false);
-          console.log("DIS BOO ")
-        //   set(ref(RealTimeDB, `games/${gameName}/word`), {
-        //     playerTurnId: userId,
-        //     play: false,
-        //   });
+
+          //   set(ref(RealTimeDB, `games/${gameName}/word`), {
+          //     playerTurnId: userId,
+          //     play: false,
+          //   });
         } else {
           setDefInput(false);
-        
         }
       }, 1000);
     }
   }, [timer, countdown]);
-
 
   return (
     <View style={styles.container}>
@@ -266,7 +242,10 @@ console.log("ONEEEE")
 
             {/* Display GuessCard and CardFront components based on conditions */}
             <View style={styles.cardContainer}>
-              {defInput && game && userScore && game.turn !== userScore.turnNum ? (
+              {defInput &&
+              game &&
+              userScore &&
+              game.turn !== userScore.turnNum ? (
                 <GuessCard
                   word={word}
                   definition={definition}
@@ -288,17 +267,24 @@ console.log("ONEEEE")
             </View>
 
             {/* Button to choose word once a word is set */}
-            {definition && !choseWord ? (
+            {/* {definition && !choseWord ? (
               <Buttons
                 name={"Choose Word"}
                 func={handleChooseWord}
                 pulse={"pulse"}
               />
-            ) : null}
+            ) : null} */}
+          
+              <Buttons
+                name={"Choose Word"}
+                func={handleChooseWord}
+                pulse={"pulse"}
+              />
+       
           </View>
         ) : (
           // Display GuessDefs component when playGame is true
-          
+
           <View style={styles.container}>
             <View style={styles.guessDef}>
               <View style={styles.cardContainer}>
@@ -340,4 +326,3 @@ const styles = StyleSheet.create({
 });
 
 export default GamePlay;
-
