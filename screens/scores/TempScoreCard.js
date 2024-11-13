@@ -317,6 +317,13 @@ const TempScoreCard = ({
                   </Text>
                   <ScrollView>
                     {/* Display messages in tempScoreCard here */}
+                    {tempScoreCard && tempScoreCard.length
+                  ? tempScoreCard.map((message, index) => (
+                      <View key={index}>
+                        <Text style={styles.text}>{message}</Text>
+                      </View>
+                    ))
+                  : null}
                   </ScrollView>
                   {message ? (
                     <Text style={styles.text}>***MESSAGE: {message}</Text>

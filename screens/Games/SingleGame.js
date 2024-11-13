@@ -211,7 +211,7 @@ const SingleGame = () => {
       dispatch(clearPlayerRequests());
     };
   }, [dispatch]);
-console.log("showTempScoreCard in single GAME: ", showTempScoreCard);
+
   return (
     <View style={styles.card}>
       <ScrollView>

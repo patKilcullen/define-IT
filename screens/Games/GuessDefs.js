@@ -248,6 +248,7 @@ const GuessDefs = ({
 
     // Update score card information in Firebase
     const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+    console.log("SCORECARD REFFFFFF: ", message)
     set(scoreCardRef, {
       gameName,
       message,
@@ -264,6 +265,7 @@ const GuessDefs = ({
 
     // Dispatch score card message if it's the user's turn
     if (singleGame.turn === userScore.turnNum) {
+        console.log("singleGame.turn === userScore.turnNum");
       dispatch(addTempScoreCardMessage(message));
     }
   };
@@ -271,13 +273,17 @@ const GuessDefs = ({
   // Listen for score card information updates from Firebase
   useEffect(() => {
     const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+   
     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
       const data = snapshot.val();
+      console.log("SCOREA CARD REFFFDATA : ", data);
       if (
         data &&
-        data.room === gameName &&
+        // data.room === gameName &&
         singleGame.turn === userScore.turnNum
       ) {
+
+        console.log("SCOREA CARD REFFF222222 : ", data.message);
         dispatch(addTempScoreCardMessage(data.message));
       }
     });

@@ -162,7 +162,7 @@ const gamePlaySlice = createSlice({
       .addCase("/getFakeDefinitions/fulfilled", (state, action) => {
          state.fakeDefinitions.push({ type : "fake", definition: action.payload });
         state.fakeDefinitions = randomizeArray(state.fakeDefinitions);
-        console.log("state.fakeDefinitions: ", state.fakeDefinitions);
+      
       });
   },
 });
@@ -189,6 +189,7 @@ export const selectFakeWords = (state) => {
   return state.gamePlay.fakeWords;
 };
 export const selectTempScoreCardMessages = (state) => {
+
   return state.gamePlay.tempScoreCard;
 };
 export const selectPlayerFakeDef = (state) => {
