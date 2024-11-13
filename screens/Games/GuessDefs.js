@@ -278,10 +278,13 @@ const GuessDefs = ({ gameId, userScore, gameName, setPlayGame, playGame }) => {
     return () => scoreCardListener();
   }, [gameId, userScore, dispatch]);
 
+  console.log("COUNTTTT: ", countdown)
   // Countdown timer for guessing phase
   useEffect(() => {
     const timer = setTimeout(() => {
+         console.log("THIS CIUNT: ", countdown);
       if (countdown > 0) {
+        console.log("THIS CIUNT: ", countdown)
         setCountdown(countdown - 1);
       } else if (countdown === 0) {
         setPlayGame(false);

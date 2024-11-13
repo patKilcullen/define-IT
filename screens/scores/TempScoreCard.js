@@ -49,6 +49,7 @@ const TempScoreCard = ({
 
   useEffect(() => {
     const timer = setTimeout(() => {
+        console.log("TEMOPP")
       if (countdown > 0 && !pause) {
         setCountdown(countdown - 1);
       } else if (countdown === 0) {
