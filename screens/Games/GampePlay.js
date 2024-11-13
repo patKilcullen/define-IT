@@ -86,15 +86,18 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
     dispatch(addRealDefinition({ type: "real", definition }));
     handleGetFakeDefs();
-    set(ref(RealTimeDB, `games/${gameName}/word`), {
-      word,
-      definition,
-      room: game.name,
-      playerTurnName: user.displayName,
-    });
+   
     setTimer(true);
     setChoseWord(true);
+    console.log("TWOOO");
     setDefInput(true);
+     set(ref(RealTimeDB, `games/${gameName}/word`), {
+       word,
+       definition,
+       room: game.name,
+       playerTurnName: user.displayName,
+       play: true,
+     });
   };
 
   // Firebase listeners for various game data
@@ -110,9 +113,17 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
     // Listener for receiving word
     const wordListener = onValue(wordRef, (snapshot) => {
       const data = snapshot.val();
+      console.log("DATERRRRRR: ", data)
       if (data) {
+//  if(data.play){
+console.log("twwwEEEE");
+ setDefInput(true);
+// }else {
+//      setDefInput(false);
+// }
+           
         dispatch(clearFakeDefs());
-        setDefInput(true);
+    
         dispatch(setWordState(data?.word || ""));
         dispatch(
           addRealDefinition({ type: "real", definition: data.definition })
@@ -124,7 +135,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
 
 
 
-    console.log("PLAY GAMEEEE: ", playGame)
+console.log("DEF INPUT: ", defInput, defInput && game && userScore && game.turn !== userScore.turnNum )
     // Listener for countdown timer
     // const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
     //   const data = snapshot.val();
@@ -141,15 +152,18 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
 
         const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
           const data = snapshot.val();
-          console.log("DATAmmm: ", data);
+         
+          
           if (data && userId !== data.playerTurnId) {
             if (data.countdown > 0) {
               setCountdown(data.countdown);
             }
-            if (data.countdown === 0) {
+            if (data.countdown === 0 ) {
+                setCountdown(0)
               setDefInput(false);
-              if(data.play === true){
-              setPlayGame(true);
+               if (data.play === true) {
+               
+                setPlayGame(true);
               }
             }
           }
@@ -193,6 +207,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
     setFlipSide,
     setTimer,
   ]);
+  console.log("PLAY GAME: ", playGame, defInput)
 
   // Timer countdown effect for gameplay
   useEffect(() => {
@@ -205,7 +220,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
           play: true
         });
         if (countdown > 0) {
-     
+console.log("ONEEEE")
           setDefInput(true);
           setCountdown((countdown) => countdown - 1);
         } else if (countdown === 0) {
@@ -213,10 +228,17 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                playerTurnId: userId,
                play: false,
              });
+           
           setPlayGame(true);
           setDefInput(false);
+          console.log("DIS BOO ")
+        //   set(ref(RealTimeDB, `games/${gameName}/word`), {
+        //     playerTurnId: userId,
+        //     play: false,
+        //   });
         } else {
           setDefInput(false);
+        
         }
       }, 1000);
     }
@@ -276,6 +298,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
           </View>
         ) : (
           // Display GuessDefs component when playGame is true
+          
           <View style={styles.container}>
             <View style={styles.guessDef}>
               <View style={styles.cardContainer}>

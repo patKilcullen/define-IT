@@ -114,7 +114,7 @@ const gamePlaySlice = createSlice({
       state.fakeWords = [];
     },
     addDefinition(state, action) {
-        console.log("action.payload: ", action.payload);
+
       state.fakeDefinitions.push(action.payload);
     },
     addRealDefinition(state, action) {
@@ -122,7 +122,7 @@ const gamePlaySlice = createSlice({
     },
 
     addPlayerFakeDef(state, action) {
-        console.log("PLAYER FAKE ACTION : ", action.payload);
+
       state.playerFakeDef = action.payload;
     },
     // NEEDED?
