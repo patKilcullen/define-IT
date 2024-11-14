@@ -201,6 +201,7 @@ const GuessDefs = ({
   setPlayGame,
   playGame,
   reloadScores,
+  game
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
@@ -292,6 +293,7 @@ const GuessDefs = ({
         setCountdown(countdown - 1);
       } else if (countdown === 0) {
         setPlayGame(false);
+        handleChangeGameTurn();
         reloadScores();
       }
     }, 1000);
@@ -299,6 +301,46 @@ const GuessDefs = ({
     // Cleanup the timer on component unmount
     return () => clearTimeout(timer);
   }, [countdown]);
+
+
+    const handleChangeGameTurn = () => {
+      game.roundsLeft !== 1
+        ? game.turn === 1
+          ? dispatch(
+              editGameTurn({
+                gameId: gameId,
+                turn: game.numPlayers,
+                roundsLeft: game.roundsLeft - 1,
+              })
+            )
+          : dispatch(
+              editGameTurn({
+                gameId: gameId,
+                turn: game.turn - 1,
+                roundsLeft: game.roundsLeft - 1,
+              })
+            )
+        : dispatch(fetchHighestGameScores(gameId)).then((res) => {
+            res.payload.length > 1 ? checkIfTied() : null;
+
+            res.payload.length > 1
+              ? game.turn === 1
+                ? dispatch(
+                    editGameTurn({ gameId: gameId, turn: game.numPlayers })
+                  )
+                : dispatch(
+                    editGameTurn({ gameId: gameId, turn: game.turn - 1 })
+                  )
+              : dispatch(
+                  editGameTurn({
+                    gameId: gameId,
+                    turn: game.turn - 1,
+                    roundsLeft: game.roundsLeft - 1,
+                  })
+                );
+          });
+    };
+
 
   return (
     <View style={styles.container}>

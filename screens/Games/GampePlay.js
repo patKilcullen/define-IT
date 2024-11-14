@@ -10,6 +10,7 @@ import {
   addRealDefinition,
   getFakeDefinitions,
 } from "../../redux/gameplay.js";
+import { fetchAllGameScores, selectAllScores } from "../../redux/scores.js";
 import { selectMe } from "../../redux/auth";
 
 // Components
@@ -25,9 +26,11 @@ import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 import { balderdashWords } from "../../Words.js";
 
-const GamePlay = ({ game, userScore, userId, reloadScores }) => {
+const GamePlay = ({ game, userScore, userId, reloadScores, setPlayerTurnName }) => {
   const dispatch = useDispatch();
   const me = useSelector(selectMe);
+  const gameScores = useSelector(selectAllScores);
+  console.log("GAME SCORESSSS: ", gameScores)
 
   // Retrieve user and game details
   const gameName = game.name;
@@ -42,21 +45,50 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
   const [timer, setTimer] = useState(false);
   const [choseWord, setChoseWord] = useState(false);
   const [playerTurn, setPlayerTurn] = useState("");
-  const [playerTurnName, setPlayerTurnName] = useState("");
+ 
   const [flip, setFlip] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
   const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
 
+  console.log("playerTurn: ", playerTurn)
   // Get the player's turn number
-  useEffect(() => {
-    if (game && game.scores) {
-      setPlayerTurn(game.scores.filter((score) => score.turnNum === game.turn));
-    }
-    if (playerTurn) {
-      setPlayerTurnName(playerTurn[0].user.username);
-    }
-  }, []);
+//   useEffect(() => {
+//     dispatch(fetchAllGameScores())
+
+//      if (gameScores) {
+//         console.log("GOT GAME SCOREr")
+//        setPlayerTurn(gameScores.filter((score) => score.turnNum === game.turn));
+//      }
+//      if (playerTurn) {
+//        setPlayerTurnName(playerTurn[0].user.username);
+//      }
+    
+//   }, []);
+useEffect(() => {
+  // Fetch the game scores when the component mounts
+  dispatch(fetchAllGameScores());
+}, [dispatch]);
+useEffect(() => {
+  if (gameScores && gameScores.length > 0) {
+    console.log("GAME TURN : ", game.turn);
+
+    // Filter scores to find the current player's turn
+    const currentPlayerTurn = gameScores.filter(
+      (score) => score.turnNum === game.turn
+    );
+    setPlayerTurn(currentPlayerTurn);
+        if (currentPlayerTurn) {
+            console.log("SETT P T NAME")
+          setPlayerTurnName(currentPlayerTurn.displayName);
+        }
+
+    // Set the player turn name if a valid player is found
+    // if (currentPlayerTurn && currentPlayerTurn[0]) {
+    //   setPlayerTurnName(currentPlayerTurn[0].user.displayName);
+    // }
+  }
+}, [gameScores, game.turn]); 
 
   // Select a random word and set definition
   const handleGetWord = () => {
@@ -295,6 +327,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
                   gameName={gameName}
                   setPlayGame={setPlayGame}
                   reloadScores={reloadScores}
+                  game={game}
                 />
               </View>
             </View>

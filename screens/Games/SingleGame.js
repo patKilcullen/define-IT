@@ -58,6 +58,7 @@ const SingleGame = () => {
   const [showTempScoreCard, setShowTempScoreCard] = useState(false);
   const [showTiedGame, setShowTiedGame] = useState(false);
   const [reloadFlip, setReloadFlip] = useState(false);
+const [playerTurnName, setPlayerTurnName] = useState("");
 
   const { user } = useContext(UserContext);
   const dispatch = useDispatch();
@@ -247,6 +248,8 @@ const SingleGame = () => {
             handleStartGame={handleStartGame}
             handleDeclineRequest={handleDeclineRequest}
             handleAcceptRequest={handleAcceptRequest}
+            playerTurnName={playerTurnName}
+
           />
         )}
 
@@ -264,6 +267,7 @@ const SingleGame = () => {
             userScore={userScore}
             reloadScores={reloadScores}
             checkIfTied={checkIfTied}
+            setPlayerTurnName={setPlayerTurnName}
           />
         )}
 

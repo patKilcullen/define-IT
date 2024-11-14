@@ -35,6 +35,7 @@ export const fetchAllGameScores = createAsyncThunk(
         id: doc.id,
         ...doc.data(),
       }));
+      console.log("SS SCORES: ", scores)
 
       return scores;
     } catch (error) {
