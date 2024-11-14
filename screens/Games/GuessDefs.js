@@ -202,8 +202,13 @@ const GuessDefs = ({
   playGame,
   reloadScores,
   game,
-//   setGuessed,
-//   guessed
+  setDefinition,
+  setWord,
+  setTimer,
+  setChoseWord,
+  setGamePlayCountdown,
+  //   setGuessed,
+  //   guessed
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
@@ -211,7 +216,7 @@ const GuessDefs = ({
   // Component state for definitions, guesses, and countdown timer
   const [combinedDefs, setCombinedDefs] = useState([]);
   const [defList, setDefList] = useState(false);
-const [guessed, setGuessed] = useState(false)
+  const [guessed, setGuessed] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
   const dispatch = useDispatch();
@@ -229,6 +234,7 @@ const [guessed, setGuessed] = useState(false)
     definitions.splice(randomIndex, 0, realDef);
     setCombinedDefs(definitions);
   }, [fakeDefs, realDef]);
+  console.log("GUESSDEF COUNTDOWN: ", countdown);
 
   // Handle the selection of a definition by the user
   const handleChooseDef = (def) => {
@@ -297,19 +303,20 @@ const [guessed, setGuessed] = useState(false)
         handleChangeGameTurn();
         reloadScores();
 
-        ;
         setDefinition("");
         setWord("");
         setGuessed(false);
-
-
-        setDefList(false);
-        setDefList(null);
-        setFakeDefs([]);
-        setTimer(false);
         setChoseWord(false);
+
+        // setDefList(null);
+        // setFakeDefs([]);
+        // NEED?
+        setTimer(false);
+
         dispatch(clearFakeWords());
-        makeHidden();
+        // makeHidden();
+        // setCountdown(5);
+        setGamePlayCountdown(5)
       }
     }, 1000);
 
@@ -352,7 +359,7 @@ const [guessed, setGuessed] = useState(false)
               );
         });
   };
-  console.log("GUESSED: ", guessed)
+  console.log("GUESSED: ", guessed);
   return !guessed ? (
     <View style={styles.container}>
       <Text style={styles.timerText}>Time: {countdown}</Text>
@@ -376,36 +383,34 @@ const [guessed, setGuessed] = useState(false)
     <CardBack title={{ first: "Balder", second: "Dash" }} />
   );
 
+  //   return (
 
-//   return (
+  //    {guessed ?  (<View style={styles.container}>
 
-//    {guessed ?  (<View style={styles.container}>
+  //       <Text style={styles.timerText}>Time: {countdown}</Text>
 
-//       <Text style={styles.timerText}>Time: {countdown}</Text>
+  //       <ScrollView contentContainerStyle={styles.scrollContainer}>
+  //         <Text>Guess the Definition</Text>
 
-//       <ScrollView contentContainerStyle={styles.scrollContainer}>
-//         <Text>Guess the Definition</Text>
+  //         {combinedDefs.map((definition, index) => (
+  //           <CardFront
+  //             key={index}
+  //             definition={definition.definition}
+  //             word={word}
+  //             guessDefs={true}
+  //             handleChooseDef={handleChooseDef}
+  //             guessedDef={definition}
+  //           />
+  //         ))}
+  //       </ScrollView>
+  //     </View>)
+  //     :<View style={styles.container}>
 
-//         {combinedDefs.map((definition, index) => (
-//           <CardFront
-//             key={index}
-//             definition={definition.definition}
-//             word={word}
-//             guessDefs={true}
-//             handleChooseDef={handleChooseDef}
-//             guessedDef={definition}
-//           />
-//         ))}
-//       </ScrollView>
-//     </View>)
-//     :<View style={styles.container}>
+  //       <Text style={styles.timerText}> you guesses</Text>
 
-//       <Text style={styles.timerText}> you guesses</Text>
-
-     
-//     </View>
-//    }
-//   );
+  //     </View>
+  //    }
+  //   );
 };
 
 const styles = StyleSheet.create({

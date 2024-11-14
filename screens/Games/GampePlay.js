@@ -52,7 +52,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores, setPlayerTurnName }) 
   const [playGame, setPlayGame] = useState(false);
 
 
-  console.log("GAME TURN: ", game.turn)
+  console.log("This countdoen: ", countdown)
 useEffect(() => {
   // Fetch the game scores when the component mounts
   dispatch(fetchAllGameScores());
@@ -321,6 +321,9 @@ useEffect(() => {
                   game={game}
                   setDefinition={setDefinition}
                   setWord={setWord}
+                  setTimer={setTimer}
+                  setChoseWord={setChoseWord}
+                  setGamePlayCountdown={setCountdown}
                 />
               </View>
             </View>
