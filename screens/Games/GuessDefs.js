@@ -295,6 +295,18 @@ const GuessDefs = ({
         setPlayGame(false);
         handleChangeGameTurn();
         reloadScores();
+        
+
+          setDefList(false);
+          setDefinition("");
+          setWord("");
+          setGuessed(false);
+          setDefList(null);
+          setFakeDefs([]);
+          setTimer(false);
+          setChoseWord(false);
+          dispatch(clearFakeWords());
+          makeHidden();
       }
     }, 1000);
 

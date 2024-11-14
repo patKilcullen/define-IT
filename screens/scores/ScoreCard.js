@@ -340,7 +340,7 @@ const ScoreCard = ({
             <Text style={styles.round}>
               {game.rounds + 1 - game.roundsLeft}/{game.rounds}
             </Text>
-            <Text style={styles.label}>{playerTurnName}'s turn</Text>
+            {/* <Text style={styles.label}>{playerTurnName}'s turn</Text> */}
           </View>
         )}
       </View>
