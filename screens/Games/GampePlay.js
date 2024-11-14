@@ -45,7 +45,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores }) => {
   const [playerTurnName, setPlayerTurnName] = useState("");
   const [flip, setFlip] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
-  const [countdown, setCountdown] = useState(10);
+  const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
 
   // Get the player's turn number

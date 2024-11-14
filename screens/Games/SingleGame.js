@@ -28,12 +28,14 @@ import {
   selectPlayerRequests,
   clearScores,
   clearPlayerRequests,
+  
 } from "../../redux/scores";
 import {
   selectTempScoreCardMessages,
   selectWord,
   selectRealDefinition,
   startGame,
+  addTempScoreCardMessage,
 } from "../../redux/gameplay";
 
 // Contexts
@@ -155,6 +157,8 @@ const SingleGame = () => {
     });
   };
 
+//   console.log("TEMP SCORE CARD: ",user.displayName, tempScoreCard)
+
   // Start the game by editing the game state
   const handleStartGame = () => {
     dispatch(editGame({ id: game.id, started: true }))
@@ -170,14 +174,21 @@ const SingleGame = () => {
   // Firebase listeners to sync game state
   useEffect(() => {
     // Set up Firebase references
-    const scoreCardRef = ref(RealTimeDB, `games/${game.name}/score_card`);
+    const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
     const startGameRef = ref(RealTimeDB, `games/${game.id}/start_game`);
     const playAgainRef = ref(RealTimeDB, `games/${game.name}/play_again`);
 
     // Listener for score card updates
     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
+      
       const data = snapshot.val();
-      if (data) setTempScoreCard(data.tempScoreCardMessages);
+        console.log("scoreCardListener single game: ",user.displayName,  data.message);
+    //   if (data.message) setTempScoreCard(data.message);
+    if (data.message){
+        console.log("DATA MESSAGE: ", data.message)
+addTempScoreCardMessage(data.message);
+    } 
+    ;
     });
 
     // Listener for game start event

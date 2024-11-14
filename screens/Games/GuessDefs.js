@@ -64,7 +64,7 @@
 
 //     if (singleGame.turn === userScore.turnNum) {
 //       dispatch(addTempScoreCardMessage(message));
-//       const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+//       const scoreCardRef = ref(RealTimeDB, `games/${gameId}_info`);
 
 //       set(scoreCardRef, {
 //         gameName: gameName,
@@ -92,7 +92,7 @@
 //   };
 
 //   useEffect(() => {
-//     const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+//     const scoreCardRef = ref(RealTimeDB, `games/${gameId}_info`);
 
 //     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
 //       const data = snapshot.val();
@@ -168,7 +168,6 @@
 
 // export default GuessDefs;
 
-
 import React, { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
@@ -230,7 +229,7 @@ const GuessDefs = ({
 
   // Handle the selection of a definition by the user
   const handleChooseDef = (def) => {
-    console.log("HNALE CHEOOSE DEF: ", def);
+   
     setGuessed(true);
     let message;
 
@@ -248,7 +247,7 @@ const GuessDefs = ({
 
     // Update score card information in Firebase
     const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
-    console.log("SCORECARD REFFFFFF: ", message)
+  
     set(scoreCardRef, {
       gameName,
       message,
@@ -265,7 +264,7 @@ const GuessDefs = ({
 
     // Dispatch score card message if it's the user's turn
     if (singleGame.turn === userScore.turnNum) {
-        console.log("singleGame.turn === userScore.turnNum");
+      console.log("singleGame.turn === userScore.turnNum");
       dispatch(addTempScoreCardMessage(message));
     }
   };
@@ -273,17 +272,17 @@ const GuessDefs = ({
   // Listen for score card information updates from Firebase
   useEffect(() => {
     const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
-   
+
     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("SCOREA CARD REFFFDATA : ", data);
+console.log(" guessDEfs : ", user.displayName);
       if (
-        data &&
+        data
+        //  &&
         // data.room === gameName &&
-        singleGame.turn === userScore.turnNum
+        // singleGame.turn === userScore.turnNum
       ) {
-
-        console.log("SCOREA CARD REFFF222222 : ", data.message);
+        console.log("scoreCardListener guessDEfs : ", user.displayName, data.message);
         dispatch(addTempScoreCardMessage(data.message));
       }
     });
