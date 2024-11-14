@@ -51,6 +51,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores, setPlayerTurnName }) 
   const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
 
+
   console.log("GAME TURN: ", game.turn)
 useEffect(() => {
   // Fetch the game scores when the component mounts
@@ -103,6 +104,7 @@ useEffect(() => {
 
   // Choose word and set initial game states
   const handleChooseWord = () => {
+
     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
     dispatch(addRealDefinition({ type: "real", definition }));
     handleGetFakeDefs();
@@ -317,6 +319,8 @@ useEffect(() => {
                   setPlayGame={setPlayGame}
                   reloadScores={reloadScores}
                   game={game}
+                  setDefinition={setDefinition}
+                  setWord={setWord}
                 />
               </View>
             </View>
