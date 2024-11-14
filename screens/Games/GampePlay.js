@@ -26,11 +26,16 @@ import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 import { balderdashWords } from "../../Words.js";
 
-const GamePlay = ({ game, userScore, userId, reloadScores, setPlayerTurnName }) => {
+const GamePlay = ({
+  game,
+  userScore,
+  userId,
+  reloadScores,
+  setPlayerTurnName,
+}) => {
   const dispatch = useDispatch();
   const me = useSelector(selectMe);
   const gameScores = useSelector(selectAllScores);
-
 
   // Retrieve user and game details
   const gameName = game.name;
@@ -45,40 +50,32 @@ const GamePlay = ({ game, userScore, userId, reloadScores, setPlayerTurnName }) 
   const [timer, setTimer] = useState(false);
   const [choseWord, setChoseWord] = useState(false);
   const [playerTurn, setPlayerTurn] = useState("");
- 
+
   const [flip, setFlip] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
   const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
 
+  console.log("This countdoen: ", countdown);
+  useEffect(() => {
+    // Fetch the game scores when the component mounts
+    dispatch(fetchAllGameScores());
+  }, [dispatch]);
+  useEffect(() => {
+    if (gameScores && gameScores.length > 0) {
+      // Filter scores to find the current player's turn
+      const currentPlayerTurn = gameScores.filter(
+        (score) => score.turnNum === game.turn
+      );
 
-  console.log("This countdoen: ", countdown)
-useEffect(() => {
-  // Fetch the game scores when the component mounts
-  dispatch(fetchAllGameScores());
-}, [dispatch]);
-useEffect(() => {
+      setPlayerTurn(currentPlayerTurn);
+      if (currentPlayerTurn) {
+        setPlayerTurnName(currentPlayerTurn.displayName);
+      }
 
-  if (gameScores && gameScores.length > 0) {
-
-
-    // Filter scores to find the current player's turn
-    const currentPlayerTurn = gameScores.filter(
-      (score) => score.turnNum === game.turn
-    );
-    console.log("currentPlayerTurn: ", currentPlayerTurn);
-    setPlayerTurn(currentPlayerTurn);
-        if (currentPlayerTurn) {
-
-          setPlayerTurnName(currentPlayerTurn.displayName);
-        }
-
-    // Set the player turn name if a valid player is found
-    // if (currentPlayerTurn && currentPlayerTurn[0]) {
-    //   setPlayerTurnName(currentPlayerTurn[0].user.displayName);
-    // }
-  }
-}, [gameScores, game.turn]); 
+    
+    }
+  }, [gameScores, game.turn]);
 
   // Select a random word and set definition
   const handleGetWord = () => {
@@ -104,14 +101,13 @@ useEffect(() => {
 
   // Choose word and set initial game states
   const handleChooseWord = () => {
-
     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
     dispatch(addRealDefinition({ type: "real", definition }));
     handleGetFakeDefs();
 
     setTimer(true);
     setChoseWord(true);
- 
+
     setDefInput(true);
     set(ref(RealTimeDB, `games/${gameName}/word`), {
       word,
@@ -137,15 +133,8 @@ useEffect(() => {
       const data = snapshot.val();
 
       if (data) {
-        //  if(data.play){
-
         setDefInput(true);
-        // }else {
-        //      setDefInput(false);
-        // }
-
         dispatch(clearFakeDefs());
-
         dispatch(setWordState(data?.word || ""));
         dispatch(
           addRealDefinition({ type: "real", definition: data.definition })
@@ -155,7 +144,6 @@ useEffect(() => {
       }
     });
 
-   
     // Listener for countdown timer
     const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
       const data = snapshot.val();
@@ -210,11 +198,9 @@ useEffect(() => {
     setTimer,
   ]);
 
-
   // Timer countdown effect for gameplay
   useEffect(() => {
     if (timer) {
-    
       setTimeout(() => {
         set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
           countdown,
@@ -229,14 +215,8 @@ useEffect(() => {
             playerTurnId: userId,
             play: false,
           });
-
           setPlayGame(true);
           setDefInput(false);
-
-          //   set(ref(RealTimeDB, `games/${gameName}/word`), {
-          //     playerTurnId: userId,
-          //     play: false,
-          //   });
         } else {
           setDefInput(false);
         }

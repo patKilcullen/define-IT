@@ -207,8 +207,7 @@ const GuessDefs = ({
   setTimer,
   setChoseWord,
   setGamePlayCountdown,
-  //   setGuessed,
-  //   guessed
+
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
@@ -302,21 +301,13 @@ const GuessDefs = ({
         setPlayGame(false);
         handleChangeGameTurn();
         reloadScores();
-
         setDefinition("");
         setWord("");
         setGuessed(false);
         setChoseWord(false);
-
-        // setDefList(null);
-        // setFakeDefs([]);
-        // NEED?
         setTimer(false);
-
         dispatch(clearFakeWords());
-        // makeHidden();
-        // setCountdown(5);
-        setGamePlayCountdown(5)
+        setGamePlayCountdown(5);
       }
     }, 1000);
 

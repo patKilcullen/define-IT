@@ -176,22 +176,6 @@ export const editGame = createAsyncThunk("editGame", async (game) => {
 });
 
 // EDIT GAME TURN
-// export const editGameTurn = createAsyncThunk(
-//   "editGameTurn",
-//   async ({ gameId, turn, roundsLeft, started }) => {
-//     try {
-//       const { data } = await api.patch(`/api/games/${gameId}/changeTurn`, {
-//         turn,
-//         roundsLeft,
-//         started,
-//       });
-//       return data;
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   }
-// );
-
 export const editGameTurn = createAsyncThunk(
   "editGameTurn",
   async ({ gameId, turn, roundsLeft}) => {
