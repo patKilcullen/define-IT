@@ -194,14 +194,15 @@ export const editGame = createAsyncThunk("editGame", async (game) => {
 
 export const editGameTurn = createAsyncThunk(
   "editGameTurn",
-  async ({ gameId, turn, roundsLeft, started }) => {
+  async ({ gameId, turn, roundsLeft}) => {
     try {
-      const gameRef = doc(db, "games", gameId); // reference to the specific game document in Firestore
+          
+      const gameRef = doc(FireBaseDB, "games", gameId); // reference to the specific game document in Firestore
       await updateDoc(gameRef, {
         turn,
         roundsLeft,
-        started,
       });
+    
       return { gameId, turn, roundsLeft, started }; // return the updated data if needed
     } catch (err) {
       console.log("Error updating game turn:", err);

@@ -37,7 +37,7 @@ const DefInputBox = ({
 
   // Sends player's fake definition to the player whose turn it is via a socket
   const handleEnterFakeDef = (e) => {
-     console.log("PLAYER DEF: DEFINT INTPUT", playerDef);
+
     e.preventDefault();
 
     dispatch(addPlayerFakeDef(playerDef));

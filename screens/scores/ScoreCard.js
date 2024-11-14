@@ -291,7 +291,6 @@ const ScoreCard = ({
   const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
   const playerRequests = useSelector(selectPlayerRequests);
-
   // console.log("USERSCORE: ", userScore)
   useEffect(() => {
     // Reference to join requests event in Firebase

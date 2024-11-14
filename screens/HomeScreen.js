@@ -35,7 +35,7 @@ export default function HomeScreen() {
         
         setError(null);
 let newWord = balderdashWords[Math.random() * balderdashWords.length]
-console.log("NEW WORD: ", newWord)
+
           setWord(newWord.word);
          setDefinition(newWord.definition);
       };

@@ -122,13 +122,13 @@ const Timer = ({ setDefInput, startCountdown }) => {
   // Countdown Timer Effect
   useEffect(() => {
     const timer = setTimeout(() => {
-         console.log("DISddded");
+ 
       if (countdown > 0) {
         setDefInput(true); // Enables definition input
         setCountdown((prevCountdown) => prevCountdown - 1);
       } else if (countdown === 0) {
         handleGetFakeDefinitions(); // Fetch fake definitions when timer reaches 0
-        console.log("DIS")
+       
         setPlayGame(true); // Starts the gameplay phase
         setDefInput(false); // Disables definition input
       } else {

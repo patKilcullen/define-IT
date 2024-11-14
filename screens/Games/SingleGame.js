@@ -158,7 +158,7 @@ const [playerTurnName, setPlayerTurnName] = useState("");
     });
   };
 
-//   console.log("TEMP SCORE CARD: ",user.displayName, tempScoreCard)
+
 
   // Start the game by editing the game state
   const handleStartGame = () => {

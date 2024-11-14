@@ -30,7 +30,7 @@ const GamePlay = ({ game, userScore, userId, reloadScores, setPlayerTurnName }) 
   const dispatch = useDispatch();
   const me = useSelector(selectMe);
   const gameScores = useSelector(selectAllScores);
-  console.log("GAME SCORESSSS: ", gameScores)
+
 
   // Retrieve user and game details
   const gameName = game.name;
@@ -51,35 +51,24 @@ const GamePlay = ({ game, userScore, userId, reloadScores, setPlayerTurnName }) 
   const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
 
-  console.log("playerTurn: ", playerTurn)
-  // Get the player's turn number
-//   useEffect(() => {
-//     dispatch(fetchAllGameScores())
-
-//      if (gameScores) {
-//         console.log("GOT GAME SCOREr")
-//        setPlayerTurn(gameScores.filter((score) => score.turnNum === game.turn));
-//      }
-//      if (playerTurn) {
-//        setPlayerTurnName(playerTurn[0].user.username);
-//      }
-    
-//   }, []);
+  console.log("GAME TURN: ", game.turn)
 useEffect(() => {
   // Fetch the game scores when the component mounts
   dispatch(fetchAllGameScores());
 }, [dispatch]);
 useEffect(() => {
+
   if (gameScores && gameScores.length > 0) {
-    console.log("GAME TURN : ", game.turn);
+
 
     // Filter scores to find the current player's turn
     const currentPlayerTurn = gameScores.filter(
       (score) => score.turnNum === game.turn
     );
+    console.log("currentPlayerTurn: ", currentPlayerTurn);
     setPlayerTurn(currentPlayerTurn);
         if (currentPlayerTurn) {
-            console.log("SETT P T NAME")
+
           setPlayerTurnName(currentPlayerTurn.displayName);
         }
 
