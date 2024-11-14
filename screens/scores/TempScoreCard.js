@@ -232,6 +232,7 @@ import {
   selectPlayerFakeDef,
   addTempScoreCardMessage,
 } from "../../redux/gameplay.js";
+import { fetchSingleGame } from "../../redux/singleGame.js";
 import { selectMe } from "../../redux/auth.js";
 import { add3Points, subtract3Points } from "../../redux/scores.js";
 import Buttons from "../../Buttons.js";
@@ -267,6 +268,8 @@ const TempScoreCard = ({
       } else if (countdown === 0) {
         dispatch(clearTempScoreCardMessages());
         setShowTempScoreCard(false);
+        dispatch(fetchSingleGame(game.id));
+
       }
     }, 1000);
 

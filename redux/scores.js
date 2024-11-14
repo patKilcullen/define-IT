@@ -35,6 +35,7 @@ export const fetchAllGameScores = createAsyncThunk(
         id: doc.id,
         ...doc.data(),
       }));
+    
 
       return scores;
     } catch (error) {
@@ -65,7 +66,7 @@ export const getUserScore = createAsyncThunk(
 
       return scores;
     } catch (error) {
-      console.log("ERROR IN FETCH ALL SCORES THUNK: ", error);
+      console.log("ERROR IN FETCH USER SCORE THUNK: ", error);
       return rejectWithValue(error.message); // Reject with error message
     }
   }
@@ -95,10 +96,10 @@ export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
 
     // Query the requests where scoreId matches
     const queryRef = query(joinRequestsRef, orderByChild("scoreId"));
-    console.log("queryRef: ", queryRef);
+
 
     const snapshot = await get(queryRef);
-    console.log("snapshot.val(): ", snapshot.val());
+
 
     if (snapshot.exists()) {
       const requests = snapshot.val();
@@ -108,7 +109,7 @@ export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
       );
 
       if (matchingRequestKey) {
-        console.log("Matching request key: ", matchingRequestKey);
+       
 
         const requestRef = ref(
           RealTimeDB,
@@ -141,7 +142,7 @@ export const fetchHighestGameScores = createAsyncThunk(
       );
       return data;
     } catch (error) {
-      console.log("ERROR IN FETCH ALL SCORES THUNK: ", error);
+      console.log("ERROR IN FETCH HIGHEST GAME SCORE SCORES THUNK: ", error);
     }
   }
 );
@@ -199,7 +200,7 @@ export const editScore = createAsyncThunk("editScore", async (score) => {
 export const addPoint = createAsyncThunk(
   "scores/addPoint",
   async ({ userId, gameId }, { rejectWithValue }) => {
-    console.log("ASS POIINT: ")
+
     try {
       // Reference to the specific scores collection
       const scoreDocRef = collection(FireBaseDB, "scores");

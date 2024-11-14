@@ -189,7 +189,7 @@ import { UserContext } from "../../UserContext";
 // Components
 import TempScoreCard from "../../screens/scores/TempScoreCard";
 const CardFront = React.lazy(() => import("../Cards/CardFront.js"));
-
+const CardBack = React.lazy(() => import("../Cards/CardBack.js"));
 // Firebase Configuration
 import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
@@ -201,6 +201,13 @@ const GuessDefs = ({
   setPlayGame,
   playGame,
   reloadScores,
+  game,
+  setDefinition,
+  setWord,
+  setTimer,
+  setChoseWord,
+  setGamePlayCountdown,
+
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
@@ -226,10 +233,10 @@ const GuessDefs = ({
     definitions.splice(randomIndex, 0, realDef);
     setCombinedDefs(definitions);
   }, [fakeDefs, realDef]);
+  console.log("GUESSDEF COUNTDOWN: ", countdown);
 
   // Handle the selection of a definition by the user
   const handleChooseDef = (def) => {
-   
     setGuessed(true);
     let message;
 
@@ -247,7 +254,7 @@ const GuessDefs = ({
 
     // Update score card information in Firebase
     const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
-  
+
     set(scoreCardRef, {
       gameName,
       message,
@@ -292,7 +299,15 @@ const GuessDefs = ({
         setCountdown(countdown - 1);
       } else if (countdown === 0) {
         setPlayGame(false);
+        handleChangeGameTurn();
         reloadScores();
+        setDefinition("");
+        setWord("");
+        setGuessed(false);
+        setChoseWord(false);
+        setTimer(false);
+        dispatch(clearFakeWords());
+        setGamePlayCountdown(5);
       }
     }, 1000);
 
@@ -300,7 +315,43 @@ const GuessDefs = ({
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  return (
+  const handleChangeGameTurn = () => {
+    game.roundsLeft !== 1
+      ? game.turn === 1
+        ? dispatch(
+            editGameTurn({
+              gameId: gameId,
+              turn: game.numPlayers,
+              roundsLeft: game.roundsLeft - 1,
+            })
+          )
+        : dispatch(
+            editGameTurn({
+              gameId: gameId,
+              turn: game.turn - 1,
+              roundsLeft: game.roundsLeft - 1,
+            })
+          )
+      : dispatch(fetchHighestGameScores(gameId)).then((res) => {
+          res.payload.length > 1 ? checkIfTied() : null;
+
+          res.payload.length > 1
+            ? game.turn === 1
+              ? dispatch(
+                  editGameTurn({ gameId: gameId, turn: game.numPlayers })
+                )
+              : dispatch(editGameTurn({ gameId: gameId, turn: game.turn - 1 }))
+            : dispatch(
+                editGameTurn({
+                  gameId: gameId,
+                  turn: game.turn - 1,
+                  roundsLeft: game.roundsLeft - 1,
+                })
+              );
+        });
+  };
+  console.log("GUESSED: ", guessed);
+  return !guessed ? (
     <View style={styles.container}>
       <Text style={styles.timerText}>Time: {countdown}</Text>
 
@@ -319,7 +370,38 @@ const GuessDefs = ({
         ))}
       </ScrollView>
     </View>
+  ) : (
+    <CardBack title={{ first: "Balder", second: "Dash" }} />
   );
+
+  //   return (
+
+  //    {guessed ?  (<View style={styles.container}>
+
+  //       <Text style={styles.timerText}>Time: {countdown}</Text>
+
+  //       <ScrollView contentContainerStyle={styles.scrollContainer}>
+  //         <Text>Guess the Definition</Text>
+
+  //         {combinedDefs.map((definition, index) => (
+  //           <CardFront
+  //             key={index}
+  //             definition={definition.definition}
+  //             word={word}
+  //             guessDefs={true}
+  //             handleChooseDef={handleChooseDef}
+  //             guessedDef={definition}
+  //           />
+  //         ))}
+  //       </ScrollView>
+  //     </View>)
+  //     :<View style={styles.container}>
+
+  //       <Text style={styles.timerText}> you guesses</Text>
+
+  //     </View>
+  //    }
+  //   );
 };
 
 const styles = StyleSheet.create({
