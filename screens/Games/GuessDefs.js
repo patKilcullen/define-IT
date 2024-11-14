@@ -275,14 +275,8 @@ const GuessDefs = ({
 
     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
       const data = snapshot.val();
-console.log(" guessDEfs : ", user.displayName);
-      if (
-        data
-        //  &&
-        // data.room === gameName &&
-        // singleGame.turn === userScore.turnNum
-      ) {
-        console.log("scoreCardListener guessDEfs : ", user.displayName, data.message);
+
+      if (data) {
         dispatch(addTempScoreCardMessage(data.message));
       }
     });

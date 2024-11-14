@@ -179,17 +179,16 @@ const SingleGame = () => {
     const playAgainRef = ref(RealTimeDB, `games/${game.name}/play_again`);
 
     // Listener for score card updates
-    const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
+//     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
       
-      const data = snapshot.val();
-        console.log("scoreCardListener single game: ",user.displayName,  data.message);
-    //   if (data.message) setTempScoreCard(data.message);
-    if (data.message){
-        console.log("DATA MESSAGE: ", data.message)
-addTempScoreCardMessage(data.message);
-    } 
-    ;
-    });
+//       const data = snapshot.val();
+//     //   if (data.message) setTempScoreCard(data.message);
+//     if (data.message){
+     
+// addTempScoreCardMessage(data.message);
+//     } 
+//     ;
+//     });
 
     // Listener for game start event
     const startGameListener = onValue(startGameRef, (snapshot) => {
@@ -206,7 +205,7 @@ addTempScoreCardMessage(data.message);
 
     // Cleanup function to remove Firebase listeners on component unmount
     return () => {
-      off(scoreCardRef, scoreCardListener);
+    //   off(scoreCardRef, scoreCardListener);
       off(startGameRef, startGameListener);
       off(playAgainRef, playAgainListener);
     };
