@@ -250,10 +250,10 @@
 
 // export default ScoreCard;
 
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-
+import { UserContext } from "../../UserContext";
 import Buttons from "../../Buttons";
 
 // STORE
@@ -279,6 +279,7 @@ const ScoreCard = ({
   playerTurnName,
   handleRemovePlayer,
 }) => {
+       const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
   const playerRequests = useSelector(selectPlayerRequests);
@@ -305,6 +306,9 @@ const ScoreCard = ({
     };
   }, [game.name, game.id, dispatch]);
 
+
+
+  console.log("user?.user?.id !== userI: ",userScore.id)
   return (
     <View style={styles.container}>
       {/* Game Name */}
@@ -359,16 +363,15 @@ const ScoreCard = ({
                 <Text style={styles.points}>
                   {user.score === 1 ? "pt" : "pts"}
                 </Text>
-                {user?.user?.id !== userId &&
-                  userId === game.ownerId &&
-                  !game.started && (
-                    <Buttons
-                      name={"Remove Player"}
-                      //   func={() => user?.user?.id}
-                      func={() => handleRemovePlayer(user.id)}
-                      small={true}
-                    />
-                  )}
+
+                {user.id !== userScore.id && !game.started && (
+                  <Buttons
+                    name={"Remove Player"}
+                    //   func={() => user?.user?.id}
+                    func={() => handleRemovePlayer(user.id)}
+                    small={true}
+                  />
+                )}
               </View>
             ))}
       </ScrollView>
