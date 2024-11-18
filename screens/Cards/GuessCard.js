@@ -89,7 +89,7 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
   return (
     // <Animated.View style={[styles.container, animatedStyle]}>
     <Modal
-      visible={word !== ""}
+      visible={word !== "" && seeInput}
       animationType="slide"
       transparent={true}
       onRequestClose={() => setShowTempScoreCard(false)}
@@ -132,7 +132,7 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
           </View>
         </Animated.View>
       </View>
-..  </Modal>
+    </Modal>
   );
 };
 
