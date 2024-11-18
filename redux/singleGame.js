@@ -39,10 +39,11 @@ export const createGame = createAsyncThunk(
     },
     { rejectWithValue }
   ) => {
+    const normalizedName = name.trim().toLowerCase()
     try {
       const docRef = await addDoc(collection(FireBaseDB, "games"), {
         userId: userId || "", // Default value or validation
-        name: name || "Untitled Game",
+        name: normalizedName || "Untitled Game",
         rounds: rounds || 0,
         roundsLeft: roundsLeft || 0,
         winner: winner || null,
@@ -131,7 +132,8 @@ export const findGameByName = createAsyncThunk(
     try {
       const gamesRef = collection(FireBaseDB, "games");
 
-      const q = query(gamesRef, where("name", "==", gameName));
+      const normalizedName = gameName.trim().toLowerCase()
+      const q = query(gamesRef, where("name", "==", normalizedName));
 
       const querySnapshot = await getDocs(q);
 
