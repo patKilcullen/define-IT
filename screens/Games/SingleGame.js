@@ -27,6 +27,7 @@ import {
   clearScores,
   clearPlayerRequests,
   getInfo,
+  deletePlayerRequests,
 } from "../../redux/scores";
 import {
   selectTempScoreCardMessages,
@@ -124,15 +125,22 @@ const SingleGame = () => {
         dispatch(fetchSingleGame(gameId));
         dispatch(fetchAllGameScores(gameId));
         dispatch(fetchPlayerRequests(gameId));
+dispatch(deletePlayerRequests({gameId, requestId}));
       });
     });
   };
 
   // Decline a join request for the game
   const handleDeclineRequest = (id) => {
-    dispatch(deleteScore({ userId: id, gameId: game.id }));
-    dispatch(fetchSingleGame(gameId));
-    dispatch(fetchAllGameScores(gameId));
+    console.log("ID: ", id)
+        dispatch(deletePlayerRequests({ game, scoreId: id }));
+    dispatch(deleteScore({ userId: id, gameId: game.id })).then((res)=>{
+  dispatch(fetchSingleGame(gameId));
+  dispatch(fetchAllGameScores(gameId));
+  dispatch(fetchPlayerRequests(gameId));
+
+    })
+  
   };
 
   // Handle join request creation

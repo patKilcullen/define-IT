@@ -22,7 +22,6 @@
 // }) => {
 //   const scores = useSelector(selectAllScores);
 
-
 //   console.log(
 //     "game.ownerId !== userId && !game.started && userScore === undefined : ",
 //     game.ownerId, userId, !game.started, userScore === undefined
@@ -156,9 +155,6 @@
 //   );
 // };
 
-
-
-
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
@@ -254,15 +250,8 @@
 
 // export default ScoreCard;
 
-
-
-import React, {useEffect} from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import Buttons from "../../Buttons";
@@ -272,11 +261,12 @@ import {
   selectAllScores,
   fetchAllGameScores,
   fetchPlayerRequests,
-  selectPlayerRequests
+  selectPlayerRequests,
+  deletePlayerRequests,
 } from "../../redux/scores";
 
- import { RealTimeDB } from "../../Firebase/FirebaseConfig";
- import { ref, push, onValue, set, off } from "firebase/database";
+import { RealTimeDB } from "../../Firebase/FirebaseConfig";
+import { ref, push, onValue, set, off } from "firebase/database";
 
 const ScoreCard = ({
   userId,
@@ -313,6 +303,10 @@ const ScoreCard = ({
       off(joinRequestsRef, joinRequestsListener);
     };
   }, [game.name, game.id, dispatch]);
+
+
+
+
 
   return (
     <View style={styles.container}>
@@ -373,7 +367,7 @@ const ScoreCard = ({
                   !game.started && (
                     <Buttons
                       name={"Remove Player"}
-                      func={() => handleDeclineRequest(user?.user?.id)}
+                      func={() => user?.user?.id}
                       small={true}
                     />
                   )}
@@ -412,7 +406,7 @@ const ScoreCard = ({
                   />
                   <Buttons
                     name={"Decline"}
-                    func={() => handleDeclineRequest(request.userId)}
+                    func={() => handleDeclineRequest(request.scoreId)}
                     small={true}
                   />
                 </View>
@@ -450,9 +444,6 @@ const ScoreCard = ({
     </View>
   );
 };
-
-
-
 
 const styles = StyleSheet.create({
   container: {
