@@ -102,16 +102,89 @@ const SingleGame = () => {
 
 
   // Accept a join request for the game
-  const handleAcceptRequest = ({ scoreId, userId, requestId }) => {
+//   const handleAcceptRequest = ({ scoreId, userId, requestId }) => {
   
-    dispatch(
-      editGame({
-        ...game,
-        userId,
-        numPlayers: game.numPlayers + 1,
-        addPlayers: true,
-      })
-    ).then((res) => {
+//     dispatch(
+//       editGame({
+//         ...game,
+//         userId,
+//         numPlayers: game.numPlayers + 1,
+//         addPlayers: true,
+//       })
+//     ).then((res) => {
+//       dispatch(
+//         editScore({
+//           scoreId,
+//           turnNum: res.payload.numPlayers,
+//           gameId: game.id,
+//           accepted: true,
+//         })
+//       ).then(() => {
+//           dispatch(getInfo({ game, user })); 
+//         dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
+
+//         dispatch(deletePlayerRequests({ game, scoreId}))
+         
+//           dispatch(fetchSingleGame(gameId));
+//           dispatch(fetchAllGameScores(gameId));
+//           dispatch(fetchPlayerRequests(gameId));
+       
+
+//       });
+//     });
+//   };
+// const handleAcceptRequest = ({ scoreId, userId }) => {
+//   dispatch(
+//     editGame({
+//       ...game,
+//       userId,
+//       numPlayers: game.numPlayers + 1,
+//       addPlayers: true,
+//     })
+//   )
+//     .then((res) => {
+//       dispatch(
+//         editScore({
+//           scoreId,
+//           turnNum: res.payload.numPlayers,
+//           gameId: game.id,
+//           accepted: true,
+//         })
+//       ).then(() => {  
+//            dispatch(getInfo({ game, user }));
+//         dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
+
+//         dispatch(deletePlayerRequests({ game, scoreId }))
+//           .then(() => {
+//             console.log(
+//               "deletePlayerRequests completed, fetching updated game data..."
+//             );
+     
+//             dispatch(fetchSingleGame(gameId));
+//             dispatch(fetchAllGameScores(gameId));
+//             dispatch(fetchPlayerRequests(gameId));
+           
+//           })  
+
+//           .catch((error) => {
+//             console.error("Error deleting player request:", error);
+//           });
+//       });
+//     })
+//     .catch((error) => {
+//       console.error("Error in handleAcceptRequest:", error);
+//     });
+// };
+const handleAcceptRequest = ({ scoreId, userId }) => {
+  dispatch(
+    editGame({
+      ...game,
+      userId,
+      numPlayers: game.numPlayers + 1,
+      addPlayers: true,
+    })
+  )
+    .then((res) => {
       dispatch(
         editScore({
           scoreId,
@@ -120,19 +193,40 @@ const SingleGame = () => {
           accepted: true,
         })
       ).then(() => {
-          dispatch(getInfo({ game, user })); 
-        dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
-        dispatch(fetchSingleGame(gameId));
-        dispatch(fetchAllGameScores(gameId));
-        dispatch(fetchPlayerRequests(gameId));
-dispatch(deletePlayerRequests({gameId, requestId}));
+        console.log("Calling getInfo...");
+        getInfo({ game, user }) // Now you can chain or await getInfo
+          .then(() => {
+            console.log("getInfo completed successfully.");
+            dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
+
+            dispatch(deletePlayerRequests({ game, scoreId }))
+              .then(() => {
+                console.log(
+                  "deletePlayerRequests completed, fetching updated data..."
+                );
+                dispatch(fetchSingleGame(gameId));
+                dispatch(fetchAllGameScores(gameId));
+                dispatch(fetchPlayerRequests(gameId));
+              })
+              .catch((error) => {
+                console.error("Error deleting player request:", error);
+              });
+          })
+          .catch((error) => {
+            console.error("Error in getInfo:", error);
+          });
       });
+    })
+    .catch((error) => {
+      console.error("Error in handleAcceptRequest:", error);
     });
-  };
+};
+
+
 
   // Decline a join request for the game
   const handleDeclineRequest = (id) => {
-    console.log("ID: ", id)
+    
         dispatch(deletePlayerRequests({ game, scoreId: id }));
     dispatch(deleteScore({ userId: id, gameId: game.id })).then((res)=>{
   dispatch(fetchSingleGame(gameId));

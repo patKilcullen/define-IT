@@ -189,10 +189,26 @@ export const deletePlayerRequests = createAsyncThunk(
 
 
 
+// export const getInfo = ({ game, user }) => {
+//   const gameStartRef = ref(RealTimeDB, `games/${game.id}/get_info`);
+
+//   set(gameStartRef, {
+//     room: game.name,
+//     userName: user.displayName,
+//   })
+//     .then(() => {
+//       console.log("Get Info event successfully sent to Firebase.");
+//     })
+//     .catch((error) => {
+//       console.error("Error sending Get Info event to Firebase:", error);
+//     });
+// };
+
+
 export const getInfo = ({ game, user }) => {
   const gameStartRef = ref(RealTimeDB, `games/${game.id}/get_info`);
 
-  set(gameStartRef, {
+  return set(gameStartRef, {
     room: game.name,
     userName: user.displayName,
   })
@@ -201,6 +217,7 @@ export const getInfo = ({ game, user }) => {
     })
     .catch((error) => {
       console.error("Error sending Get Info event to Firebase:", error);
+      throw error; // Ensure errors propagate to the caller
     });
 };
     
