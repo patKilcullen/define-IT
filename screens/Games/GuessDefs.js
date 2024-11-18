@@ -233,7 +233,7 @@ const GuessDefs = ({
     definitions.splice(randomIndex, 0, realDef);
     setCombinedDefs(definitions);
   }, [fakeDefs, realDef]);
-  console.log("GUESSDEF COUNTDOWN: ", countdown);
+ 
 
   // Handle the selection of a definition by the user
   const handleChooseDef = (def) => {
@@ -316,6 +316,8 @@ const GuessDefs = ({
   }, [countdown]);
 
   const handleChangeGameTurn = () => {
+
+
     game.roundsLeft !== 1
       ? game.turn === 1
         ? dispatch(

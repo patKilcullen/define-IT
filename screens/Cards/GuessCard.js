@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Animated,,
+  Animated,
   Modal
 } from "react-native";
 import { useDispatch } from "react-redux";
@@ -23,9 +23,9 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
   const inputRef = useRef();
 
   // Set focus on input box
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+//   useEffect(() => {
+//     inputRef.current.focus();
+//   }, []);
 
   const dispatch = useDispatch();
 
@@ -85,44 +85,54 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
     setSeeInput(false);
     setPlayerDef("");
   };
+  console.log("GUESS WORD: ", word)
   return (
     // <Animated.View style={[styles.container, animatedStyle]}>
-    <Animated.View style={styles.container}>
-      <View style={styles.cardsContainer}>
-        <LinearGradient
-          colors={["#88ebe6", "#283330"]}
-          style={[styles.card, { height: cardHeight, width: cardWidth }]}
-        >
-          <View style={styles.innerCard}>
-            <View style={styles.topPortion}>
-              <Text style={styles.topText}>{word}</Text>
-            </View>
-            <View style={styles.bottomPortion}>
-              {seeInput && (
-                <View>
-                  <TextInput
-                    style={[styles.textInput, { textAlignVertical: "top" }]}
-                    placeholder="Enter your definition"
-                    multiline={true}
-                    numberOfLines={4}
-                    value={playerDef}
-                    onChangeText={(text) => setPlayerDef(text)}
-                    ref={inputRef}
-                  />
-
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleEnterFakeDef}
-                  >
-                    <Text>Submit</Text>
-                  </TouchableOpacity>
+    <Modal
+      visible={word !== ""}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => setShowTempScoreCard(false)}
+    >
+      <View style={styles.modalContainer}>
+        <Animated.View style={styles.container}>
+          <View style={styles.cardsContainer}>
+            <LinearGradient
+              colors={["#88ebe6", "#283330"]}
+              style={[styles.card, { height: cardHeight, width: cardWidth }]}
+            >
+              <View style={styles.innerCard}>
+                <View style={styles.topPortion}>
+                  <Text style={styles.topText}>{word}</Text>
                 </View>
-              )}
-            </View>
+                <View style={styles.bottomPortion}>
+                  {seeInput && (
+                    <View>
+                      <TextInput
+                        style={[styles.textInput, { textAlignVertical: "top" }]}
+                        placeholder="Enter your definition"
+                        multiline={true}
+                        numberOfLines={4}
+                        value={playerDef}
+                        onChangeText={(text) => setPlayerDef(text)}
+                        ref={inputRef}
+                      />
+
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleEnterFakeDef}
+                      >
+                        <Text>Submit</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              </View>
+            </LinearGradient>
           </View>
-        </LinearGradient>
+        </Animated.View>
       </View>
-    </Animated.View>
+..  </Modal>
   );
 };
 

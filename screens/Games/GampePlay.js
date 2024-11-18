@@ -9,6 +9,7 @@ import {
   addDefinition,
   addRealDefinition,
   getFakeDefinitions,
+  clearWordState,
 } from "../../redux/gameplay.js";
 import { fetchAllGameScores, selectAllScores } from "../../redux/scores.js";
 import { selectMe } from "../../redux/auth";
@@ -56,7 +57,11 @@ const GamePlay = ({
   const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
 
-  console.log("This countdoen: ", countdown);
+  useEffect(()=>{
+   dispatch(clearWordState()); 
+   setWord("")
+  }, [])
+
   useEffect(() => {
     // Fetch the game scores when the component mounts
     dispatch(fetchAllGameScores());
@@ -223,7 +228,7 @@ const GamePlay = ({
       }, 1000);
     }
   }, [timer, countdown]);
-
+console.log("PLAYGAME: ", user.displayName, playGame)
   return (
     <View style={styles.container}>
       <ScrollView>
