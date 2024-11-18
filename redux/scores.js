@@ -91,70 +91,22 @@ export const fetchPlayerRequests = createAsyncThunk(
   }
 );
 
-// FETCH PLAYER REQUESTS
-// export const fetchPlayers = createAsyncThunk(
-//   "fetchPlayers",
-//   async (gameId, { rejectWithValue }) => {
-//     console.log("FETHC PLAYERS 1111");
-//     try {
-//       const playersRef = ref(RealTimeDB, `games/${gameId}/fetch_players`);
-//       const snapshot = await get(playersRef);
-//       const players = snapshot.val();
-// console.log("FETHC PLAYERS")
-//     //   return players ? Object.values(players) : [];
-//        return players
-//     } catch (error) {
-//       console.error("Error fetching players: ", error);
-//       return rejectWithValue(error.message);
-//     }
-//   }
-// );
 
-// START GAME
-export const fetchPlayersOLS = ({game, user}) => {
-console.log("FETCH PLAYAAAAAS", game.id);
-  const gameStartRef = ref(RealTimeDB, `games/${game.id}/fetch_players`);
 
-  set(gameStartRef, {
-    room: game.name,
-    userName: user.displayName,
-  })
-    .then(() => {
-      console.log("Game start event successfully sent to Firebase.");
-    })
-    .catch((error) => {
-      console.error("Error sending start game event to Firebase:", error);
-    });
-};
-// export const fetchPlayers = ({ game, user }) => {
-//     console.log("FETCH PLAYAAAAAS", game.id);
-//   const fetchPlayersRef = ref(RealTimeDB, `games/${game.id}/fetch_players`);
-// console.log("FETCH PLAYAAAAAS222222", fetchPlayersRef);
-//   return set(fetchPlayersRef, {
-//     room: game.name,
-//     userName: user.displayName,
-//     timestamp: Date.now(),
-//   })
-//     .then(() => {
-//       console.log("Fetch players event successfully sent to Firebase.");
-//     })
-//     .catch((error) => {
-//       console.error("Error sending fetch players event to Firebase:", error);
-//     });
-// };
+
 
 export const getInfo = ({ game, user }) => {
   const gameStartRef = ref(RealTimeDB, `games/${game.id}/get_info`);
-console.log("get infyyy")
+  
   set(gameStartRef, {
     room: game.name,
     userName: user.displayName,
   })
     .then(() => {
-      console.log("Game start event successfully sent to Firebase.");
+      console.log("Get Info event successfully sent to Firebase.");
     })
     .catch((error) => {
-      console.error("Error sending start game event to Firebase:", error);
+      console.error("Error sending Get Info event to Firebase:", error);
     });
 };
     

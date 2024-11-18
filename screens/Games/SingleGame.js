@@ -26,7 +26,6 @@ import {
   selectPlayerRequests,
   clearScores,
   clearPlayerRequests,
-  fetchPlayers,
   getInfo,
 } from "../../redux/scores";
 import {
@@ -99,40 +98,11 @@ const SingleGame = () => {
     prevGameTurn.current = gameTurn;
   }, [showTempScoreCard]);
 
-  //   // Accept a join request for the game
-  //   const handleAcceptRequest = ({ scoreId, userId, requestId }) => {
-  //        dispatch(getInfo({ game, user }));
-  //     dispatch(
-  //       editGame({
-  //         ...game,
-  //         userId,
-  //         numPlayers: game.numPlayers + 1,
-  //         addPlayers: true,
-  //       })
-  //     ).then((res) => {
-  //       dispatch(
-  //         editScore({
-  //           scoreId,
-  //           turnNum: res.payload.numPlayers,
-  //           gameId: game.id,
-  //           accepted: true,
-  //         })
-  //       ).then(() => {
 
-  //         dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
-  //         dispatch(fetchSingleGame(gameId));
-  //         dispatch(fetchAllGameScores(gameId));
-  //         dispatch(fetchPlayerRequests(gameId));
-  //         //  dispatch(fetchPlayers(gameId));
-
-  //       });
-  //     });
-  //   };
 
   // Accept a join request for the game
   const handleAcceptRequest = ({ scoreId, userId, requestId }) => {
   
-
     dispatch(
       editGame({
         ...game,
@@ -154,7 +124,6 @@ const SingleGame = () => {
         dispatch(fetchSingleGame(gameId));
         dispatch(fetchAllGameScores(gameId));
         dispatch(fetchPlayerRequests(gameId));
-        //  dispatch(fetchPlayers(gameId));
       });
     });
   };
@@ -209,8 +178,7 @@ const SingleGame = () => {
     // const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
     const startGameRef = ref(RealTimeDB, `games/${game.id}/start_game`);
     const playAgainRef = ref(RealTimeDB, `games/${game.name}/play_again`);
-    // const fetchPlayersRef = ref(RealTimeDB, `games/${game.id}/fetch_players`);
-    const fetchPlayersRef = ref(RealTimeDB, `games/${game.id}/fetch_players`);
+
     const getInfoRef = ref(RealTimeDB, `games/${game.id}/get_info`);
     // Listener for score card updates
     //     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
@@ -226,28 +194,6 @@ const SingleGame = () => {
     //     ;
     //     });
 
-    //     const fetchPlayersListener = onValue(fetchPlayersRef, (snapshot) => {
-    //       const data = snapshot.val();
-    //       //   if (data.message) setTempScoreCard(data.message);
-    // console.log("LISTENEIER... ", data ? data : "no data")
-    // if(data){
-    // console.log("GOT DATA!!!!!!!!!!!!!: ", data)
-    //    dispatch(fetchSingleGame(gameId));
-    //    dispatch(fetchAllGameScores(gameId));
-    // }
-    //     //   if (data && data.message) {
-    //     //     dispatch(fetchPlayers(game.id));
-    //     //     // addTempScoreCardMessage(data.message);
-    //     //   }
-    //     });
-    const fetchPlayersListener = onValue(fetchPlayersRef, (snapshot) => {
-      const data = snapshot.val();
-
-      if (data && data.room === game.name) {
-        dispatch(fetchSingleGame(gameId));
-        dispatch(fetchAllGameScores(gameId));
-      }
-    });
 
     // Listener for game start event
     const startGameListener = onValue(startGameRef, (snapshot) => {
@@ -260,7 +206,7 @@ const SingleGame = () => {
       const data = snapshot.val();
 
       if (data && data.room === game.name) {
-        console.log("END: ", user.displayName);
+    
         dispatch(fetchSingleGame(gameId));
         dispatch(fetchAllGameScores(gameId));
       }
@@ -278,7 +224,6 @@ const SingleGame = () => {
       //    off(scoreCardRef, scoreCardListener);
       off(startGameRef, startGameListener);
       off(playAgainRef, playAgainListener);
-      off(fetchPlayersRef, fetchPlayersListener);
       off(getInfoRef, getInfoListener);
     };
   }, [game.name, gameId, dispatch]);
