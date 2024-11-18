@@ -293,7 +293,12 @@ const CreateGame = () => {
                   style={styles.input}
                   placeholder="Number of Rounds"
                   value={rounds.toString()}
-                  onChangeText={(text) => setRounds(parseInt(text) || 1)}
+                  onChangeText={(text) => {
+                    if(text === ""){
+                        setRounds("")
+                    }else{
+                    setRounds(parseInt(text) || 0)}}
+                  }
                   keyboardType="numeric"
                 />
                 {error ? <Text style={styles.errorText}>{error}</Text> : null}
