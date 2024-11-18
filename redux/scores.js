@@ -9,9 +9,10 @@ import {
   getDocs,
   updateDoc,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 
-import { ref, get, set, orderByChild, equalTo, update, remove } from "firebase/database";
+import { ref, get, set, orderByChild, equalTo, update, remove, } from "firebase/database";
 
 
 const api = axios?.create({
@@ -401,7 +402,7 @@ export const subtract3Points = createAsyncThunk(
 );
 
 // DELETE SCORE - for now used only when game owner denies request
-export const deleteScore = createAsyncThunk("deleteScore", async (score) => {
+export const deleteScoreOLD = createAsyncThunk("deleteScore", async (score) => {
   try {
     await api.delete(`/api/scores/${score.gameId}/${score.userId}`);
     return { gameId: score.gameId, userId: score.userId };
@@ -410,6 +411,30 @@ export const deleteScore = createAsyncThunk("deleteScore", async (score) => {
   }
 });
 
+// DELETE SCORE
+export const deleteScore = createAsyncThunk(
+  "createScore",
+  async (id) => {
+    try {
+            const scoreDoc = doc(FireBaseDB, "scores", id);
+
+              await deleteDoc(scoreDoc);
+    //   const scoreDocRef = collection(FireBaseDB, "scores");
+    //   // Query to find the document with matching gameId and userId
+    //   const q = query(
+    //     scoreDocRef,
+    //     where("id", "==", id),
+    //   );
+
+    //   const querySnapshot = await getDocs(q);
+
+
+    
+    } catch (error) {
+      console.log("ERROR IN CREAT Score THUNK: ", error);
+    }
+  }
+);
 const allScoresSlice = createSlice({
   name: "allScores",
   initialState: {

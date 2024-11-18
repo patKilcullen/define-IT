@@ -277,6 +277,7 @@ const ScoreCard = ({
   handleDeclineRequest,
   handleAcceptRequest,
   playerTurnName,
+  handleRemovePlayer,
 }) => {
   const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
@@ -303,10 +304,6 @@ const ScoreCard = ({
       off(joinRequestsRef, joinRequestsListener);
     };
   }, [game.name, game.id, dispatch]);
-
-
-
-
 
   return (
     <View style={styles.container}>
@@ -367,7 +364,8 @@ const ScoreCard = ({
                   !game.started && (
                     <Buttons
                       name={"Remove Player"}
-                      func={() => user?.user?.id}
+                      //   func={() => user?.user?.id}
+                      func={() => handleRemovePlayer(user.id)}
                       small={true}
                     />
                   )}

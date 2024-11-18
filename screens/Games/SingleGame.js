@@ -236,6 +236,14 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
     })
   
   };
+   const handleRemovePlayer = (id) => {
+ console.log("ID: ", id)
+     dispatch(deleteScore(id)).then((res) => {
+       dispatch(fetchSingleGame(gameId));
+       dispatch(fetchAllGameScores(gameId));
+       dispatch(fetchPlayerRequests(gameId));
+     });
+   };
 
   // Handle join request creation
   const handleAskJoin = () => {
@@ -366,6 +374,7 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
             handleDeclineRequest={handleDeclineRequest}
             handleAcceptRequest={handleAcceptRequest}
             playerTurnName={playerTurnName}
+            handleRemovePlayer={handleRemovePlayer}
           />
         )}
 
