@@ -308,7 +308,7 @@ const ScoreCard = ({
 
 
 
-  console.log("user?.user?.id !== userI: ",userScore.id)
+
   return (
     <View style={styles.container}>
       {/* Game Name */}
@@ -364,7 +364,7 @@ const ScoreCard = ({
                   {user.score === 1 ? "pt" : "pts"}
                 </Text>
 
-                {user.id !== userScore.id && !game.started && (
+                {user.id !== userScore?.id && !game.started && (
                   <Buttons
                     name={"Remove Player"}
                     //   func={() => user?.user?.id}

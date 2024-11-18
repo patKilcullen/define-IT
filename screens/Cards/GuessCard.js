@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Animated,
+  Animated,,
+  Modal
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
@@ -126,6 +127,12 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
 };
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+  },
   topPortion: {
     height: "40%",
     width: "100%",

@@ -170,7 +170,7 @@
 
 import React, { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Modal } from "react-native";
 
 // Redux State and Actions
 import {
@@ -350,58 +350,39 @@ const GuessDefs = ({
               );
         });
   };
-  console.log("GUESSED: ", guessed);
+
   return !guessed ? (
-    <View style={styles.container}>
-      <Text style={styles.timerText}>Time: {countdown}</Text>
+    <Modal
+      visible={true}
+      animationType="slide"
+      transparent={true}
+      //   onRequestClose={() => setShowTempScoreCard(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.container}>
+          <Text style={styles.timerText}>Time: {countdown}</Text>
 
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text>Guess the Definition</Text>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <Text>Guess the Definition</Text>
 
-        {combinedDefs.map((definition, index) => (
-          <CardFront
-            key={index}
-            definition={definition.definition}
-            word={word}
-            guessDefs={true}
-            handleChooseDef={handleChooseDef}
-            guessedDef={definition}
-          />
-        ))}
-      </ScrollView>
-    </View>
+            {combinedDefs.map((definition, index) => (
+              <CardFront
+                key={index}
+                definition={definition.definition}
+                word={word}
+                guessDefs={true}
+                handleChooseDef={handleChooseDef}
+                guessedDef={definition}
+              />
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
   ) : (
     <CardBack title={{ first: "Balder", second: "Dash" }} />
   );
 
-  //   return (
-
-  //    {guessed ?  (<View style={styles.container}>
-
-  //       <Text style={styles.timerText}>Time: {countdown}</Text>
-
-  //       <ScrollView contentContainerStyle={styles.scrollContainer}>
-  //         <Text>Guess the Definition</Text>
-
-  //         {combinedDefs.map((definition, index) => (
-  //           <CardFront
-  //             key={index}
-  //             definition={definition.definition}
-  //             word={word}
-  //             guessDefs={true}
-  //             handleChooseDef={handleChooseDef}
-  //             guessedDef={definition}
-  //           />
-  //         ))}
-  //       </ScrollView>
-  //     </View>)
-  //     :<View style={styles.container}>
-
-  //       <Text style={styles.timerText}> you guesses</Text>
-
-  //     </View>
-  //    }
-  //   );
 };
 
 const styles = StyleSheet.create({
@@ -419,6 +400,12 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: 10,
     alignItems: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
   },
 });
 
