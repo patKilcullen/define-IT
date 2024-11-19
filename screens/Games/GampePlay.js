@@ -228,7 +228,7 @@ const GamePlay = ({
       }, 1000);
     }
   }, [timer, countdown]);
-console.log("PLAYGAME: ", user.displayName, playGame)
+
   return (
     <View style={styles.container}>
       <ScrollView>

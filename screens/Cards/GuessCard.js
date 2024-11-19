@@ -85,7 +85,7 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
     setSeeInput(false);
     setPlayerDef("");
   };
-  console.log("GUESS WORD: ", word)
+ 
   return (
     // <Animated.View style={[styles.container, animatedStyle]}>
     <Modal

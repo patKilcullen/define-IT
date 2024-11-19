@@ -239,6 +239,9 @@ const GuessDefs = ({
   const handleChooseDef = (def) => {
     setGuessed(true);
     let message;
+    if(def.type === "none"){
+      message = `${user.displayName} forgot to answer!`;   
+    }
 
     if (def.type === "fake") {
       message = `${user.displayName} guessed the WRONG answer!`;
@@ -297,7 +300,18 @@ const GuessDefs = ({
     const timer = setTimeout(() => {
       if (countdown > 0) {
         setCountdown(countdown - 1);
-      } else if (countdown === 0) {
+
+      if (countdown === 1) {
+if (!guessed) {
+  handleChooseDef({ type: "none" });
+}
+
+
+
+      }
+
+      }  else if (countdown === 0) {
+        
         setPlayGame(false);
         handleChangeGameTurn();
         reloadScores();
