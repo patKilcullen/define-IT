@@ -56,6 +56,7 @@ const GamePlay = ({
   const [flipSide, setFlipSide] = useState("back");
   const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
+   const [seeInput, setSeeInput] = useState(true);
 
   useEffect(()=>{
    dispatch(clearWordState()); 
@@ -213,8 +214,17 @@ const GamePlay = ({
           play: true,
         });
         if (countdown > 0) {
+            console.log("THIS COUNT: ", countdown)
           setDefInput(true);
           setCountdown((countdown) => countdown - 1);
+
+// if(countdown === 3){
+//      console.log("2 COUNT: ", countdown);
+// setDefInput(false);
+// setSeeInput(false)
+// }
+
+
         } else if (countdown === 0) {
           set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
             playerTurnId: userId,
@@ -228,6 +238,8 @@ const GamePlay = ({
       }, 1000);
     }
   }, [timer, countdown]);
+
+
 
   return (
     <View style={styles.container}>
@@ -260,6 +272,8 @@ const GamePlay = ({
                   flip={flip}
                   userId={userId}
                   gameName={game.name}
+                  seeInput={seeInput}
+                  setSeeInput={setSeeInput}
                 />
               ) : null}
               {game && userScore && game.turn === userScore.turnNum ? (

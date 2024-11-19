@@ -255,7 +255,7 @@ const TempScoreCard = ({
   showTiedGame,
 }) => {
       const { user } = useContext(UserContext);
-  const [countdown, setCountdown] = useState(7);
+  const [countdown, setCountdown] = useState(1);
   const [showChallengeButton, setShowChallengeButton] = useState(true);
   const [pause, setPause] = useState(false);
   const [aiResponse, setAiResponse] = useState("");

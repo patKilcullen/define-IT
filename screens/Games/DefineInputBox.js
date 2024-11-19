@@ -52,7 +52,7 @@ const DefInputBox = ({
     setPlayerDef("");
     // showBackOfCard("back");
   };
-
+console.log("DSFSDFSDFSDFSDFSDFSDFSDFSDF")
   return (
     <View style={styles.container}>
       {seeInput && (

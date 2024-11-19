@@ -207,7 +207,6 @@ const GuessDefs = ({
   setTimer,
   setChoseWord,
   setGamePlayCountdown,
-
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
@@ -216,7 +215,7 @@ const GuessDefs = ({
   const [combinedDefs, setCombinedDefs] = useState([]);
   const [defList, setDefList] = useState(false);
   const [guessed, setGuessed] = useState(false);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(2);
 
   const dispatch = useDispatch();
 
@@ -233,17 +232,16 @@ const GuessDefs = ({
     definitions.splice(randomIndex, 0, realDef);
     setCombinedDefs(definitions);
   }, [fakeDefs, realDef]);
- 
 
   // Handle the selection of a definition by the user
   const handleChooseDef = (def) => {
     setGuessed(true);
     let message;
-    if(def.type === "none"){
-      message = `${user.displayName} forgot to answer!`;   
+    if (def.type === "none") {
+      message = `${user.displayName} forgot to answer!`;
     }
 
-    if (def.type === "fake") {
+   else if (def.type === "fake") {
       message = `${user.displayName} guessed the WRONG answer!`;
     } else if (def.type === "real") {
       message = `${user.displayName} guessed the CORRECT answer and gets 1 point!`;
@@ -299,19 +297,15 @@ const GuessDefs = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       if (countdown > 0) {
+           
         setCountdown(countdown - 1);
 
-      if (countdown === 1) {
-if (!guessed) {
-  handleChooseDef({ type: "none" });
-}
-
-
-
-      }
-
-      }  else if (countdown === 0) {
-        
+        if (countdown === 1) {
+          if (!guessed) {
+            handleChooseDef({ type: "none" });
+          }
+        }
+      } else if (countdown === 0) {
         setPlayGame(false);
         handleChangeGameTurn();
         reloadScores();
@@ -330,8 +324,6 @@ if (!guessed) {
   }, [countdown]);
 
   const handleChangeGameTurn = () => {
-
-
     game.roundsLeft !== 1
       ? game.turn === 1
         ? dispatch(
@@ -398,7 +390,6 @@ if (!guessed) {
   ) : (
     <CardBack title={{ first: "Balder", second: "Dash" }} />
   );
-
 };
 
 const styles = StyleSheet.create({

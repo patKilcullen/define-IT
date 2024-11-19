@@ -308,7 +308,9 @@ const ScoreCard = ({
 
 
 
-
+// console.log("GAME: ", game.ownerId)
+// // console.log("USER: ", user)
+// console.log("SCORE: ", userScore.turn, user.displayName);
   return (
     <View style={styles.container}>
       {/* Game Name */}
@@ -364,14 +366,16 @@ const ScoreCard = ({
                   {user.score === 1 ? "pt" : "pts"}
                 </Text>
 
-                {user.id !== userScore?.id && !game.started && (
-                  <Buttons
-                    name={"Remove Player"}
-                    //   func={() => user?.user?.id}
-                    func={() => handleRemovePlayer(user.id)}
-                    small={true}
-                  />
-                )}
+                {user.id !== userScore?.id &&
+                  !game.started &&
+                  userScore?.turn &&(
+                    <Buttons
+                      name={"Remove Player"}
+                      //   func={() => user?.user?.id}
+                      func={() => handleRemovePlayer(user.id)}
+                      small={true}
+                    />
+                  )}
               </View>
             ))}
       </ScrollView>

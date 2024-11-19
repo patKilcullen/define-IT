@@ -15,17 +15,17 @@ import { addPlayerFakeDef } from "../../redux/gameplay";
 import { ref, set } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
-const GuessCard = ({ word, flip, gameName, userId }) => {
-  const [seeInput, setSeeInput] = useState(true);
+const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput }) => {
+
 
   const [playerDef, setPlayerDef] = useState("");
 
   const inputRef = useRef();
 
   // Set focus on input box
-//   useEffect(() => {
-//     inputRef.current.focus();
-//   }, []);
+  //   useEffect(() => {
+  //     inputRef.current.focus();
+  //   }, []);
 
   const dispatch = useDispatch();
 
@@ -34,43 +34,43 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
   const cardWidth = width * 0.9;
   const textFontSize = width * 0.15;
 
-  const [flipAnimation] = useState(new Animated.Value(0));
-  // const flipAnimation = useRef(new Animated.Value(0).current);
-  const [isFlipped, setIsFlipped] = useState(false);
+//   const [flipAnimation] = useState(new Animated.Value(0));
+//   // const flipAnimation = useRef(new Animated.Value(0).current);
+//   const [isFlipped, setIsFlipped] = useState(false);
 
-  const handleFlip = () => {
-    if (!isFlipped) {
-      Animated.timing(flipAnimation, {
-        toValue: 180,
-        duration: 800,
-        useNativeDriver: true, // Set to false for unsupported properties
-      }).start(() => {
-        setIsFlipped(true);
-      });
-    } else {
-      Animated.timing(flipAnimation, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: true, // Set to false for unsupported properties
-      }).start(() => {
-        setIsFlipped(false);
-      });
-    }
-  };
-  const frontInterpolate = flipAnimation.interpolate({
-    inputRange: [0, 180],
-    outputRange: ["0deg", "180deg"],
-  });
+//   const handleFlip = () => {
+//     if (!isFlipped) {
+//       Animated.timing(flipAnimation, {
+//         toValue: 180,
+//         duration: 800,
+//         useNativeDriver: true, // Set to false for unsupported properties
+//       }).start(() => {
+//         setIsFlipped(true);
+//       });
+//     } else {
+//       Animated.timing(flipAnimation, {
+//         toValue: 0,
+//         duration: 800,
+//         useNativeDriver: true, // Set to false for unsupported properties
+//       }).start(() => {
+//         setIsFlipped(false);
+//       });
+//     }
+//   };
+//   const frontInterpolate = flipAnimation.interpolate({
+//     inputRange: [0, 180],
+//     outputRange: ["0deg", "180deg"],
+//   });
 
-  const animatedStyle = {
-    transform: [{ rotateY: frontInterpolate }],
-  };
+//   const animatedStyle = {
+//     transform: [{ rotateY: frontInterpolate }],
+//   };
 
-  useEffect(() => {
-    if (flip) {
-      handleFlip();
-    }
-  }, [flip]);
+//   useEffect(() => {
+//     if (flip) {
+//       handleFlip();
+//     }
+//   }, [flip]);
 
   // Sends player's fake definition to the player whose turn it is via a socket
   const handleEnterFakeDef = (e) => {
@@ -85,7 +85,7 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
     setSeeInput(false);
     setPlayerDef("");
   };
- 
+console.log("SEINOUT", seeInput )
   return (
     // <Animated.View style={[styles.container, animatedStyle]}>
     <Modal

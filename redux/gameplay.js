@@ -137,7 +137,7 @@ const gamePlaySlice = createSlice({
       state.word = action.payload;
     },
     addTempScoreCardMessage(state, action) {
-      console.log("addTempScoreCardMessage: ", action.payload);
+    
       if (!state.tempScoreCard.includes(action.payload)) {
         state.tempScoreCard.push(action.payload);
       } else {
