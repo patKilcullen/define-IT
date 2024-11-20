@@ -57,7 +57,7 @@ const GamePlay = ({
   const [flipSide, setFlipSide] = useState("back");
   const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
-
+  const [closeGetWord, setCloseGetWord] = useState(false);
 
   useEffect(()=>{
    dispatch(clearWordState()); 
@@ -91,6 +91,7 @@ const GamePlay = ({
     setWord(newWord?.word);
     setDefinition(newWord.definition);
     dispatch(addDefinition({ type: "real", definition: newWord.definition }));
+    
   };
 
   // Fetch fake definitions from API and store them in Firebase
@@ -123,6 +124,7 @@ const GamePlay = ({
       playerTurnName: user.displayName,
       play: true,
     });
+    setCloseGetWord(true)
   };
 
   // Firebase listeners for various game data
@@ -241,6 +243,7 @@ const GamePlay = ({
           });
           setPlayGame(true);
           setDefInput(false);
+           setCloseGetWord(false);
         } else {
           setDefInput(false);
         }
@@ -261,9 +264,10 @@ const GamePlay = ({
             </Text>
 
             {/* Button to get a word if it's the player's turn */}
-            {game && userScore && game.turn === userScore.turnNum ? (
+            {game && !closeGetWord && userScore && game.turn === userScore.turnNum ? (
               <Buttons
-                name={!word ? "Get Word" : "Get Another Word"}
+                // name={!word ? "Get Word" : "Get Another Word"}
+                name={"Get Word"}
                 func={handleGetWord}
                 pulse={!word || !word.length ? "pulse" : null}
               />
@@ -285,13 +289,18 @@ const GamePlay = ({
                   setSeeInput={setSeeInput}
                 />
               ) : null}
-              {word && game && userScore && game.turn === userScore.turnNum ? (
+              {word &&
+              !closeGetWord &&
+              game &&
+              userScore &&
+              game.turn === userScore.turnNum ? (
                 <CardFront
                   word={word}
                   definition={definition}
                   getAWord={
                     <Buttons
-                      name={!word ? "Get Word" : "Get Another Word"}
+                      // name={!word ? "Get Word" : "Get Another Word"}
+                      name={"Get Word"}
                       func={handleGetWord}
                       pulse={!word || !word.length ? "pulse" : null}
                     />
@@ -300,6 +309,14 @@ const GamePlay = ({
                 />
               ) : null}
               {!word && (
+                <View style={styles.backCard}>
+                  <CardBack
+                    title={{ first: "Balder", second: "Dash" }}
+                    flip={flip}
+                  />
+                </View>
+              )}
+              {closeGetWord && (
                 <View style={styles.backCard}>
                   <CardBack
                     title={{ first: "Balder", second: "Dash" }}

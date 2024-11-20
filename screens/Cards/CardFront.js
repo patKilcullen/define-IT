@@ -22,7 +22,8 @@ const CardFront = ({
 }) => {
   const { width, height } = Dimensions.get("window");
 // const cardHeight = height * .9;
- const cardHeight = width * 1.5;
+//  const cardHeight = width * 1.5;
+ const cardHeight = height * .9;
   const cardWidth = width * .9 ;
   console.log("CARd FRONT");
   return (
