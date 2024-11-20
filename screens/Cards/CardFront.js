@@ -23,7 +23,7 @@ const CardFront = ({
   const { width, height } = Dimensions.get("window");
 // const cardHeight = height * .9;
  const cardHeight = width * 1.5;
-  const cardWidth = width  ;
+  const cardWidth = width * .9 ;
   console.log("CARd FRONT");
   return (
     <Modal
@@ -35,7 +35,7 @@ const CardFront = ({
       <View
         style={{
           ...styles.modalContainer,
-          width: cardWidth,
+          width: width,
           height: cardHeight,
         }}
       >

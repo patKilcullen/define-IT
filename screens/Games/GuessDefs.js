@@ -186,10 +186,13 @@ import { editGameTurn, selectSingleGame } from "../../redux/singleGame";
 // Contexts
 import { UserContext } from "../../UserContext";
 
+
+
 // Components
 import TempScoreCard from "../../screens/scores/TempScoreCard";
 const CardFront = React.lazy(() => import("../Cards/CardFront.js"));
 const CardBack = React.lazy(() => import("../Cards/CardBack.js"));
+const DefsCard = React.lazy(() => import("../Cards/DefsCard.js"));
 // Firebase Configuration
 import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
@@ -375,7 +378,7 @@ const GuessDefs = ({
             <Text>Guess the Definition</Text>
 
             {combinedDefs.map((definition, index) => (
-              <CardFront
+              <DefsCard
                 key={index}
                 definition={definition.definition}
                 word={word}
