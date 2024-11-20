@@ -56,7 +56,7 @@ const GamePlay = ({
   const [flipSide, setFlipSide] = useState("back");
   const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
-   const [seeInput, setSeeInput] = useState(true);
+
 
   useEffect(()=>{
    dispatch(clearWordState()); 
@@ -153,16 +153,26 @@ const GamePlay = ({
     // Listener for countdown timer
     const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
       const data = snapshot.val();
-
+  console.log("THOP: ", username, data?.countdown);
       if (data && userId !== data.playerTurnId) {
+         console.log("THIS COUNT: ", data?.countdown, username, seeInput);
         if (data.countdown > 0) {
           setCountdown(data.countdown);
+          if(data.countdown === 1){
+              console.log("ONE: ", data?.countdown, username);
+              setSeeInput(false)
+          }
         }
         if (data.countdown === 0) {
+                console.log("count 0: ", data?.countdown, username);
           setCountdown(0);
           setDefInput(false);
+
+         
           if (data.play === true) {
+             console.log("data play trueee: ", data?.countdown, username);
             setPlayGame(true);
+            //   setSeeInput(true);
           }
         }
       }
@@ -204,28 +214,26 @@ const GamePlay = ({
     setTimer,
   ]);
 
+
+  const [seeInput, setSeeInput] = useState(true);
   // Timer countdown effect for gameplay
   useEffect(() => {
     if (timer) {
       setTimeout(() => {
+  
         set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
           countdown,
           playerTurnId: userId,
           play: true,
         });
         if (countdown > 0) {
-            console.log("THIS COUNT: ", countdown)
+         
           setDefInput(true);
           setCountdown((countdown) => countdown - 1);
 
-// if(countdown === 3){
-//      console.log("2 COUNT: ", countdown);
-// setDefInput(false);
-// setSeeInput(false)
-// }
-
 
         } else if (countdown === 0) {
+     
           set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
             playerTurnId: userId,
             play: false,
@@ -239,7 +247,29 @@ const GamePlay = ({
     }
   }, [timer, countdown]);
 
+// useEffect(() => {
+//   if (timer && countdown > 0) {
+//     const interval = setInterval(() => {
+//       setCountdown((prevCountdown) => {
+//         if (prevCountdown > 1) {
+//           return prevCountdown - 1;
+//         } else {
+//           clearInterval(interval); // Stop interval when reaching 0
+//           console.log("HERRR DUDE: ", username);
+//           set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
+//             playerTurnId: userId,
+//             play: false,
+//           });
+//           setPlayGame(true);
+//           setDefInput(false);
+//           return 0; // Ensure countdown is exactly 0
+//         }
+//       });
+//     }, 1000);
 
+//     return () => clearInterval(interval); // Cleanup interval
+//   }
+// }, [timer, countdown]);
 
   return (
     <View style={styles.container}>
@@ -323,6 +353,7 @@ const GamePlay = ({
                   setTimer={setTimer}
                   setChoseWord={setChoseWord}
                   setGamePlayCountdown={setCountdown}
+                  setSeeInput={setSeeInput}
                 />
               </View>
             </View>

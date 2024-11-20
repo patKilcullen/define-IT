@@ -72,6 +72,7 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput }) => {
 //     }
 //   }, [flip]);
 
+
   // Sends player's fake definition to the player whose turn it is via a socket
   const handleEnterFakeDef = (e) => {
     e.preventDefault();
@@ -85,7 +86,9 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput }) => {
     setSeeInput(false);
     setPlayerDef("");
   };
-console.log("SEINOUT", seeInput )
+
+
+   
   return (
     // <Animated.View style={[styles.container, animatedStyle]}>
     <Modal
@@ -94,6 +97,7 @@ console.log("SEINOUT", seeInput )
       transparent={true}
       onRequestClose={() => setShowTempScoreCard(false)}
     >
+   
       <View style={styles.modalContainer}>
         <Animated.View style={styles.container}>
           <View style={styles.cardsContainer}>

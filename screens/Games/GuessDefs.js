@@ -207,6 +207,7 @@ const GuessDefs = ({
   setTimer,
   setChoseWord,
   setGamePlayCountdown,
+  setSeeInput,
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
@@ -215,7 +216,7 @@ const GuessDefs = ({
   const [combinedDefs, setCombinedDefs] = useState([]);
   const [defList, setDefList] = useState(false);
   const [guessed, setGuessed] = useState(false);
-  const [countdown, setCountdown] = useState(2);
+  const [countdown, setCountdown] = useState(5);
 
   const dispatch = useDispatch();
 
@@ -239,9 +240,7 @@ const GuessDefs = ({
     let message;
     if (def.type === "none") {
       message = `${user.displayName} forgot to answer!`;
-    }
-
-   else if (def.type === "fake") {
+    } else if (def.type === "fake") {
       message = `${user.displayName} guessed the WRONG answer!`;
     } else if (def.type === "real") {
       message = `${user.displayName} guessed the CORRECT answer and gets 1 point!`;
@@ -297,12 +296,13 @@ const GuessDefs = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       if (countdown > 0) {
-           
         setCountdown(countdown - 1);
 
         if (countdown === 1) {
+            setSeeInput(true);
           if (!guessed) {
             handleChooseDef({ type: "none" });
+                   
           }
         }
       } else if (countdown === 0) {
@@ -316,6 +316,7 @@ const GuessDefs = ({
         setTimer(false);
         dispatch(clearFakeWords());
         setGamePlayCountdown(5);
+        setSeeInput(true)
       }
     }, 1000);
 
