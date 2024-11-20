@@ -236,6 +236,10 @@ import { fetchSingleGame } from "../../redux/singleGame.js";
 import { selectMe } from "../../redux/auth.js";
 import { add3Points, subtract3Points } from "../../redux/scores.js";
 import Buttons from "../../Buttons.js";
+import { UserContext } from "../../UserContext";
+import { ref, set, onValue } from "firebase/database";
+// import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
+import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
 const TempScoreCard = ({
   reloadScores,
@@ -250,7 +254,8 @@ const TempScoreCard = ({
   tempScoreCard,
   showTiedGame,
 }) => {
-  const [countdown, setCountdown] = useState(7);
+      const { user } = useContext(UserContext);
+  const [countdown, setCountdown] = useState(1);
   const [showChallengeButton, setShowChallengeButton] = useState(true);
   const [pause, setPause] = useState(false);
   const [aiResponse, setAiResponse] = useState("");
@@ -269,7 +274,15 @@ const TempScoreCard = ({
         dispatch(clearTempScoreCardMessages());
         setShowTempScoreCard(false);
         dispatch(fetchSingleGame(game.id));
+  set(ref(RealTimeDB, `games/${gameName}/word`), {
+    word: "",
+    definition: "",
+    room: game.name,
+    playerTurnName: user.displayName,
+    play: true,
+  });
 
+        
       }
     }, 1000);
 

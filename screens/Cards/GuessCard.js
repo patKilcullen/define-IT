@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   Animated,
+  Modal
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
@@ -14,17 +15,17 @@ import { addPlayerFakeDef } from "../../redux/gameplay";
 import { ref, set } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 
-const GuessCard = ({ word, flip, gameName, userId }) => {
-  const [seeInput, setSeeInput] = useState(true);
+const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput }) => {
+
 
   const [playerDef, setPlayerDef] = useState("");
 
   const inputRef = useRef();
 
   // Set focus on input box
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+  //   useEffect(() => {
+  //     inputRef.current.focus();
+  //   }, []);
 
   const dispatch = useDispatch();
 
@@ -33,43 +34,44 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
   const cardWidth = width * 0.9;
   const textFontSize = width * 0.15;
 
-  const [flipAnimation] = useState(new Animated.Value(0));
-  // const flipAnimation = useRef(new Animated.Value(0).current);
-  const [isFlipped, setIsFlipped] = useState(false);
+//   const [flipAnimation] = useState(new Animated.Value(0));
+//   // const flipAnimation = useRef(new Animated.Value(0).current);
+//   const [isFlipped, setIsFlipped] = useState(false);
 
-  const handleFlip = () => {
-    if (!isFlipped) {
-      Animated.timing(flipAnimation, {
-        toValue: 180,
-        duration: 800,
-        useNativeDriver: true, // Set to false for unsupported properties
-      }).start(() => {
-        setIsFlipped(true);
-      });
-    } else {
-      Animated.timing(flipAnimation, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: true, // Set to false for unsupported properties
-      }).start(() => {
-        setIsFlipped(false);
-      });
-    }
-  };
-  const frontInterpolate = flipAnimation.interpolate({
-    inputRange: [0, 180],
-    outputRange: ["0deg", "180deg"],
-  });
+//   const handleFlip = () => {
+//     if (!isFlipped) {
+//       Animated.timing(flipAnimation, {
+//         toValue: 180,
+//         duration: 800,
+//         useNativeDriver: true, // Set to false for unsupported properties
+//       }).start(() => {
+//         setIsFlipped(true);
+//       });
+//     } else {
+//       Animated.timing(flipAnimation, {
+//         toValue: 0,
+//         duration: 800,
+//         useNativeDriver: true, // Set to false for unsupported properties
+//       }).start(() => {
+//         setIsFlipped(false);
+//       });
+//     }
+//   };
+//   const frontInterpolate = flipAnimation.interpolate({
+//     inputRange: [0, 180],
+//     outputRange: ["0deg", "180deg"],
+//   });
 
-  const animatedStyle = {
-    transform: [{ rotateY: frontInterpolate }],
-  };
+//   const animatedStyle = {
+//     transform: [{ rotateY: frontInterpolate }],
+//   };
 
-  useEffect(() => {
-    if (flip) {
-      handleFlip();
-    }
-  }, [flip]);
+//   useEffect(() => {
+//     if (flip) {
+//       handleFlip();
+//     }
+//   }, [flip]);
+
 
   // Sends player's fake definition to the player whose turn it is via a socket
   const handleEnterFakeDef = (e) => {
@@ -84,48 +86,67 @@ const GuessCard = ({ word, flip, gameName, userId }) => {
     setSeeInput(false);
     setPlayerDef("");
   };
+
+
+   
   return (
     // <Animated.View style={[styles.container, animatedStyle]}>
-    <Animated.View style={styles.container}>
-      <View style={styles.cardsContainer}>
-        <LinearGradient
-          colors={["#88ebe6", "#283330"]}
-          style={[styles.card, { height: cardHeight, width: cardWidth }]}
-        >
-          <View style={styles.innerCard}>
-            <View style={styles.topPortion}>
-              <Text style={styles.topText}>{word}</Text>
-            </View>
-            <View style={styles.bottomPortion}>
-              {seeInput && (
-                <View>
-                  <TextInput
-                    style={[styles.textInput, { textAlignVertical: "top" }]}
-                    placeholder="Enter your definition"
-                    multiline={true}
-                    numberOfLines={4}
-                    value={playerDef}
-                    onChangeText={(text) => setPlayerDef(text)}
-                    ref={inputRef}
-                  />
-
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleEnterFakeDef}
-                  >
-                    <Text>Submit</Text>
-                  </TouchableOpacity>
+    <Modal
+      visible={word !== "" && seeInput}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => setShowTempScoreCard(false)}
+    >
+   
+      <View style={styles.modalContainer}>
+        <Animated.View style={styles.container}>
+          <View style={styles.cardsContainer}>
+            <LinearGradient
+              colors={["#88ebe6", "#283330"]}
+              style={[styles.card, { height: cardHeight, width: cardWidth }]}
+            >
+              <View style={styles.innerCard}>
+                <View style={styles.topPortion}>
+                  <Text style={styles.topText}>{word}</Text>
                 </View>
-              )}
-            </View>
+                <View style={styles.bottomPortion}>
+                  {seeInput && (
+                    <View>
+                      <TextInput
+                        style={[styles.textInput, { textAlignVertical: "top" }]}
+                        placeholder="Enter your definition"
+                        multiline={true}
+                        numberOfLines={4}
+                        value={playerDef}
+                        onChangeText={(text) => setPlayerDef(text)}
+                        ref={inputRef}
+                      />
+
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleEnterFakeDef}
+                      >
+                        <Text>Submit</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              </View>
+            </LinearGradient>
           </View>
-        </LinearGradient>
+        </Animated.View>
       </View>
-    </Animated.View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+  },
   topPortion: {
     height: "40%",
     width: "100%",

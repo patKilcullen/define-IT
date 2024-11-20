@@ -207,6 +207,8 @@ import {
   StyleSheet,
   Dimensions,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -275,37 +277,44 @@ const CreateGame = () => {
           colors={["#88ebe6", "#283330"]}
           style={[styles.card, { height: cardHeight, width: cardWidth }]}
         >
-          <View style={styles.innerCard}>
-            <Text style={[styles.title, { fontFamily: "CustomFont" }]}>
-              Create a New Game
-            </Text>
-            <KeyboardAvoidingView style={styles.form}>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Game Name"
-                value={gameName}
-                onChangeText={setGameName}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Number of Rounds"
-                value={rounds.toString()}
-                onChangeText={(text) => setRounds(parseInt(text) || 1)}
-                keyboardType="numeric"
-              />
-              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.innerCard}>
+              <Text style={[styles.title, { fontFamily: "CustomFont" }]}>
+                Create a New Game
+              </Text>
+              <KeyboardAvoidingView style={styles.form}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter Game Name"
+                  value={gameName}
+                  onChangeText={setGameName}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Number of Rounds"
+                  value={rounds.toString()}
+                  onChangeText={(text) => {
+                    if(text === ""){
+                        setRounds("")
+                    }else{
+                    setRounds(parseInt(text) || 0)}}
+                  }
+                  keyboardType="numeric"
+                />
+                {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-             {/* CREATE GAME BUTTON */}
-              <TouchableOpacity onPress={handleCreateGame}>
-                <LinearGradient
-                  colors={["#88ebe6", "#283330"]}
-                  style={styles.buttonGradient}
-                >
-                  <Text style={styles.buttonText}>Create Game</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </KeyboardAvoidingView>
-          </View>
+                {/* CREATE GAME BUTTON */}
+                <TouchableOpacity onPress={handleCreateGame}>
+                  <LinearGradient
+                    colors={["#88ebe6", "#283330"]}
+                    style={styles.buttonGradient}
+                  >
+                    <Text style={styles.buttonText}>Create Game</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </KeyboardAvoidingView>
+            </View>
+          </TouchableWithoutFeedback>
         </LinearGradient>
       </View>
     </View>

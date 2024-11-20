@@ -9,9 +9,11 @@ import {
   getDocs,
   updateDoc,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 
-import { ref, get, orderByChild, equalTo, update } from "firebase/database";
+import { ref, get, set, orderByChild, equalTo, update, remove, } from "firebase/database";
+
 
 const api = axios?.create({
   baseURL: "http://localhost:8080",
@@ -76,6 +78,7 @@ export const getUserScore = createAsyncThunk(
 export const fetchPlayerRequests = createAsyncThunk(
   "fetchPlayerRequests",
   async (gameId, { rejectWithValue }) => {
+  
     try {
       const joinRequestsRef = ref(RealTimeDB, `games/${gameId}/join_requests`);
       const snapshot = await get(joinRequestsRef);
@@ -88,7 +91,137 @@ export const fetchPlayerRequests = createAsyncThunk(
     }
   }
 );
+// FETCH PLAYER REQUESTS
+export const deletePlayerRequestsOLD = createAsyncThunk(
+  "fetchPlayerRequests",
+  async ({gameId, requestId}, { rejectWithValue }) => {
+  
+    try {
+      const joinRequestsRef = ref(
+        RealTimeDB,
+        `games/${gameId}/join_requests/${requestId}`
+      );
+      await remove(joinRequestsRef);
+    //   const snapshot = await get(joinRequestsRef);
+    //   const requests = snapshot.val();
 
+      return requestsId
+    } catch (error) {
+      console.error("Error fetching player requests: ", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// ACCEPT REQUEST TO JOIN
+// export const deletePlayerRequests = async ({ game, scoreId }) => {
+//   try {
+//     const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
+
+//     // Query the requests where scoreId matches
+//     const queryRef = query(joinRequestsRef, orderByChild("scoreId"));
+
+//     const snapshot = await get(queryRef);
+
+//     if (snapshot.exists()) {
+//       const requests = snapshot.val();
+
+//       const matchingRequestKey = Object.keys(requests).find(
+//         (key) => requests[key].scoreId === scoreId
+//       );
+
+//       if (matchingRequestKey) {
+//         const requestRef = ref(
+//           RealTimeDB,
+//           `games/${game.id}/join_requests/${matchingRequestKey}`
+//         );
+
+//         await remove(requestRef);
+
+//         console.log("Join request successfully removed.");
+//       } else {
+//         console.error("No matching request found for scoreId:", scoreId);
+//       }
+//     } else {
+//       console.error("No join requests found for the game.");
+//     }
+//   } catch (error) {
+//     console.error("Error removing join request by scoreId:", error);
+//   }
+// };
+export const deletePlayerRequests = createAsyncThunk(
+  "playerRequests/deletePlayerRequests",
+  async ({ game, scoreId }, { rejectWithValue }) => {
+    try {
+      const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
+      const queryRef = query(joinRequestsRef, orderByChild("scoreId"));
+      const snapshot = await get(queryRef);
+
+      if (snapshot.exists()) {
+        const requests = snapshot.val();
+        const matchingRequestKey = Object.keys(requests).find(
+          (key) => requests[key].scoreId === scoreId
+        );
+
+        if (matchingRequestKey) {
+          const requestRef = ref(
+            RealTimeDB,
+            `games/${game.id}/join_requests/${matchingRequestKey}`
+          );
+
+          await remove(requestRef);
+          console.log("Join request successfully removed.");
+          return matchingRequestKey; // Optionally return the deleted key
+        } else {
+          console.error("No matching request found for scoreId:", scoreId);
+          return rejectWithValue("No matching request found.");
+        }
+      } else {
+        console.error("No join requests found for the game.");
+        return rejectWithValue("No join requests found.");
+      }
+    } catch (error) {
+      console.error("Error removing join request by scoreId:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+
+
+// export const getInfo = ({ game, user }) => {
+//   const gameStartRef = ref(RealTimeDB, `games/${game.id}/get_info`);
+
+//   set(gameStartRef, {
+//     room: game.name,
+//     userName: user.displayName,
+//   })
+//     .then(() => {
+//       console.log("Get Info event successfully sent to Firebase.");
+//     })
+//     .catch((error) => {
+//       console.error("Error sending Get Info event to Firebase:", error);
+//     });
+// };
+
+
+export const getInfo = ({ game, user }) => {
+  const gameStartRef = ref(RealTimeDB, `games/${game.id}/get_info`);
+
+  return set(gameStartRef, {
+    room: game.name,
+    userName: user.displayName,
+  })
+    .then(() => {
+      console.log("Get Info event successfully sent to Firebase.");
+    })
+    .catch((error) => {
+      console.error("Error sending Get Info event to Firebase:", error);
+      throw error; // Ensure errors propagate to the caller
+    });
+};
+    
 // ACCEPT REQUEST TO JOIN
 export const acceptJoinRequestByScoreId = async ({ game, scoreId }) => {
   try {
@@ -269,7 +402,7 @@ export const subtract3Points = createAsyncThunk(
 );
 
 // DELETE SCORE - for now used only when game owner denies request
-export const deleteScore = createAsyncThunk("deleteScore", async (score) => {
+export const deleteScoreOLD = createAsyncThunk("deleteScore", async (score) => {
   try {
     await api.delete(`/api/scores/${score.gameId}/${score.userId}`);
     return { gameId: score.gameId, userId: score.userId };
@@ -278,6 +411,30 @@ export const deleteScore = createAsyncThunk("deleteScore", async (score) => {
   }
 });
 
+// DELETE SCORE
+export const deleteScore = createAsyncThunk(
+  "createScore",
+  async (id) => {
+    try {
+            const scoreDoc = doc(FireBaseDB, "scores", id);
+
+              await deleteDoc(scoreDoc);
+    //   const scoreDocRef = collection(FireBaseDB, "scores");
+    //   // Query to find the document with matching gameId and userId
+    //   const q = query(
+    //     scoreDocRef,
+    //     where("id", "==", id),
+    //   );
+
+    //   const querySnapshot = await getDocs(q);
+
+
+    
+    } catch (error) {
+      console.log("ERROR IN CREAT Score THUNK: ", error);
+    }
+  }
+);
 const allScoresSlice = createSlice({
   name: "allScores",
   initialState: {

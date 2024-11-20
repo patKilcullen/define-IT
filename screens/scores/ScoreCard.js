@@ -22,7 +22,6 @@
 // }) => {
 //   const scores = useSelector(selectAllScores);
 
-
 //   console.log(
 //     "game.ownerId !== userId && !game.started && userScore === undefined : ",
 //     game.ownerId, userId, !game.started, userScore === undefined
@@ -156,9 +155,6 @@
 //   );
 // };
 
-
-
-
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
@@ -254,17 +250,10 @@
 
 // export default ScoreCard;
 
-
-
-import React, {useEffect} from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import React, { useEffect, useContext } from "react";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-
+import { UserContext } from "../../UserContext";
 import Buttons from "../../Buttons";
 
 // STORE
@@ -272,11 +261,12 @@ import {
   selectAllScores,
   fetchAllGameScores,
   fetchPlayerRequests,
-  selectPlayerRequests
+  selectPlayerRequests,
+  deletePlayerRequests,
 } from "../../redux/scores";
 
- import { RealTimeDB } from "../../Firebase/FirebaseConfig";
- import { ref, push, onValue, set, off } from "firebase/database";
+import { RealTimeDB } from "../../Firebase/FirebaseConfig";
+import { ref, push, onValue, set, off } from "firebase/database";
 
 const ScoreCard = ({
   userId,
@@ -287,7 +277,9 @@ const ScoreCard = ({
   handleDeclineRequest,
   handleAcceptRequest,
   playerTurnName,
+  handleRemovePlayer,
 }) => {
+       const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
   const playerRequests = useSelector(selectPlayerRequests);
@@ -314,6 +306,11 @@ const ScoreCard = ({
     };
   }, [game.name, game.id, dispatch]);
 
+
+
+// console.log("GAME: ", game.ownerId)
+// // console.log("USER: ", user)
+// console.log("SCORE: ", userScore.turn, user.displayName);
   return (
     <View style={styles.container}>
       {/* Game Name */}
@@ -368,12 +365,14 @@ const ScoreCard = ({
                 <Text style={styles.points}>
                   {user.score === 1 ? "pt" : "pts"}
                 </Text>
-                {user?.user?.id !== userId &&
-                  userId === game.ownerId &&
-                  !game.started && (
+
+                {user.id !== userScore?.id &&
+                  !game.started &&
+                  userScore?.turn &&(
                     <Buttons
                       name={"Remove Player"}
-                      func={() => handleDeclineRequest(user?.user?.id)}
+                      //   func={() => user?.user?.id}
+                      func={() => handleRemovePlayer(user.id)}
                       small={true}
                     />
                   )}
@@ -412,7 +411,7 @@ const ScoreCard = ({
                   />
                   <Buttons
                     name={"Decline"}
-                    func={() => handleDeclineRequest(request.userId)}
+                    func={() => handleDeclineRequest(request.scoreId)}
                     small={true}
                   />
                 </View>
@@ -450,9 +449,6 @@ const ScoreCard = ({
     </View>
   );
 };
-
-
-
 
 const styles = StyleSheet.create({
   container: {

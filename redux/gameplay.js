@@ -107,6 +107,9 @@ const gamePlaySlice = createSlice({
     setWordState(state, action) {
       state.word = action.payload;
     },
+    clearWordState(state, action) {
+      state.word = "";
+    },
     clearFakeDefs(state, action) {
       state.fakeDefinitions = [];
     },
@@ -114,7 +117,6 @@ const gamePlaySlice = createSlice({
       state.fakeWords = [];
     },
     addDefinition(state, action) {
-
       state.fakeDefinitions.push(action.payload);
     },
     addRealDefinition(state, action) {
@@ -122,7 +124,6 @@ const gamePlaySlice = createSlice({
     },
 
     addPlayerFakeDef(state, action) {
-
       state.playerFakeDef = action.payload;
     },
     // NEEDED?
@@ -136,7 +137,7 @@ const gamePlaySlice = createSlice({
       state.word = action.payload;
     },
     addTempScoreCardMessage(state, action) {
-        console.log("addTempScoreCardMessage: ", action.payload);
+    
       if (!state.tempScoreCard.includes(action.payload)) {
         state.tempScoreCard.push(action.payload);
       } else {
@@ -160,9 +161,11 @@ const gamePlaySlice = createSlice({
         state.fakeWords.push(action.payload);
       })
       .addCase("/getFakeDefinitions/fulfilled", (state, action) => {
-         state.fakeDefinitions.push({ type : "fake", definition: action.payload });
+        state.fakeDefinitions.push({
+          type: "fake",
+          definition: action.payload,
+        });
         state.fakeDefinitions = randomizeArray(state.fakeDefinitions);
-      
       });
   },
 });
@@ -179,6 +182,7 @@ function randomizeArray(array) {
 export const selectWord = (state) => {
   return state.gamePlay.word;
 };
+
 export const selectRealDefinition = (state) => {
   return state.gamePlay.definition;
 };
@@ -206,6 +210,7 @@ export const {
   addPlayerFakeDef,
   addTempScoreCardMessage,
   clearTempScoreCardMessages,
+  clearWordState
 } = gamePlaySlice.actions;
 
 export default gamePlaySlice.reducer;
