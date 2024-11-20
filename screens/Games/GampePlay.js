@@ -247,29 +247,7 @@ const GamePlay = ({
     }
   }, [timer, countdown]);
 
-// useEffect(() => {
-//   if (timer && countdown > 0) {
-//     const interval = setInterval(() => {
-//       setCountdown((prevCountdown) => {
-//         if (prevCountdown > 1) {
-//           return prevCountdown - 1;
-//         } else {
-//           clearInterval(interval); // Stop interval when reaching 0
-//           console.log("HERRR DUDE: ", username);
-//           set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
-//             playerTurnId: userId,
-//             play: false,
-//           });
-//           setPlayGame(true);
-//           setDefInput(false);
-//           return 0; // Ensure countdown is exactly 0
-//         }
-//       });
-//     }, 1000);
 
-//     return () => clearInterval(interval); // Cleanup interval
-//   }
-// }, [timer, countdown]);
 
   return (
     <View style={styles.container}>
@@ -306,32 +284,29 @@ const GamePlay = ({
                   setSeeInput={setSeeInput}
                 />
               ) : null}
-              {game && userScore && game.turn === userScore.turnNum ? (
-                <CardFront word={word} definition={definition} />
-              ) : null}
-
-              <View style={styles.backCard}>
-                <CardBack
-                  title={{ first: "Balder", second: "Dash" }}
-                  flip={flip}
+              {word && game && userScore && game.turn === userScore.turnNum ? (
+                <CardFront
+                  word={word}
+                  definition={definition}
+                  getAWord={
+                    <Buttons
+                      name={!word ? "Get Word" : "Get Another Word"}
+                      func={handleGetWord}
+                      pulse={!word || !word.length ? "pulse" : null}
+                    />
+                  }
+                  handleChooseWord={handleChooseWord}
                 />
-              </View>
+              ) : null}
+              {!word && (
+                <View style={styles.backCard}>
+                  <CardBack
+                    title={{ first: "Balder", second: "Dash" }}
+                    flip={flip}
+                  />
+                </View>
+              )}
             </View>
-
-            {/* Button to choose word once a word is set */}
-            {/* {definition && !choseWord ? (
-              <Buttons
-                name={"Choose Word"}
-                func={handleChooseWord}
-                pulse={"pulse"}
-              />
-            ) : null} */}
-
-            <Buttons
-              name={"Choose Word"}
-              func={handleChooseWord}
-              pulse={"pulse"}
-            />
           </View>
         ) : (
           // Display GuessDefs component when playGame is true
