@@ -352,7 +352,7 @@ setGetWord(false)
      <Animated.View
        style={[
     
-         { transform: [{ scale: scaleAnimation }] },
+         { transform: [{ scale: !getWord ? scaleAnimation: 0 }] },
        ]}
      >
        <TouchableOpacity
@@ -368,7 +368,7 @@ setGetWord(false)
                { transform: [{ scale: scaleAnimation }] },
              ]}
            >
-             <Text style={styles.getWordText}>Get Word</Text>
+             <Text style={styles.getWordText}>Click</Text>
            </Animated.View>
          )}
        </TouchableOpacity>
