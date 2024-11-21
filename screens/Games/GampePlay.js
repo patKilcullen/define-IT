@@ -635,7 +635,7 @@ setChoseWord(true);
             </Text>
 
             {/* Button to get a word if it's the player's turn */}
-            {game &&
+            {/* {game &&
             !closeGetWord &&
             userScore &&
             game.turn === userScore.turnNum ? (
@@ -645,7 +645,7 @@ setChoseWord(true);
                 func={handleGetWord}
                 pulse={!word || !word.length ? "pulse" : null}
               />
-            ) : null}
+            ) : null} */}
 
             {/* Display GuessCard and CardFront components based on conditions */}
             <View style={styles.cardContainer}>
@@ -665,6 +665,10 @@ setChoseWord(true);
               ) : null}
 
               <CardFront
+                handleGetWord={game &&
+            !closeGetWord &&
+            userScore &&
+            game.turn === userScore.turnNum ? handleGetWord : null}
                 getWord={getWord}
                 setGetWord={setGetWord}
                 word={word}

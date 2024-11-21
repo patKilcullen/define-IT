@@ -253,6 +253,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import CardBack from "./CardBack";
 import Buttons from "../../Buttons";
+// import { StrokeText } from "@adityakrshnn/react-native-stroke-text";
 
 const CardFront = ({
   word,
@@ -264,7 +265,8 @@ const CardFront = ({
   visible,
   onClose,
   getWord,
-  setGetWord
+  setGetWord,
+  handleGetWord
 }) => {
   const { width, height } = Dimensions.get("window");
   const cardWidth = width * .9
@@ -323,166 +325,243 @@ const CardFront = ({
 const handleClose = ()=>{
 setGetWord(false)
 }
- return <>
-   <CardBack title={{ first: "Balder", second: "Dash" }} />
 
-   <Modal
-     visible={getWord}
-     animationType="fade"
-     transparent={true}
-     onRequestClose={onClose}
-   >
-     <View style={styles.modalContainer}>
-       <Animated.View
-         style={[
-           styles.cardContainer,
-           {
-             transform: [
-               { translateX: positionAnimation.x },
-               { translateY: positionAnimation.y },
-               { scale },
-             ],
-           },
-         ]}
+  const scaleAnimation = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleAnimation, {
+          toValue: .9, // Scale up
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnimation, {
+          toValue: 1, // Scale down
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulse.start();
+
+    return () => pulse.stop(); // Clean up animation on unmount
+  }, [scaleAnimation]);
+ return (
+   <>
+     <Animated.View
+       style={[
+    
+         { transform: [{ scale: scaleAnimation }] },
+       ]}
+     >
+       <TouchableOpacity
+         style={styles.cardBackContainer}
+         onPress={handleGetWord}
+         activeOpacity={0.8} // For better press feedback
        >
-         {/* Back of the card */}
-         <Animated.View
-           style={[
-             styles.cardBack,
-             {
-               width: cardWidth,
-               height: cardHeight,
-               transform: [{ scale }, { rotateY: backRotation }],
-               position: "absolute",
-             },
-           ]}
-         >
-           <CardBack title={{ first: "Balder", second: "Dash" }} />
-         </Animated.View>
-
-         {/* Front of the card */}
-         <Animated.View
-           style={[
-             styles.card,
-             {
-               width: cardWidth,
-               height: cardHeight,
-               transform: [{ scale }, { rotateY: frontRotation }],
-               position: "absolute",
-             },
-           ]}
-         >
-           <LinearGradient
-             colors={["#88ebe6", "#283330"]}
-             style={[styles.card, { height: cardHeight, width: cardWidth }]}
+         <CardBack title={{ first: "Balder", second: "Dash" }} />
+         {handleGetWord && (
+           <Animated.View
+             style={[
+               styles.pulsingButton,
+               { transform: [{ scale: scaleAnimation }] },
+             ]}
            >
-             <View style={styles.innerCard}>
-               <Animated.View style={styles.topPortion}>
-                 <Text style={styles.topText}>{word}</Text>
-               </Animated.View>
-
-               <View style={styles.bottomPortion}>
-                 <Text style={styles.bottomText}>{definition}</Text>
-               </View>
-
-               <View style={styles.buttons}>
-                 {getAWord}
-                 <Buttons
-                   name={"Choose Word"}
-                   func={handleChooseWord}
-                   pulse={"pulse"}
-                 />
-                 <Buttons name={"close"} func={handleClose} pulse={"pulse"} />
-               </View>
+             <Text style={styles.getWordText}>Get Word</Text>
+           </Animated.View>
+         )}
+       </TouchableOpacity>
+     </Animated.View>
+     {/* <View style={styles.cardBackContainer}>
+       <TouchableOpacity onPress={handleGetWord}>
+         {handleGetWord && (
+           <Animated.View
+             style={[
+               styles.pulsingCircle,
+               { transform: [{ scale: scaleAnimation }] },
+             ]}
+           >
+             <View style={styles.getWordButton}>
+               <Text style={styles.getWordText}>Get Word</Text>
              </View>
-           </LinearGradient>
+           </Animated.View>
+         )}
+         <CardBack title={{ first: "Balder", second: "Dash" }} />
+       </TouchableOpacity>
+     </View> */}
+     {/* <View style={styles.cardBackContainer}>
+       <CardBack title={{ first: "Balder", second: "Dash" }} />
+       {handleGetWord && (
+         <Animated.View
+           style={[
+           
+             { transform: [{ scale: scaleAnimation }] },
+           ]}
+         >
+           <TouchableOpacity
+             style={styles.getWordButton}
+             onPress={handleGetWord}
+           >
+             <Text style={styles.getWordText}>Get Word</Text>
+           </TouchableOpacity>
          </Animated.View>
-       </Animated.View>
-     </View>
-   </Modal>
+       )}
+     </View> */}
+
+     <Modal
+       visible={getWord}
+       animationType="fade"
+       transparent={true}
+       onRequestClose={onClose}
+     >
+       <View style={styles.modalContainer}>
+         <Animated.View
+           style={[
+             styles.cardContainer,
+             {
+               transform: [
+                 { translateX: positionAnimation.x },
+                 { translateY: positionAnimation.y },
+                 { scale },
+               ],
+             },
+           ]}
+         >
+           {/* Back of the card */}
+           <Animated.View
+             style={[
+               styles.cardBack,
+               {
+                 width: cardWidth,
+                 height: cardHeight,
+                 transform: [{ scale }, { rotateY: backRotation }],
+                 position: "absolute",
+               },
+             ]}
+           >
+             <CardBack title={{ first: "Balder", second: "Dash" }} />
+           </Animated.View>
+
+           {/* Front of the card */}
+           <Animated.View
+             style={[
+               styles.card,
+               {
+                 width: cardWidth,
+                 height: cardHeight,
+                 transform: [{ scale }, { rotateY: frontRotation }],
+                 position: "absolute",
+               },
+             ]}
+           >
+             <LinearGradient
+               colors={["#88ebe6", "#283330"]}
+               style={[styles.card, { height: cardHeight, width: cardWidth }]}
+             >
+               <View style={styles.innerCard}>
+                 <Animated.View style={styles.topPortion}>
+                   <Text style={styles.topText}>{word}</Text>
+                 </Animated.View>
+
+                 <View style={styles.bottomPortion}>
+                   <Text style={styles.bottomText}>{definition}</Text>
+                 </View>
+
+                 <View style={styles.buttons}>
+                   {getAWord}
+                   <Buttons
+                     name={"Choose Word"}
+                     func={handleChooseWord}
+                     pulse={"pulse"}
+                   />
+                   <Buttons name={"close"} func={handleClose} pulse={"pulse"} />
+                 </View>
+               </View>
+             </LinearGradient>
+           </Animated.View>
+         </Animated.View>
+       </View>
+     </Modal>
    </>
+ );
 }
-//   return !getWord ? (
-//     <CardBack title={{ first: "Balder", second: "Dash" }} />
-//   ) : (
-//     <Modal
-//       visible={getWord}
-//       animationType="fade"
-//       transparent={true}
-//       onRequestClose={onClose}
-//     >
-//       <View style={styles.modalContainer}>
-//         <Animated.View
-//           style={[
-//             styles.cardContainer,
-//             {
-//               transform: [
-//                 { translateX: positionAnimation.x },
-//                 { translateY: positionAnimation.y },
-//                 { scale },
-//               ],
-//             },
-//           ]}
-//         >
-//           {/* Back of the card */}
-//           <Animated.View
-//             style={[
-//               styles.cardBack,
-//               {
-//                 width: cardWidth,
-//                 height: cardHeight,
-//                 transform: [{ scale }, { rotateY: backRotation }],
-//                 position: "absolute",
-//               },
-//             ]}
-//           >
-//             <CardBack title={{ first: "Balder", second: "Dash" }} />
-//           </Animated.View>
 
-//           {/* Front of the card */}
-//           <Animated.View
-//             style={[
-//               styles.card,
-//               {
-//                 width: cardWidth,
-//                 height: cardHeight,
-//                 transform: [{ scale }, { rotateY: frontRotation }],
-//                 position: "absolute",
-//               },
-//             ]}
-//           >
-//             <LinearGradient
-//               colors={["#88ebe6", "#283330"]}
-//               style={[styles.card, { height: cardHeight, width: cardWidth }]}
-//             >
-//               <View style={styles.innerCard}>
-//                 <Animated.View style={styles.topPortion}>
-//                   <Text style={styles.topText}>{word}</Text>
-//                 </Animated.View>
-
-//                 <View style={styles.bottomPortion}>
-//                   <Text style={styles.bottomText}>{definition}</Text>
-//                 </View>
-
-//                 <View style={styles.buttons}>
-//                   {getAWord}
-//                   <Buttons
-//                     name={"Choose Word"}
-//                     func={handleChooseWord}
-//                     pulse={"pulse"}
-//                   />
-//                   <Buttons name={"close"} func={handleClose} pulse={"pulse"} />
-//                 </View>
-//               </View>
-//             </LinearGradient>
-//           </Animated.View>
-//         </Animated.View>
-//       </View>
-//     </Modal>
-//   );
-// };
 
 const styles = StyleSheet.create({
+  //   cardBackContainer: {
+  //     position: "relative",
+  //     alignItems: "center",
+  //     justifyContent: "center",
+  //   },
+
+  //   getWordButton: {
+
+  //     borderWidth: 3,
+  //     position: "absolute",
+
+  //     borderRadius: 25,
+  //     borderColor:  "rgba(255, 255, 255, 0.5)",
+  //   },
+  //   cardBackContainer: {
+  //     position: "relative",
+  //     alignItems: "center",
+  //     justifyContent: "center",
+  //   },
+  //   getWordButton: {
+  //     position: "absolute",
+  //     top: "20%", // Adjust this to place the button correctly
+  //     zIndex: 10, // Ensure the button is above the card
+  //         borderWidth: 3,
+  //         position: "absolute",
+
+  //         borderRadius: 25,
+  //         borderColor:  "rgba(255, 255, 255, 0.5)",
+  //   },
+  //   //   getWordText: {
+  //   //     fontSize: 16,
+  //   //     fontWeight: "bold",
+  //   //     color: "white",
+  //   //   },
+
+  //   getWordText: {
+  //     fontSize: 40,
+  //     fontWeight: "bold",
+  //     textAlign: "center",
+  //     padding: 6,
+  //     color: "rgba(255, 255, 255, 0.5)",
+  //   },
+  cardBackContainer: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pulsingButton: {
+    position: "absolute",
+    top: "25%", // Adjust to position over the card
+    transform: [{ translateY: -20 }], // Center vertically relative to cardBack
+    zIndex: 10, // Ensure it's above the card
+  // Semi-transparent button background
+    padding: 10,
+    borderRadius: 25,
+    borderWidth: 3,
+            position: "absolute",
+
+            borderRadius: 25,
+            borderColor:  "rgba(255, 255, 255, 0.5)",
+  },
+  getWordText: {
+    // fontSize: 16,
+    // fontWeight: "bold",
+    // color: "#000",
+    // textAlign: "center",
+    fontSize: 40,
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 6,
+    color: "rgba(255, 255, 255, 0.5)",
+  },
+
   modalContainer: {
     flex: 1,
     justifyContent: "center",

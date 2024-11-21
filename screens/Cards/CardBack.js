@@ -53,9 +53,9 @@ const CardBack = ({ title, flip }) => {
     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
   });
 
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <Animated.View
