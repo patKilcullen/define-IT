@@ -11,57 +11,58 @@ const CardBack = ({ title, flip }) => {
 
   const [flipAnimation] = useState(new Animated.Value(0));
   // const flipAnimation = useRef(new Animated.Value(0).current);
-  const [isFlipped, setIsFlipped] = useState(false);
+  // const [isFlipped, setIsFlipped] = useState(false);
 
-  const handleFlip = () => {
-    if (!isFlipped) {
-      Animated.timing(flipAnimation, {
-        toValue: 180,
-        duration: 800,
-        useNativeDriver: false, // Set to false for unsupported properties
-      }).start(() => {
-        setIsFlipped(true);
-      });
-    } else {
-      Animated.timing(flipAnimation, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: false, // Set to false for unsupported properties
-      }).start(() => {
-        setIsFlipped(false);
-      });
-    }
-  };
-  // FLIP
-  const backInterpolate = flipAnimation.interpolate({
-    inputRange: [0, 180],
-    outputRange: ["180deg", "360deg"],
-  });
+  // const handleFlip = () => {
+  //   if (!isFlipped) {
+  //     Animated.timing(flipAnimation, {
+  //       toValue: 180,
+  //       duration: 800,
+  //       useNativeDriver: false, // Set to false for unsupported properties
+  //     }).start(() => {
+  //       setIsFlipped(true);
+  //     });
+  //   } else {
+  //     Animated.timing(flipAnimation, {
+  //       toValue: 0,
+  //       duration: 800,
+  //       useNativeDriver: false, // Set to false for unsupported properties
+  //     }).start(() => {
+  //       setIsFlipped(false);
+  //     });
+  //   }
+  // };
+  // // FLIP
+  // const backInterpolate = flipAnimation.interpolate({
+  //   inputRange: [0, 180],
+  //   outputRange: ["180deg", "360deg"],
+  // });
 
-  const animatedStyle = {
-    transform: [{ rotateY: backInterpolate }],
-  };
+  // const animatedStyle = {
+  //   transform: [{ rotateY: backInterpolate }],
+  // };
 
-  useEffect(() => {
-    if (flip) {
-      handleFlip();
-    }
-  }, [flip]);
+  // useEffect(() => {
+  //   if (flip) {
+  //     handleFlip();
+  //   }
+  // }, [flip]);
 
   // Load the custom font
   const [fontsLoaded] = useFonts({
     CustomFont: require("../../assets/fonts/Prociono-Regular.ttf"), // Example of a custom font
   });
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
 
   return (
     <Animated.View
       style={[
         styles.card,
-        { height: cardHeight, width: cardWidth, animatedStyle },
+        // { height: cardHeight, width: cardWidth, animatedStyle },
+        { height: cardHeight, width: cardWidth},
       ]}
     >
       {/* Inner Card with Gradient */}

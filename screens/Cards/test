@@ -1,0 +1,133 @@
+import React, { useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Modal,
+  Animated,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import CardBack from "./CardBack";
+
+const CardFront = ({ word, definition, visible, onClose }) => {
+  const { width, height } = Dimensions.get("window");
+  const cardHeight = height * 0.9;
+  const cardWidth = width * 0.9;
+
+  const flipAnimation = useRef(new Animated.Value(0)).current;
+
+  const startAnimation = () => {
+    Animated.timing(flipAnimation, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  // Interpolation for back rotation
+  const backRotation = flipAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ["0deg", "90deg", "180deg"], // Start visible, rotate to hide
+  });
+
+  // Interpolation for front rotation
+  const frontRotation = flipAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ["180deg", "90deg", "0deg"], // Start hidden, rotate to visible
+  });
+
+  // Interpolation for scaling
+  const scale = flipAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 1.5, 1], // Add growth effect
+  });
+
+  return (
+    <Modal
+      visible={visible}
+      animationType="fade"
+      transparent={true}
+      onShow={startAnimation}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <View
+          style={[
+            styles.cardContainer,
+            { width: cardWidth, height: cardHeight },
+          ]}
+        >
+          {/* Back of the card */}
+          <Animated.View
+            style={[
+              styles.card,
+              {
+                transform: [{ rotateY: backRotation }, { scale }],
+                position: "absolute",
+              },
+            ]}
+          >
+            <CardBack title={{ first: "Balder", second: "Dash" }} />
+          </Animated.View>
+
+          {/* Front of the card */}
+          <Animated.View
+            style={[
+              styles.card,
+              {
+                transform: [{ rotateY: frontRotation }, { scale }],
+                position: "absolute",
+              },
+            ]}
+          >
+            <LinearGradient
+              colors={["#88ebe6", "#283330"]}
+              style={styles.innerCard}
+            >
+              <Text style={styles.cardText}>{word}</Text>
+              <Text style={styles.definition}>{definition}</Text>
+            </LinearGradient>
+          </Animated.View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  cardContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  card: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 20,
+    overflow: "hidden",
+    backfaceVisibility: "hidden",
+  },
+  innerCard: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cardText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  definition: {
+    fontSize: 18,
+    color: "#fff",
+    marginTop: 10,
+  },
+});
+
+export default CardFront;
