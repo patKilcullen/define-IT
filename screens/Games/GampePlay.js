@@ -663,22 +663,23 @@ setChoseWord(true);
                   setSeeInput={setSeeInput}
                 />
               ) : null}
-            
-                <CardFront
+
+              <CardFront
                 getWord={getWord}
-                  word={word}
-                  definition={definition}
-                  getAWord={
-                    <Buttons
-                      name={!word ? "Get Word" : "New Word"}
-                      //   name={"Get Word"}
-                      func={handleGetWord}
-                      pulse={!word || !word.length ? "pulse" : null}
-                    />
-                  }
-                  handleChooseWord={handleChooseWord}
-                />
-               
+                setGetWord={setGetWord}
+                word={word}
+                definition={definition}
+                getAWord={
+                  <Buttons
+                    name={!word ? "Get Word" : "New Word"}
+                    //   name={"Get Word"}
+                    func={handleGetWord}
+                    pulse={!word || !word.length ? "pulse" : null}
+                  />
+                }
+                handleChooseWord={handleChooseWord}
+              />
+
               {/* {!word && (
                 <View style={styles.backCard}>
                   <CardBack title={{ first: "Balder", second: "Dash" }} />

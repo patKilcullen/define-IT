@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
   
     backgroundColor: "#88ebe6",
     
+    
   },
   innerCard: {
     // padding: 10,
