@@ -266,7 +266,9 @@ const CardFront = ({
   onClose,
   getWord,
   setGetWord,
-  handleGetWord
+  handleGetWord,
+  userTurn,
+  gameTurn,
 }) => {
   const { width, height } = Dimensions.get("window");
   const cardWidth = width * .9
@@ -347,12 +349,14 @@ setGetWord(false)
 
     return () => pulse.stop(); // Clean up animation on unmount
   }, [scaleAnimation]);
+   console.log("aaa: ", gameTurn, userTurn)
+
  return (
    <>
      <Animated.View
        style={[
     
-         { transform: [{ scale: !getWord ? scaleAnimation: 0 }] },
+         { transform: [{ scale: !getWord && gameTurn === userTurn   ? scaleAnimation : 1 }] },
        ]}
      >
        <TouchableOpacity
@@ -373,41 +377,6 @@ setGetWord(false)
          )}
        </TouchableOpacity>
      </Animated.View>
-     {/* <View style={styles.cardBackContainer}>
-       <TouchableOpacity onPress={handleGetWord}>
-         {handleGetWord && (
-           <Animated.View
-             style={[
-               styles.pulsingCircle,
-               { transform: [{ scale: scaleAnimation }] },
-             ]}
-           >
-             <View style={styles.getWordButton}>
-               <Text style={styles.getWordText}>Get Word</Text>
-             </View>
-           </Animated.View>
-         )}
-         <CardBack title={{ first: "Balder", second: "Dash" }} />
-       </TouchableOpacity>
-     </View> */}
-     {/* <View style={styles.cardBackContainer}>
-       <CardBack title={{ first: "Balder", second: "Dash" }} />
-       {handleGetWord && (
-         <Animated.View
-           style={[
-           
-             { transform: [{ scale: scaleAnimation }] },
-           ]}
-         >
-           <TouchableOpacity
-             style={styles.getWordButton}
-             onPress={handleGetWord}
-           >
-             <Text style={styles.getWordText}>Get Word</Text>
-           </TouchableOpacity>
-         </Animated.View>
-       )}
-     </View> */}
 
      <Modal
        visible={getWord}
@@ -489,48 +458,7 @@ setGetWord(false)
 
 
 const styles = StyleSheet.create({
-  //   cardBackContainer: {
-  //     position: "relative",
-  //     alignItems: "center",
-  //     justifyContent: "center",
-  //   },
 
-  //   getWordButton: {
-
-  //     borderWidth: 3,
-  //     position: "absolute",
-
-  //     borderRadius: 25,
-  //     borderColor:  "rgba(255, 255, 255, 0.5)",
-  //   },
-  //   cardBackContainer: {
-  //     position: "relative",
-  //     alignItems: "center",
-  //     justifyContent: "center",
-  //   },
-  //   getWordButton: {
-  //     position: "absolute",
-  //     top: "20%", // Adjust this to place the button correctly
-  //     zIndex: 10, // Ensure the button is above the card
-  //         borderWidth: 3,
-  //         position: "absolute",
-
-  //         borderRadius: 25,
-  //         borderColor:  "rgba(255, 255, 255, 0.5)",
-  //   },
-  //   //   getWordText: {
-  //   //     fontSize: 16,
-  //   //     fontWeight: "bold",
-  //   //     color: "white",
-  //   //   },
-
-  //   getWordText: {
-  //     fontSize: 40,
-  //     fontWeight: "bold",
-  //     textAlign: "center",
-  //     padding: 6,
-  //     color: "rgba(255, 255, 255, 0.5)",
-  //   },
   cardBackContainer: {
     position: "relative",
     alignItems: "center",
@@ -551,10 +479,6 @@ const styles = StyleSheet.create({
             borderColor:  "rgba(255, 255, 255, 0.5)",
   },
   getWordText: {
-    // fontSize: 16,
-    // fontWeight: "bold",
-    // color: "#000",
-    // textAlign: "center",
     fontSize: 40,
     fontWeight: "bold",
     textAlign: "center",

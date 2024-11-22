@@ -536,7 +536,7 @@ setChoseWord(true);
     // Listener for countdown timer
     const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("THOP: ", username, data?.countdown);
+
       if (data && userId !== data.playerTurnId) {
         console.log("THIS COUNT: ", data?.countdown, username, seeInput);
         if (data.countdown > 0) {
@@ -624,6 +624,8 @@ setChoseWord(true);
     }
   }, [timer, countdown]);
 
+
+  console.log("USERSCORE: ", userScore)
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -663,12 +665,18 @@ setChoseWord(true);
                   setSeeInput={setSeeInput}
                 />
               ) : null}
-
+{userScore && userScore.turnNum &&
               <CardFront
-                handleGetWord={game &&
-            !closeGetWord &&
-            userScore &&
-            game.turn === userScore.turnNum ? handleGetWord : null}
+                gameTurn={game.turn}
+                userTurn={userScore?.turnNum}
+                handleGetWord={
+                  game &&
+                  !closeGetWord &&
+                  userScore &&
+                  game.turn === userScore.turnNum
+                    ? handleGetWord
+                    : null
+                }
                 getWord={getWord}
                 setGetWord={setGetWord}
                 word={word}
@@ -682,7 +690,7 @@ setChoseWord(true);
                   />
                 }
                 handleChooseWord={handleChooseWord}
-              />
+              />}
 
               {/* {!word && (
                 <View style={styles.backCard}>

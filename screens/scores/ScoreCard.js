@@ -449,6 +449,7 @@ const ScoreCard = ({
     </View>
   );
 };
+console.log("SCORE CARD")
 
 const styles = StyleSheet.create({
   container: {
@@ -458,7 +459,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#571122",
     borderRadius: 10,
-    display: "none"
+
   },
   header: {
     alignItems: "center",

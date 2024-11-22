@@ -60,6 +60,7 @@ const SingleGame = () => {
   const [playerTurnName, setPlayerTurnName] = useState("");
 
   const { user } = useContext(UserContext);
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const route = useRoute();
@@ -185,6 +186,8 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
     })
   )
     .then((res) => {
+        console.log("res.payload.numPlayers: ", res.payload.numPlayers);
+        console.log("game: ", game)
       dispatch(
         editScore({
           scoreId,
