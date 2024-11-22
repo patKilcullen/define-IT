@@ -520,7 +520,7 @@ setChoseWord(true);
     // Listener for receiving word
     const wordListener = onValue(wordRef, (snapshot) => {
       const data = snapshot.val();
-
+console.log("WORD LISTENEERRRR: ")
       if (data) {
         setDefInput(true);
         dispatch(clearFakeDefs());
