@@ -295,11 +295,11 @@ const CardFront = ({
         useNativeDriver: true,
       }),
       // Position animation
-      Animated.timing(positionAnimation, {
-        toValue: { x: 0, y: 0 }, // Move to center
-        duration: 1500,
-        useNativeDriver: true,
-      }),
+    //   Animated.timing(positionAnimation, {
+    //     toValue: { x: 0, y: 0 }, // Move to center
+    //     duration: 1500,
+    //     useNativeDriver: true,
+    //   }),
     ]).start();
   };
 
@@ -349,7 +349,7 @@ setGetWord(false)
 
     return () => pulse.stop(); // Clean up animation on unmount
   }, [scaleAnimation]);
-   console.log("aaa: ", gameTurn, userTurn)
+
 
  return (
    <>
@@ -390,8 +390,8 @@ setGetWord(false)
              styles.cardContainer,
              {
                transform: [
-                 { translateX: positionAnimation.x },
-                 { translateY: positionAnimation.y },
+                //  { translateX: positionAnimation.x },
+                //  { translateY: positionAnimation.y },
                  { scale },
                ],
              },
@@ -409,7 +409,7 @@ setGetWord(false)
                },
              ]}
            >
-             <CardBack title={{ first: "Balder", second: "Dash" }} />
+             <CardBack title={{ first: "Waht's", second: "it?" }} />
            </Animated.View>
 
            {/* Front of the card */}
@@ -458,7 +458,6 @@ setGetWord(false)
 
 
 const styles = StyleSheet.create({
-
   cardBackContainer: {
     position: "relative",
     alignItems: "center",
@@ -469,14 +468,14 @@ const styles = StyleSheet.create({
     top: "25%", // Adjust to position over the card
     transform: [{ translateY: -20 }], // Center vertically relative to cardBack
     zIndex: 10, // Ensure it's above the card
-  // Semi-transparent button background
+    // Semi-transparent button background
     padding: 10,
     borderRadius: 25,
     borderWidth: 3,
-            position: "absolute",
+    position: "absolute",
 
-            borderRadius: 25,
-            borderColor:  "rgba(255, 255, 255, 0.5)",
+    borderRadius: 25,
+    borderColor: "rgba(255, 255, 255, 0.5)",
   },
   getWordText: {
     fontSize: 40,
@@ -537,6 +536,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderBottomWidth: 5,
     borderBottomColor: "#571122",
+    overflow: "hidden",
   },
   topText: {
     fontSize: 40,
