@@ -520,7 +520,7 @@ setChoseWord(true);
     // Listener for receiving word
     const wordListener = onValue(wordRef, (snapshot) => {
       const data = snapshot.val();
-console.log("WORD LISTENEERRRR: ")
+
       if (data) {
         setDefInput(true);
         dispatch(clearFakeDefs());
@@ -609,7 +609,12 @@ console.log("WORD LISTENEERRRR: ")
         if (countdown > 0) {
           setDefInput(true);
           setCountdown((countdown) => countdown - 1);
-        } else if (countdown === 0) {
+        } if (countdown === 1) {
+             setCloseCardFront(true);
+        } 
+    
+        else if (countdown === 0) {
+            
           set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
             playerTurnId: userId,
             play: false,
@@ -624,8 +629,10 @@ console.log("WORD LISTENEERRRR: ")
     }
   }, [timer, countdown]);
 
-
-  console.log("USERSCORE: ", userScore)
+const [closeCardFront, setCloseCardFront] = useState(false)
+const handleCloseCardFront = ()=>{
+setCloseCardFront(true)
+}
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -665,32 +672,34 @@ console.log("WORD LISTENEERRRR: ")
                   setSeeInput={setSeeInput}
                 />
               ) : null}
-{userScore && userScore.turnNum &&
-              <CardFront
-                gameTurn={game.turn}
-                userTurn={userScore?.turnNum}
-                handleGetWord={
-                  game &&
-                  !closeGetWord &&
-                  userScore &&
-                  game.turn === userScore.turnNum
-                    ? handleGetWord
-                    : null
-                }
-                getWord={getWord}
-                setGetWord={setGetWord}
-                word={word}
-                definition={definition}
-                getAWord={
-                  <Buttons
-                    name={!word ? "Get Word" : "New Word"}
-                    //   name={"Get Word"}
-                    func={handleGetWord}
-                    pulse={!word || !word.length ? "pulse" : null}
-                  />
-                }
-                handleChooseWord={handleChooseWord}
-              />}
+              {userScore && userScore.turnNum && (
+                <CardFront
+                  gameTurn={game.turn}
+                  userTurn={userScore?.turnNum}
+                  handleGetWord={
+                    game &&
+                    !closeGetWord &&
+                    userScore &&
+                    game.turn === userScore.turnNum
+                      ? handleGetWord
+                      : null
+                  }
+                  getWord={getWord}
+                  setGetWord={setGetWord}
+                  word={word}
+                  definition={definition}
+                  getAWord={
+                    <Buttons
+                      name={!word ? "Get Word" : "New Word"}
+                      //   name={"Get Word"}
+                      func={handleGetWord}
+                      pulse={!word || !word.length ? "pulse" : null}
+                    />
+                  }
+                  handleChooseWord={handleChooseWord}
+                  closeCardFront={closeCardFront}
+                />
+              )}
 
               {/* {!word && (
                 <View style={styles.backCard}>

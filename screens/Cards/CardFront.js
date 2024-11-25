@@ -264,6 +264,7 @@ const CardFront = ({
   handleChooseWord,
   visible,
   onClose,
+  closeCardFront,
   getWord,
   setGetWord,
   handleGetWord,
@@ -355,8 +356,11 @@ setGetWord(false)
    <>
      <Animated.View
        style={[
-    
-         { transform: [{ scale: !getWord && gameTurn === userTurn   ? scaleAnimation : 1 }] },
+         {
+           transform: [
+             { scale: !getWord && gameTurn === userTurn ? scaleAnimation : 1 },
+           ],
+         },
        ]}
      >
        <TouchableOpacity
@@ -379,10 +383,10 @@ setGetWord(false)
      </Animated.View>
 
      <Modal
-       visible={getWord}
+       visible={getWord && !closeCardFront}
        animationType="fade"
        transparent={true}
-       onRequestClose={onClose}
+       onRequestClose={closeCardFront}
      >
        <View style={styles.modalContainer}>
          <Animated.View
@@ -390,8 +394,8 @@ setGetWord(false)
              styles.cardContainer,
              {
                transform: [
-                //  { translateX: positionAnimation.x },
-                //  { translateY: positionAnimation.y },
+                 //  { translateX: positionAnimation.x },
+                 //  { translateY: positionAnimation.y },
                  { scale },
                ],
              },
