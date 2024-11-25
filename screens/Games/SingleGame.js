@@ -288,24 +288,24 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
   // Firebase listeners to sync game state
   useEffect(() => {
     // Set up Firebase references
-     const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
+    //  const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
     const startGameRef = ref(RealTimeDB, `games/${game.id}/start_game`);
     const playAgainRef = ref(RealTimeDB, `games/${game.name}/play_again`);
 
     const getInfoRef = ref(RealTimeDB, `games/${game.id}/get_info`);
     // Listener for score card updates
-        const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
+    //     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
 
-          const data = snapshot.val();
-        //   if (data.message) setTempScoreCard(data.message);
+    //       const data = snapshot.val();
+    //     //   if (data.message) setTempScoreCard(data.message);
     
-        if (data && data.message){
-         console.log("DATA SCARE CARD: ", data)
-         dispatch(fetchSingleGame(game.id));
-     addTempScoreCardMessage(data.message);
-        }
-        ;
-        });
+    //     if (data && data.message){
+    //      console.log("DATA SCARE CARD: ", data)
+    //      dispatch(fetchSingleGame(game.id));
+    //  addTempScoreCardMessage(data.message);
+    //     }
+    //     ;
+    //     });
 
 
     // Listener for game start event

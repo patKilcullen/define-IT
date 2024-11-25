@@ -59,7 +59,7 @@ const GuessDefs = ({
   const word = useSelector(selectWord);
   const singleGame = useSelector(selectSingleGame);
   const fakeDefs = useSelector(selectFakeDefinitions);
-  console.log("FAKE DEFS: ", fakeDefs)
+ 
   const realDef = useSelector(selectRealDefinition);
 
   // Combine real and fake definitions, inserting the real definition at a random index
@@ -129,7 +129,7 @@ const GuessDefs = ({
 
     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("THIS DATA:", data);
+  
       if (data) {
         dispatch(addTempScoreCardMessage(data.message));
       }

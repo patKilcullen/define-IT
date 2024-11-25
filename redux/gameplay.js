@@ -117,7 +117,11 @@ const gamePlaySlice = createSlice({
       state.fakeWords = [];
     },
     addDefinition(state, action) {
-      state.fakeDefinitions.push(action.payload);
+
+        let randomIdx = Math.random() * state.fakeDefinitions.length + 1
+        state.fakeDefinitions.splice(randomIdx, 0, action.payload);
+    //   state.fakeDefinitions.push(action.payload);
+    //    state.fakeDefinitions = randomizeArray(action.payload);
     },
     addRealDefinition(state, action) {
       state.definition = action.payload;
