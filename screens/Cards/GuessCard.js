@@ -245,6 +245,16 @@ const styles = StyleSheet.create({
     //   borderColor: "black",
     //   borderWidth: 8,
     // },
+//   topPortion: {
+//     height: "40%",
+//     width: "100%",
+//     backgroundColor: "#88ebe6",
+//     justifyContent: "center",
+//     borderBottomWidth: 5,
+//     borderBottomColor: "#571122",
+//     borderTopLeftRadius: 30,
+//     borderTopRightRadius: 30,
+//   },
   topPortion: {
     height: "40%",
     width: "100%",
@@ -252,8 +262,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderBottomWidth: 5,
     borderBottomColor: "#571122",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    overflow: "hidden",
   },
   topText: {
     fontSize: 40,
