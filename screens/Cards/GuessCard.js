@@ -18,7 +18,7 @@ import { ref, set } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 import CardBack from "./CardBack.js";
 
-const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput }) => {
+const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userName }) => {
   const [playerDef, setPlayerDef] = useState("");
 
   const inputRef = useRef();
@@ -36,18 +36,41 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput }) => {
   const textFontSize = width * 0.15;
 
   // Sends player's fake definition to the player whose turn it is via a socket
-  const handleEnterFakeDef = (e) => {
-    e.preventDefault();
+//   const handleEnterFakeDef = (e) => {
+//     e.preventDefault();
 
+//     dispatch(addPlayerFakeDef(playerDef));
+// console.log(" playerDef,userId,userName, gameName:",  playerDef, userId,  userName, gameName)
+// console.log("types: ", typeof playerDef, typeof userId, typeof userName);
+//     set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
+//       playerDef,
+//       userId,
+//       userName
+//     });
+//     setSeeInput(false);
+//     setPlayerDef("");
+//   };
+const handleEnterFakeDef = async (e) => {
+  e.preventDefault();
+
+  try {
     dispatch(addPlayerFakeDef(playerDef));
+    console.log("playerDef, userId, userName:", playerDef, userId, userName);
 
-    set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
+    await set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
       playerDef,
       userId,
+      userName,
     });
-    setSeeInput(false);
-    setPlayerDef("");
-  };
+
+    console.log("Data successfully written to Firebase");
+  } catch (error) {
+    console.error("Firebase set error:", error.message);
+  }
+
+  setSeeInput(false);
+  setPlayerDef("");
+};
 
   const flipAnimation = useRef(new Animated.Value(0)).current;
   const positionAnimation = useRef(

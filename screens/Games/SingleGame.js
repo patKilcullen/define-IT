@@ -378,6 +378,7 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
             handleAcceptRequest={handleAcceptRequest}
             playerTurnName={playerTurnName}
             handleRemovePlayer={handleRemovePlayer}
+            playerName={user.displayName}
           />
         )}
 
