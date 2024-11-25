@@ -67,12 +67,13 @@ const GuessDefs = ({
     const randomIndex = Math.floor(Math.random() * (fakeDefs.length + 1));
     const definitions = [...fakeDefs];
     definitions.splice(randomIndex, 0, realDef);
-    setCombinedDefs(definitions);
+    let notUsersDefs = definitions.filter((def) => def.type !== userName);
+    setCombinedDefs(notUsersDefs);
   }, [fakeDefs, realDef]);
 
   // Handle the selection of a definition by the user
   const handleChooseDef = (def) => {
-    console.log("DEF BB: ", def)
+  
     const chosenDefUserID = def.userId
     setGuessed(true);
     let message;
@@ -206,7 +207,7 @@ const GuessDefs = ({
               );
         });
   };
-
+console.log("OCOMBINES: ", combinedDefs)
   return !guessed ? (
     <Modal
       visible={true}
