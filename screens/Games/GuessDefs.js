@@ -42,6 +42,7 @@ const GuessDefs = ({
   setGamePlayCountdown,
   setSeeInput,
   setParentCountdown,
+  userName,
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
@@ -58,6 +59,7 @@ const GuessDefs = ({
   const word = useSelector(selectWord);
   const singleGame = useSelector(selectSingleGame);
   const fakeDefs = useSelector(selectFakeDefinitions);
+  console.log("FAKE DEFS: ", fakeDefs)
   const realDef = useSelector(selectRealDefinition);
 
   // Combine real and fake definitions, inserting the real definition at a random index
@@ -70,6 +72,8 @@ const GuessDefs = ({
 
   // Handle the selection of a definition by the user
   const handleChooseDef = (def) => {
+    console.log("DEF BB: ", def)
+    const chosenDefUserID = def.userId
     setGuessed(true);
     let message;
     if (def.type === "none") {
@@ -81,38 +85,40 @@ const GuessDefs = ({
       dispatch(addPoint({ userId, gameId }));
     } else {
       // Handle scenario for guessing another player's fake definition
-      dispatch(addPoint({ userId, gameId })).then((res) => {
-        console.log("RES: ", res);
-        // console.log(
-        //   "res.payload.user.user.displayName: ",
-        //   res.payload.userName
-        // );
-        // message = `${user.displayName} guessed ${res.payload.user.user.displayName}'s fake definition... ${res.payload.user.user.displayName} gets 1 point!!`;
-        message = `${user.displayName} guessed turns's fake definition... turd gets 1 point!!`;
-      });
+      dispatch(addPoint({ chosenDefUserID, gameId }))
+       message = `${user.displayName} guessed ${def.type}'s fake definition... ${def.type} gets 1 point!!`;
+    //   .then((res) => {
+    //     console.log("RES: ", res);
+    //     // console.log(
+    //     //   "res.payload.user.user.displayName: ",
+    //     //   res.payload.userName
+    //     // );
+    //      message = `${user.displayName} guessed ${res.payload.user.user.displayName}'s fake definition... ${res.payload.user.user.displayName} gets 1 point!!`;
+    //     // message = `${userName} guessed turns's fake definition... turd gets 1 point!!`;
+    //   });
     }
 
     // Update score card information in Firebase
     const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
-    console.log("MESSAGE: ", message);
+    console.log("MESSAGE: ", message, gameName, userName, gameId);
 
     set(scoreCardRef, {
       gameName,
       message,
+      userName
     })
-      .then(() => {
-        console.log("Scorecard information sent to Firebase successfully");
-      })
-      .catch((error) => {
-        console.error(
-          "Error sending scorecard information to Firebase:",
-          error
-        );
-      });
+    //   .then(() => {
+    //     console.log("Scorecard information sent to Firebase successfully");
+    //   })
+    //   .catch((error) => {
+    //     console.error(
+    //       "Error sending scorecard information to Firebase:",
+    //       error
+    //     );
+    //   });
 
     // Dispatch score card message if it's the user's turn
     if (singleGame.turn === userScore.turnNum) {
-      console.log("singleGame.turn === userScore.turnNum");
       dispatch(addTempScoreCardMessage(message));
     }
   };
@@ -123,7 +129,7 @@ const GuessDefs = ({
 
     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
       const data = snapshot.val();
-
+      console.log("THIS DATA:", data);
       if (data) {
         dispatch(addTempScoreCardMessage(data.message));
       }

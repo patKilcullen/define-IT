@@ -54,8 +54,9 @@ const handleEnterFakeDef = async (e) => {
   e.preventDefault();
 
   try {
-    dispatch(addPlayerFakeDef(playerDef));
-    console.log("playerDef, userId, userName:", playerDef, userId, userName);
+      console.log("handleEnterFakeDef:", playerDef, userId, userName);
+    dispatch(addPlayerFakeDef({def: playerDef, userId: userId, userName: userName}));
+  
 
     await set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
       playerDef,

@@ -356,7 +356,7 @@ export const addPoint = createAsyncThunk(
         await updateDoc(doc.ref, { score: newScore });
 
         console.log("Score updated successfully:", newScore);
-        return { userId, gameId, score: newScore };
+        return { userName, userId, gameId, score: newScore };
       } else {
         console.error("Score document not found.");
         return rejectWithValue("Score document not found.");

@@ -159,7 +159,7 @@ setChoseWord(true);
       const data = snapshot.val();
 
       if (data && userId !== data.playerTurnId) {
-        console.log("FUCKING COUNT: ", data.countdown);
+
         if (data.countdown > 0) {
           setCountdown(data.countdown);
           if (data.countdown === 1) {
@@ -187,7 +187,7 @@ setChoseWord(true);
       if (data) {
         console.log("DATA FAKE PLAYER DEF LISTENER: ", data)
         dispatch(
-          addDefinition({ type: data.userName, definition: data.playerDef })
+          addDefinition({ type: data.userName, definition: data.playerDef, userId })
           //   addDefinition({ type: [data.userName], definition: data.playerDef })
         );
       }
@@ -279,7 +279,7 @@ const [closeCardFront, setCloseCardFront] = useState(false)
 const handleCloseCardFront = ()=>{
 setCloseCardFront(true)
 }
-console.log("countdowncountdown: ", countdown);
+
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -386,6 +386,7 @@ console.log("countdowncountdown: ", countdown);
                   setGamePlayCountdown={setCountdown}
                   setSeeInput={setSeeInput}
                   setParentCountdown={setCountdown}
+                  userName={username}
                 />
               </View>
             </View>
