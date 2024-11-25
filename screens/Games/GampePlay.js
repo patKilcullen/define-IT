@@ -185,7 +185,6 @@ setChoseWord(true);
     const fakePlayerDefListener = onValue(playerDefRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        console.log("DATA FAKE PLAYER DEF LISTENER: ", data)
         dispatch(
           addDefinition({ type: data.userName, definition: data.playerDef, userId })
           //   addDefinition({ type: [data.userName], definition: data.playerDef })

@@ -20,7 +20,7 @@ import CardBack from "./CardBack.js";
 
 const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userName }) => {
   const [playerDef, setPlayerDef] = useState("");
-
+  const [reverseFlip, setReverseFlip] = useState(false);
   const inputRef = useRef();
 
   // Set focus on input box
@@ -36,82 +36,154 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
   const textFontSize = width * 0.15;
 
   // Sends player's fake definition to the player whose turn it is via a socket
-//   const handleEnterFakeDef = (e) => {
-//     e.preventDefault();
+  //   const handleEnterFakeDef = (e) => {
+  //     e.preventDefault();
 
-//     dispatch(addPlayerFakeDef(playerDef));
-// console.log(" playerDef,userId,userName, gameName:",  playerDef, userId,  userName, gameName)
-// console.log("types: ", typeof playerDef, typeof userId, typeof userName);
-//     set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
-//       playerDef,
-//       userId,
-//       userName
-//     });
-//     setSeeInput(false);
-//     setPlayerDef("");
-//   };
-const handleEnterFakeDef = async (e) => {
-  e.preventDefault();
+  //     dispatch(addPlayerFakeDef(playerDef));
+  // console.log(" playerDef,userId,userName, gameName:",  playerDef, userId,  userName, gameName)
+  // console.log("types: ", typeof playerDef, typeof userId, typeof userName);
+  //     set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
+  //       playerDef,
+  //       userId,
+  //       userName
+  //     });
+  //     setSeeInput(false);
+  //     setPlayerDef("");
+  //   };
+  const handleEnterFakeDef = async (e) => {
+    e.preventDefault();
 
-  try {
-      console.log("handleEnterFakeDef:", playerDef, userId, userName);
-    dispatch(addPlayerFakeDef({def: playerDef, userId: userId, userName: userName}));
-  
+    try {
+      dispatch(
+        addPlayerFakeDef({ def: playerDef, userId: userId, userName: userName })
+      );
 
-    await set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
-      playerDef,
-      userId,
-      userName,
-    });
+      await set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
+        playerDef,
+        userId,
+        userName,
+      });
 
-    console.log("Data successfully written to Firebase");
-  } catch (error) {
-    console.error("Firebase set error:", error.message);
-  }
+      console.log("Data successfully written to Firebase");
+    } catch (error) {
+      console.error("Firebase set error:", error.message);
+    }
 
-  setSeeInput(false);
-  setPlayerDef("");
-};
+    // setSeeInput(false);
+
+    setPlayerDef("");
+    setReverseFlip(true);
+    startFlipAnimation2();
+    setTimeout(() => {
+       setSeeInput(false);
+    // moveOffScreen()
+    }, 2000);
+  };
 
   const flipAnimation = useRef(new Animated.Value(0)).current;
-  const positionAnimation = useRef(
-    new Animated.ValueXY({ x: 0, y: 0 })
-  ).current;
+
+  const flipAnimation2 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (word) {
-     
-      startPositionAnimation();
+      startFlipAnimation();
     }
   }, [word !== "" && seeInput]);
 
-  const startPositionAnimation = () => {
+  // const startFlipAnimation = () => {
+  //   Animated.parallel([
+  //     // Flip animation
+  //     Animated.timing(flipAnimation, {
+  //       toValue:  1, // Reverse or forward
+  //       duration: 1500,
+  //       useNativeDriver: true,
+  //     }),
+  //   ]).start();
+  // };
+
+  // // Interpolation for back rotation
+  // const backRotation = flipAnimation.interpolate({
+  //   inputRange: [0, 0.5, 1],
+  //   outputRange: ["0deg", "90deg", "180deg"], // Back starts visible, rotates to hide
+  // });
+
+  // // Interpolation for front rotation
+  // const frontRotation = flipAnimation.interpolate({
+  //   inputRange: [0, 0.5, 1],
+  //   outputRange: ["180deg", "90deg", "0deg"], // Front starts hidden, rotates to show
+  // });
+
+  // // Interpolation for scaling
+  // const scale = flipAnimation.interpolate({
+  //   inputRange: [0, 0.5, 1],
+  //   outputRange:  [1, 1.1, 1.2], // Grow and settle
+  // });
+
+  const startFlipAnimation = () => {
     Animated.parallel([
       // Flip animation
       Animated.timing(flipAnimation, {
-        toValue: 1,
-        duration: 1500,
-        useNativeDriver: true,
-      }),
-      // Position animation
-      Animated.timing(positionAnimation, {
-        toValue: { x: 2, y: 2 }, // Move to center
+        toValue: 1, // Reverse or forward
         duration: 1500,
         useNativeDriver: true,
       }),
     ]).start();
   };
 
+  const startFlipAnimation2 = () => {
+    Animated.parallel([
+      // Flip animation
+      Animated.timing(flipAnimation2, {
+        toValue: 1, // Reverse or forward
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+         Animated.timing(moveOffScreenValue, {
+      toValue:  0 - cardHeight, // Move completely off-screen to the right
+      duration: 1500, // Animation duration in ms
+      useNativeDriver: true, // Use native driver for performance}
+  })
+    ]).start();
+  };
+
+  const backRotation2 = flipAnimation2.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ["180deg", "90deg", "0deg"],
+    // Back starts visible, rotates to hide
+  });
+
+  // Interpolation for front rotation
+  const frontRotation2 = flipAnimation2.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ["0deg", "90deg", "180deg"],
+    // Front starts hidden, rotates to show
+  });
+
+   
+ const moveOffScreenValue = useRef(new Animated.Value(0)).current;
+//   const moveOffScreen = () => {
+//     Animated.timing(moveOffScreenValue, {
+//       toValue: cardHeight, // Move completely off-screen to the right
+//       duration: 1000, // Animation duration in ms
+//       useNativeDriver: true, // Use native driver for performance
+//     }).start();
+//   };
+
+
   // Interpolation for back rotation
   const backRotation = flipAnimation.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: ["0deg", "90deg", "180deg"], // Back starts visible, rotates to hide
+    outputRange: reverseFlip
+      ? ["180deg", "90deg", "0deg"]
+      : ["0deg", "90deg", "180deg"], // Back starts visible, rotates to hide
   });
 
   // Interpolation for front rotation
   const frontRotation = flipAnimation.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: ["180deg", "90deg", "0deg"], // Front starts hidden, rotates to show
+    outputRange: reverseFlip
+      ? ["0deg", "90deg", "180deg"]
+      : ["180deg", "90deg", "0deg"], // Front starts hidden, rotates to show
   });
 
   // Interpolation for scaling
@@ -122,8 +194,6 @@ const handleEnterFakeDef = async (e) => {
 
   return (
     <>
-   
-
       <Modal
         visible={word !== "" && seeInput}
         animationType="fade"
@@ -136,8 +206,8 @@ const handleEnterFakeDef = async (e) => {
               styles.cardContainer,
               {
                 transform: [
-                //   { translateX: positionAnimation.x },
-                //   { translateY: positionAnimation.y },
+                  //   { translateX: positionAnimation.x },
+                  //   { translateY: positionAnimation.y },
                   { scale },
                 ],
               },
@@ -150,7 +220,11 @@ const handleEnterFakeDef = async (e) => {
                 {
                   width: cardWidth,
                   height: cardHeight,
-                  transform: [{ scale }, { rotateY: backRotation }],
+                  transform: [
+                    { scale },
+                    { rotateY: reverseFlip ? backRotation2 : backRotation },
+                    { translateY:  moveOffScreenValue },
+                  ],
                   position: "absolute",
                 },
               ]}
@@ -167,7 +241,10 @@ const handleEnterFakeDef = async (e) => {
                 {
                   width: cardWidth,
                   height: cardHeight,
-                  transform: [{ scale }, { rotateY: frontRotation }],
+                  transform: [
+                    { scale },
+                    { rotateY: reverseFlip ? frontRotation2 : frontRotation },
+                  ],
                   position: "absolute",
                 },
               ]}
