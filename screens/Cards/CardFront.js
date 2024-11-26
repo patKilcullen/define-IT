@@ -270,6 +270,7 @@ const CardFront = ({
   handleGetWord,
   userTurn,
   gameTurn,
+  username
 }) => {
   const { width, height } = Dimensions.get("window");
   const cardWidth = width * .9
@@ -351,7 +352,7 @@ setGetWord(false)
     return () => pulse.stop(); // Clean up animation on unmount
   }, [scaleAnimation]);
 
-
+console.log("GAMLE TURN uSER TURN, get word, username: ", gameTurn, userTurn, getWord, username, closeCardFront)
  return (
    <>
      <Animated.View

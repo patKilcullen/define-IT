@@ -43,6 +43,7 @@ const GuessDefs = ({
   setSeeInput,
   setParentCountdown,
   userName,
+  setGetWord
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
@@ -51,7 +52,7 @@ const GuessDefs = ({
   const [combinedDefs, setCombinedDefs] = useState([]);
   const [defList, setDefList] = useState(false);
   const [guessed, setGuessed] = useState(false);
-  const [countdown, setCountdown] = useState(15);
+  const [countdown, setCountdown] = useState(3);
 
   const dispatch = useDispatch();
 
@@ -173,6 +174,8 @@ const GuessDefs = ({
   }, [countdown]);
 
   const handleChangeGameTurn = () => {
+
+     
     game.roundsLeft !== 1
       ? game.turn === 1
         ? dispatch(
@@ -207,7 +210,7 @@ const GuessDefs = ({
               );
         });
   };
-console.log("OCOMBINES: ", combinedDefs)
+
   return !guessed ? (
     <Modal
       visible={true}

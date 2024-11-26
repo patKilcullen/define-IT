@@ -55,14 +55,15 @@ const GamePlay = ({
 
   const [flip, setFlip] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
-  const [countdown, setCountdown] = useState(15);
+  const [countdown, setCountdown] = useState(5);
   const [playGame, setPlayGame] = useState(false);
   const [closeGetWord, setCloseGetWord] = useState(false);
 
   useEffect(() => {
     dispatch(clearWordState());
     setWord("");
-    setCountdown(15)
+    setCountdown(3)
+
   }, []);
 
   useEffect(() => {
@@ -85,6 +86,7 @@ const GamePlay = ({
 
   // Select a random word and set definition
   const handleGetWord = () => {
+    console.log("GET WOR: ", getWord)
     setGetWord(true)
     const newWord =
       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
@@ -168,10 +170,12 @@ setChoseWord(true);
           }
         }
         if (data.countdown === 0) {
-          
+          console.log("ENDI OF LISTENEER")
         //   setCountdown(0);
-          setDefInput(false);
 
+          setDefInput(false);
+setGetWord(false)
+setCloseCardFront(false)
           if (data.play === true) {
             
             setPlayGame(true);
@@ -245,6 +249,9 @@ setChoseWord(true);
           setPlayGame(true);
           setDefInput(false);
           setCloseGetWord(false);
+          console.log("END OF TIMER")
+          setGetWord(false)
+       setCloseCardFront(false);
         //   setTimer(false)
         //      setCountdown(15);
         } else {
@@ -321,6 +328,7 @@ setCloseCardFront(true)
               ) : null}
               {userScore && userScore.turnNum && (
                 <CardFront
+                username={username}
                   gameTurn={game.turn}
                   userTurn={userScore?.turnNum}
                   handleGetWord={
@@ -370,6 +378,7 @@ setCloseCardFront(true)
             <View style={styles.guessDef}>
               <View style={styles.cardContainer}>
                 <GuessDefs
+              
                   word={word}
                   userScore={userScore}
                   userId={userId}
@@ -386,6 +395,7 @@ setCloseCardFront(true)
                   setSeeInput={setSeeInput}
                   setParentCountdown={setCountdown}
                   userName={username}
+                  setGetWord={setGetWord}
                 />
               </View>
             </View>
