@@ -674,14 +674,7 @@ const CardFront = ({
     return () => pulse.stop(); // Clean up animation on unmount
   }, [scaleAnimation]);
 
-  console.log(
-    "GAMLE TURN uSER TURN, get word, username: ",
-    gameTurn,
-    userTurn,
-    getWord,
-    username,
-    closeCardFront
-  );
+  
   return (
     <>
       <Pressable

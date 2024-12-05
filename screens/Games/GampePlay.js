@@ -27,6 +27,9 @@ import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 import { balderdashWords } from "../../Words.js";
 
+import { useNavbar } from "../../NabBarContext.js";
+
+
 const GamePlay = ({
   game,
   userScore,
@@ -41,6 +44,7 @@ const GamePlay = ({
   // Retrieve user and game details
   const gameName = game.name;
   const { user } = useContext(UserContext);
+  const { hideNavbar, showNavbar } = useNavbar();
   const username = user.displayName;
 
   // Local Component State
@@ -69,6 +73,7 @@ const GamePlay = ({
   useEffect(() => {
     // Fetch the game scores when the component mounts
     dispatch(fetchAllGameScores());
+showNavbar()
   }, [dispatch]);
   useEffect(() => {
     if (gameScores && gameScores.length > 0) {
@@ -86,7 +91,7 @@ const GamePlay = ({
 
   // Select a random word and set definition
   const handleGetWord = () => {
-    console.log("GET WOR: ", getWord)
+    hideNavbar()
     setGetWord(true)
     const newWord =
       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];

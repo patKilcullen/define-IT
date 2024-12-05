@@ -114,7 +114,7 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
   )
     .then((res) => {
         console.log("res.payload.numPlayers: ", res.payload.numPlayers);
-        console.log("game: ", game)
+       
       dispatch(
         editScore({
           scoreId,

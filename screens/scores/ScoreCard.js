@@ -34,7 +34,7 @@ const ScoreCard = ({
   const scores = useSelector(selectAllScores);
   const playerRequests = useSelector(selectPlayerRequests);
 const [collapsed, setCollapsed] = useState(game.started ? true : false)
-console.log("GAME: ", game.started)
+
 
   // console.log("USERSCORE: ", userScore)
   useEffect(() => {
@@ -233,7 +233,7 @@ setCollapsed((prev)=> !prev)
     </>
   );
 };
-console.log("SCORE CARD")
+
 
 const styles = StyleSheet.create({
   container: {
