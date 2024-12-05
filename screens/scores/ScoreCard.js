@@ -26,7 +26,8 @@ const ScoreCard = ({
   handleAcceptRequest,
   playerTurnName,
   handleRemovePlayer,
-  playerName
+  playerName,
+  hideScoreCard
 }) => {
        const { user } = useContext(UserContext);
   const dispatch = useDispatch();
@@ -37,6 +38,9 @@ console.log("GAME: ", game.started)
 
   // console.log("USERSCORE: ", userScore)
   useEffect(() => {
+    if(hideScoreCard){
+        setCollapsed(true)
+    }
     // Reference to join requests event in Firebase
     const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
 
@@ -56,7 +60,7 @@ console.log("GAME: ", game.started)
     return () => {
       off(joinRequestsRef, joinRequestsListener);
     };
-  }, [game.name, game.id, dispatch]);
+  }, [game.name, game.id, dispatch, hideScoreCard]);
 
 
 

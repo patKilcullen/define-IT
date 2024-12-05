@@ -58,6 +58,7 @@ const SingleGame = () => {
   const [showTiedGame, setShowTiedGame] = useState(false);
   const [reloadFlip, setReloadFlip] = useState(false);
   const [playerTurnName, setPlayerTurnName] = useState("");
+  const [hideScoreCard, setHideScoreCard] = useState(false)
 
   const { user } = useContext(UserContext);
 
@@ -204,7 +205,12 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
     dispatch(editGame({ id: game.id, started: true }))
       .then(() => dispatch(fetchSingleGame(gameId)))
       .then(() => dispatch(startGame({ game, user })));
+      handleHideScoreCard()
   };
+// hide score card when game starts
+  const handleHideScoreCard = ()=>{
+    setHideScoreCard(true)
+  }
 
   // Update tempScoreCard when tempScoreCardTurn changes
   useEffect(() => {
@@ -238,7 +244,10 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
     const startGameListener = onValue(startGameRef, (snapshot) => {
       const data = snapshot.val();
 
-      if (data && data.room === game.name) dispatch(fetchSingleGame(game.id));
+      if (data && data.room === game.name){
+        dispatch(fetchSingleGame(game.id));
+handleHideScoreCard()
+      } 
     });
     // Listener for game start event
     const getInfoListener = onValue(getInfoRef, (snapshot) => {
@@ -305,6 +314,7 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
             playerTurnName={playerTurnName}
             handleRemovePlayer={handleRemovePlayer}
             playerName={user.displayName}
+            hideScoreCard={hideScoreCard}
           />
         )}
 
