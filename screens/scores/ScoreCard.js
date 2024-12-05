@@ -32,8 +32,8 @@ const ScoreCard = ({
   const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
   const playerRequests = useSelector(selectPlayerRequests);
-const [collapsed, setCollapsed] = useState(true)
-
+const [collapsed, setCollapsed] = useState(game.started ? true : false)
+console.log("GAME: ", game.started)
 
   // console.log("USERSCORE: ", userScore)
   useEffect(() => {

@@ -78,10 +78,10 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 2,
     borderColor: "black",
-  
+
     backgroundColor: "#88ebe6",
-    
-    
+
+    zIndex: 5,
   },
   innerCard: {
     // padding: 10,

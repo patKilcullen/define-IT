@@ -102,80 +102,6 @@ const SingleGame = () => {
 
 
 
-  // Accept a join request for the game
-//   const handleAcceptRequest = ({ scoreId, userId, requestId }) => {
-  
-//     dispatch(
-//       editGame({
-//         ...game,
-//         userId,
-//         numPlayers: game.numPlayers + 1,
-//         addPlayers: true,
-//       })
-//     ).then((res) => {
-//       dispatch(
-//         editScore({
-//           scoreId,
-//           turnNum: res.payload.numPlayers,
-//           gameId: game.id,
-//           accepted: true,
-//         })
-//       ).then(() => {
-//           dispatch(getInfo({ game, user })); 
-//         dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
-
-//         dispatch(deletePlayerRequests({ game, scoreId}))
-         
-//           dispatch(fetchSingleGame(gameId));
-//           dispatch(fetchAllGameScores(gameId));
-//           dispatch(fetchPlayerRequests(gameId));
-       
-
-//       });
-//     });
-//   };
-// const handleAcceptRequest = ({ scoreId, userId }) => {
-//   dispatch(
-//     editGame({
-//       ...game,
-//       userId,
-//       numPlayers: game.numPlayers + 1,
-//       addPlayers: true,
-//     })
-//   )
-//     .then((res) => {
-//       dispatch(
-//         editScore({
-//           scoreId,
-//           turnNum: res.payload.numPlayers,
-//           gameId: game.id,
-//           accepted: true,
-//         })
-//       ).then(() => {  
-//            dispatch(getInfo({ game, user }));
-//         dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
-
-//         dispatch(deletePlayerRequests({ game, scoreId }))
-//           .then(() => {
-//             console.log(
-//               "deletePlayerRequests completed, fetching updated game data..."
-//             );
-     
-//             dispatch(fetchSingleGame(gameId));
-//             dispatch(fetchAllGameScores(gameId));
-//             dispatch(fetchPlayerRequests(gameId));
-           
-//           })  
-
-//           .catch((error) => {
-//             console.error("Error deleting player request:", error);
-//           });
-//       });
-//     })
-//     .catch((error) => {
-//       console.error("Error in handleAcceptRequest:", error);
-//     });
-// };
 const handleAcceptRequest = ({ scoreId, userId }) => {
   dispatch(
     editGame({
@@ -416,6 +342,10 @@ const styles = StyleSheet.create({
     borderColor: "#000",
     borderWidth: 1,
     borderRadius: 10,
+
+
+    padding: 0,
+    position: "relative"
   },
   homeButton: {
     color: "blue",

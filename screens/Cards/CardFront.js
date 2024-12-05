@@ -598,7 +598,7 @@ const CardFront = ({
   username,
 }) => {
   const { width, height } = Dimensions.get("window");
-  const cardWidth = width * 0.9;
+  const cardWidth = width * 0.85;
   const cardHeight = width * 1.5;
   //   const cardHeight = height * .9
 
@@ -622,11 +622,11 @@ const CardFront = ({
         useNativeDriver: true,
       }),
       // Position animation
-      //   Animated.timing(positionAnimation, {
-      //     toValue: { x: 0, y: 0 }, // Move to center
-      //     duration: 1500,
-      //     useNativeDriver: true,
-      //   }),
+        Animated.timing(positionAnimation, {
+          toValue: { x: 0, y: 0 }, // Move to center
+          duration: 1500,
+          useNativeDriver: true,
+        }),
     ]).start();
   };
 
@@ -689,7 +689,7 @@ const CardFront = ({
         onPress={handleGetWord}
         activeOpacity={0.8} // For better press feedback
       >
-        <Animated.View
+        {/* <Animated.View
           style={[
             styles.cardBack,
             {
@@ -699,7 +699,7 @@ const CardFront = ({
               position: "absolute",
             },
           ]}
-        ></Animated.View>
+        ></Animated.View> */}
         <Animated.View
           style={[
             styles.cardBack,
@@ -764,7 +764,7 @@ const CardFront = ({
         {/* 
 
       {/* Front of the card */}
-        <Animated.View
+        {/* <Animated.View
           style={[
             styles.card,
             {
@@ -772,6 +772,22 @@ const CardFront = ({
               height: cardHeight,
               transform: [{ scale }, { rotateY: frontRotation }],
               position: "absolute",
+            },
+          ]}
+        > */}
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              width: cardWidth,
+              height: cardHeight,
+              transform: [{ scale }, { rotateY: frontRotation }],
+              position: getWord ? "absolute" : "relative", // Change to absolute when flipped
+              zIndex: getWord ? 100000 : 1, // Bring to the front when flipped
+              top: getWord ? -50 : "auto", // Adjust position when flipped
+              left: getWord ? 0 : "auto", // Center horizontally when flipped
+              elevation: 100000
+        
             },
           ]}
         >
@@ -855,6 +871,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 8,
     backfaceVisibility: "hidden", // Prevents the back and front from showing simultaneously
+  
   },
   cardBack: {
     zIndex: 1,

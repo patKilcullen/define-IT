@@ -46,7 +46,9 @@ export default function App() {
     <SocketProvider>
       <Provider store={store}>
         <UserProvider>
-          <NavigationContainer style={{ backgroundColor: "red" }}>
+          <NavigationContainer >
+              <View style={{ position: "relative", flex: 1 }}>
+
             {user && <Navbar />}
 
             <Stack.Navigator>
@@ -89,6 +91,7 @@ export default function App() {
               )}
             </Stack.Navigator>
             <StatusBar style="auto" />
+            </View>
           </NavigationContainer>
         </UserProvider>
       </Provider>
@@ -101,6 +104,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  
   },
 });
 

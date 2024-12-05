@@ -411,12 +411,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+//   marign: 0
+position: "relative"
+
   },
   cardContainer: {
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
+borderColor: "transparent",
+borderWidth: 20,
+position: "relative"
   },
   guessDef: {
     marginLeft: -13,
