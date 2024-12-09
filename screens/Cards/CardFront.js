@@ -779,7 +779,8 @@ const styles = StyleSheet.create({
     backfaceVisibility: "hidden",
   },
   pulsingButton: {
-    position: "absolute",
+    alignSelf: "center",
+    // position: "absolute",
     top: "25%", // Adjust to position over the card
     transform: [{ translateY: -20 }], // Center vertically relative to cardBack
     zIndex: 10, // Ensure it's above the card
