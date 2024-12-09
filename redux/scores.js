@@ -284,6 +284,7 @@ export const fetchHighestGameScores = createAsyncThunk(
 export const createScore = createAsyncThunk(
   "createScore",
   async ({ score, accepted, turn, turnNum, gameId, userId, displayName }) => {
+    console.log('CREATE SCORE: ', displayName)
     try {
       const docRef = await addDoc(collection(FireBaseDB, "scores"), {
         score: score || 0,

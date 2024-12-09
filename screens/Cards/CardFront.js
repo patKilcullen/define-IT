@@ -598,9 +598,12 @@ const CardFront = ({
   username,
 }) => {
   const { width, height } = Dimensions.get("window");
-  const cardWidth = width * 0.85;
-  const cardHeight = width * 1.5;
-  //   const cardHeight = height * .9
+  const cardWidth = width * .9 
+   const cardHeight = width * 1.5;
+    //  const cardHeight = height * .8
+
+    //   const cardWidth = width * 0.9;
+    //   const cardHeight = height * .85;
 
   const flipAnimation = useRef(new Animated.Value(0)).current;
   const positionAnimation = useRef(
@@ -682,47 +685,6 @@ const CardFront = ({
         onPress={handleGetWord}
         activeOpacity={0.8} // For better press feedback
       >
-        {/* <Animated.View
-          style={[
-            styles.cardBack,
-            {
-              width: cardWidth,
-              height: cardHeight,
-              transform: [{ scale }, { rotateY: backRotation }],
-              position: "absolute",
-            },
-          ]}
-        ></Animated.View> */}
-        <Animated.View
-          style={[
-            styles.cardBack,
-            {
-              width: cardWidth,
-              height: cardHeight,
-              transform: [
-                {
-                  scale:
-                    !getWord && gameTurn === userTurn ? scaleAnimation : scale,
-                },
-                { rotateY: backRotation },
-              ],
-              position: "absolute",
-            },
-          ]}
-        >
-          <CardBack title={{ first: "Balder", second: "Dash" }} />
-          {handleGetWord && (
-            <Animated.View
-              style={[
-                styles.pulsingButton,
-                { transform: [{ scale: scaleAnimation }] },
-              ]}
-            >
-              <Text style={styles.getWordText}>Click</Text>
-            </Animated.View>
-          )}
-        </Animated.View>
-
         <Animated.View
           style={[
             {
@@ -754,20 +716,18 @@ const CardFront = ({
             )}
           </TouchableOpacity>
         </Animated.View>
-        {/* 
+      </Pressable>
+      {/* 
 
       {/* Front of the card */}
-        {/* <Animated.View
-          style={[
-            styles.card,
-            {
-              width: cardWidth,
-              height: cardHeight,
-              transform: [{ scale }, { rotateY: frontRotation }],
-              position: "absolute",
-            },
-          ]}
-        > */}
+      {/* <View
+        style={[
+          styles.cardContainer,
+          {
+            height: height,
+          },
+        ]}
+      > */}
         <Animated.View
           style={[
             styles.card,
@@ -776,11 +736,11 @@ const CardFront = ({
               height: cardHeight,
               transform: [{ scale }, { rotateY: frontRotation }],
               position: getWord ? "absolute" : "relative", // Change to absolute when flipped
-              zIndex: getWord ? 100000 : 1, // Bring to the front when flipped
-              top: getWord ? -50 : "auto", // Adjust position when flipped
-              left: getWord ? 0 : "auto", // Center horizontally when flipped
-              elevation: 100000
-        
+              //   zIndex: getWord ? 100000 : 1, // Bring to the front when flipped
+              //   top: getWord ? -50 : "auto", // Adjust position when flipped
+              //   left: getWord ? 0 : "auto", // Center horizontally when flipped
+              elevation: 100000,
+            
             },
           ]}
         >
@@ -809,16 +769,13 @@ const CardFront = ({
             </View>
           </LinearGradient>
         </Animated.View>
-      </Pressable>
+      {/* </View> */}
     </>
   );
 };
 
 const styles = StyleSheet.create({
   cardBackContainer: {
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center",
     backfaceVisibility: "hidden",
   },
   pulsingButton: {
@@ -843,30 +800,29 @@ const styles = StyleSheet.create({
     color: "rgba(255, 255, 255, 0.5)",
   },
 
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
-  },
   cardContainer: {
     justifyContent: "center",
     alignItems: "center",
-    backfaceVisibility: "hidden",
+  
+    // flexDirection: "column",
+    borderColor: "red",
+    borderWidth: 10,
+
   },
   card: {
     zIndex: 2004,
     borderRadius: 50,
     padding: 30,
-    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
     borderWidth: 8,
     backfaceVisibility: "hidden", // Prevents the back and front from showing simultaneously
-  
   },
   cardBack: {
+    borderColor: "purple",
+    borderWidth: 10,
+
     zIndex: 1,
     borderRadius: 50,
     flexDirection: "column",

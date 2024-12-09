@@ -19,7 +19,7 @@ const Navbar = () => {
      const { isNavbarVisible } = useNavbar();
     //    const { isNavbarVisible } = useContext(NavBarContext);
 
-console.log("IS NAV VIS NAV BAR: ", isNavbarVisible);
+
   const logoutAndRedirectHome = () => {
   signOut(FirebaseAuth)
     .then(() => {

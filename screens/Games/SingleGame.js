@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Dimensions
 } from "react-native";
 
 // Redux State and Actions
@@ -74,9 +75,20 @@ const SingleGame = () => {
   const word = useSelector(selectWord);
   const definition = useSelector(selectRealDefinition);
 
-  // Find the user’s score in the game
-  const userScore = scores.find((score) => score?.userId === user?.uid);
+  const { width, height } = Dimensions.get("window");
+  const cardWidth = width
+  //   const cardHeight = width * 1.5;
+  const cardHeight = height 
 
+  // Find the user’s score in the game
+  const userScore = scores.find((score) => score?.userId === user?.uid, );
+// console.log(
+//   "SINGLE GAME ACCEPTED",
+// //   scores,
+// user.displayName,
+//   userScore?.accepted
+
+// );
   // Update the state for the final card display when rounds are over
   useEffect(() => {
     setShowFinalCard(game.roundsLeft === 0);
@@ -124,16 +136,12 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
         })
       ).then(() => {
         console.log("Calling getInfo...");
-        getInfo({ game, user }) // Now you can chain or await getInfo
+        getInfo({ game, user }) 
           .then(() => {
-            console.log("getInfo completed successfully.");
             dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
 
             dispatch(deletePlayerRequests({ game, scoreId }))
               .then(() => {
-                console.log(
-                  "deletePlayerRequests completed, fetching updated data..."
-                );
                 dispatch(fetchSingleGame(gameId));
                 dispatch(fetchAllGameScores(gameId));
                 dispatch(fetchPlayerRequests(gameId));
@@ -143,7 +151,7 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
               });
           })
           .catch((error) => {
-            console.error("Error in getInfo:", error);
+            console.error("Error in getInfo:", user.displayName, error);
           });
       });
     })
@@ -167,7 +175,7 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
   
   };
    const handleRemovePlayer = (id) => {
- console.log("ID: ", id)
+
      dispatch(deleteScore(id)).then((res) => {
        dispatch(fetchSingleGame(gameId));
        dispatch(fetchAllGameScores(gameId));
@@ -177,6 +185,7 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
 
   // Handle join request creation
   const handleAskJoin = () => {
+    console.log("handleAskJoi, ", user.displayName);
     dispatch(
       createScore({
         score: 0,
@@ -209,6 +218,7 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
   };
 // hide score card when game starts
   const handleHideScoreCard = ()=>{
+   
     setHideScoreCard(true)
   }
 
@@ -243,18 +253,19 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
     // Listener for game start event
     const startGameListener = onValue(startGameRef, (snapshot) => {
       const data = snapshot.val();
-
+// console.log("SINGLW GAME: ", user.displayName)
       if (data && data.room === game.name){
         dispatch(fetchSingleGame(game.id));
 handleHideScoreCard()
+      getInfo({ game, user }); 
       } 
     });
     // Listener for game start event
     const getInfoListener = onValue(getInfoRef, (snapshot) => {
       const data = snapshot.val();
-
+console.log("getInfoListener 11111: ", user.displayName);
       if (data && data.room === game.name) {
-    
+    console.log("getInfoListener: ", user.displayName, );
         dispatch(fetchSingleGame(gameId));
         dispatch(fetchAllGameScores(gameId));
       }
@@ -288,8 +299,8 @@ handleHideScoreCard()
   }, [dispatch]);
 
   return (
-    <View style={styles.card}>
-      <ScrollView>
+    <View style={[styles.card, {height: cardHeight}]}>
+      <ScrollView style={styles.card}>
         {/* Display TempScoreCard if active, otherwise show ScoreCard */}
         {showTempScoreCard ? (
           <TempScoreCard
@@ -302,7 +313,7 @@ handleHideScoreCard()
             definition={definition.definition}
             tempScoreCard={tempScoreCard}
           />
-        ) : (
+        ) : !hideScoreCard ? (
           <ScoreCard
             userId={user?.uid}
             userScore={userScore}
@@ -316,7 +327,7 @@ handleHideScoreCard()
             playerName={user.displayName}
             hideScoreCard={hideScoreCard}
           />
-        )}
+        ): null}
 
         {/* Render FinalCard if game rounds are complete */}
         {showFinalCard && <FinalCard game={game} userScore={userScore} />}
@@ -333,13 +344,14 @@ handleHideScoreCard()
             reloadScores={reloadScores}
             checkIfTied={checkIfTied}
             setPlayerTurnName={setPlayerTurnName}
+            handleHideScoreCard={handleHideScoreCard}
           />
         )}
 
         {/* Home button to navigate back */}
-        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <Text style={styles.homeButton}>Home</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
     </View>
   );
@@ -347,15 +359,10 @@ handleHideScoreCard()
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
-    padding: 20,
-    borderColor: "#000",
-    borderWidth: 1,
+
+
     borderRadius: 10,
 
-
-    padding: 0,
-    position: "relative"
   },
   homeButton: {
     color: "blue",

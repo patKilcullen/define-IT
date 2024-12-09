@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import { View, StyleSheet, ScrollView, Text, Dimensions } from "react-native";
 
 // Redux State and Actions
 import {
@@ -36,6 +36,7 @@ const GamePlay = ({
   userId,
   reloadScores,
   setPlayerTurnName,
+  handleHideScoreCard,
 }) => {
   const dispatch = useDispatch();
   const me = useSelector(selectMe);
@@ -44,6 +45,7 @@ const GamePlay = ({
   // Retrieve user and game details
   const gameName = game.name;
   const { user } = useContext(UserContext);
+//   console.log("USERRR: ", user.displayName)
   const { hideNavbar, showNavbar } = useNavbar();
   const username = user.displayName;
 
@@ -63,17 +65,21 @@ const GamePlay = ({
   const [playGame, setPlayGame] = useState(false);
   const [closeGetWord, setCloseGetWord] = useState(false);
 
+     const { width, height } = Dimensions.get("window");
+     const cardWidth = width 
+     //   const cardHeight = width * 1.5;
+     const cardHeight = height
+
   useEffect(() => {
     dispatch(clearWordState());
     setWord("");
-    setCountdown(3)
-
+    setCountdown(3);
   }, []);
 
   useEffect(() => {
     // Fetch the game scores when the component mounts
     dispatch(fetchAllGameScores());
-showNavbar()
+    showNavbar();
   }, [dispatch]);
   useEffect(() => {
     if (gameScores && gameScores.length > 0) {
@@ -91,8 +97,9 @@ showNavbar()
 
   // Select a random word and set definition
   const handleGetWord = () => {
-    hideNavbar()
-    setGetWord(true)
+    hideNavbar();
+    handleHideScoreCard()
+    setGetWord(true);
     const newWord =
       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
     setWord(newWord?.word);
@@ -115,14 +122,12 @@ showNavbar()
 
   // Choose word and set initial game states
   const handleChooseWord = () => {
-
-    
     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
     dispatch(addRealDefinition({ type: "real", definition }));
     handleGetFakeDefs();
 
     setTimer(true);
-setChoseWord(true);
+    setChoseWord(true);
 
     setDefInput(true);
     set(ref(RealTimeDB, `games/${gameName}/word`), {
@@ -148,7 +153,7 @@ setChoseWord(true);
     // Listener for receiving word
     const wordListener = onValue(wordRef, (snapshot) => {
       const data = snapshot.val();
-
+console.log("USER @ : ", user.displayName)
       if (data) {
         setDefInput(true);
         dispatch(clearFakeDefs());
@@ -166,23 +171,20 @@ setChoseWord(true);
       const data = snapshot.val();
 
       if (data && userId !== data.playerTurnId) {
-
         if (data.countdown > 0) {
           setCountdown(data.countdown);
           if (data.countdown === 1) {
-            
             setSeeInput(false);
           }
         }
         if (data.countdown === 0) {
-          console.log("ENDI OF LISTENEER")
-        //   setCountdown(0);
+          console.log("ENDI OF LISTENEER");
+          //   setCountdown(0);
 
           setDefInput(false);
-setGetWord(false)
-setCloseCardFront(false)
+          setGetWord(false);
+          setCloseCardFront(false);
           if (data.play === true) {
-            
             setPlayGame(true);
             //   setSeeInput(true);
           }
@@ -195,7 +197,11 @@ setCloseCardFront(false)
       const data = snapshot.val();
       if (data) {
         dispatch(
-          addDefinition({ type: data.userName, definition: data.playerDef, userId })
+          addDefinition({
+            type: data.userName,
+            definition: data.playerDef,
+            userId,
+          })
           //   addDefinition({ type: [data.userName], definition: data.playerDef })
         );
       }
@@ -231,7 +237,7 @@ setCloseCardFront(false)
   // Timer countdown effect for gameplay
   useEffect(() => {
     if (timer) {
-        console.log("OTHER OCUNT: ", countdown);
+      console.log("OTHER OCUNT: ", countdown);
       setTimeout(() => {
         set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
           countdown,
@@ -241,12 +247,10 @@ setCloseCardFront(false)
         if (countdown > 0) {
           setDefInput(true);
           setCountdown((countdown) => countdown - 1);
-        } if (countdown === 1) {
-             setCloseCardFront(true);
-        } 
-    
-        else if (countdown === 0) {
-            
+        }
+        if (countdown === 1) {
+          setCloseCardFront(true);
+        } else if (countdown === 0) {
           set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
             playerTurnId: userId,
             play: false,
@@ -254,46 +258,48 @@ setCloseCardFront(false)
           setPlayGame(true);
           setDefInput(false);
           setCloseGetWord(false);
-          console.log("END OF TIMER")
-          setGetWord(false)
-       setCloseCardFront(false);
-        //   setTimer(false)
-        //      setCountdown(15);
+          console.log("END OF TIMER");
+          setGetWord(false);
+          setCloseCardFront(false);
+          //   setTimer(false)
+          //      setCountdown(15);
         } else {
           setDefInput(false);
         }
       }, 1000);
     }
   }, [timer, countdown]);
-// useEffect(() => {
-//   if (timer) {
-//     const interval = setInterval(() => {
-//       setCountdown((prevCountdown) => {
-//         if (prevCountdown > 1) {
-//           return prevCountdown - 1;
-//         } else {
-//           clearInterval(interval); // Stop the interval
-//           setCountdown(15); // Reset countdown for the next round
-//           setTimer(false); // Stop the timer
-//           setPlayGame(true); // Transition to gameplay
-//           return 0;
-//         }
-//       });
-//     }, 1000);
+  // useEffect(() => {
+  //   if (timer) {
+  //     const interval = setInterval(() => {
+  //       setCountdown((prevCountdown) => {
+  //         if (prevCountdown > 1) {
+  //           return prevCountdown - 1;
+  //         } else {
+  //           clearInterval(interval); // Stop the interval
+  //           setCountdown(15); // Reset countdown for the next round
+  //           setTimer(false); // Stop the timer
+  //           setPlayGame(true); // Transition to gameplay
+  //           return 0;
+  //         }
+  //       });
+  //     }, 1000);
 
-//     return () => clearInterval(interval); // Cleanup on unmount
-//   }
-// }, [timer]);
+  //     return () => clearInterval(interval); // Cleanup on unmount
+  //   }
+  // }, [timer]);
 
-
-const [closeCardFront, setCloseCardFront] = useState(false)
-const handleCloseCardFront = ()=>{
-setCloseCardFront(true)
-}
-
+  const [closeCardFront, setCloseCardFront] = useState(false);
+  const handleCloseCardFront = () => {
+    setCloseCardFront(true);
+  };
+// console.log(
+//   "userScore && userScore.turnNum: ", user.displayName,
+//   userScore
+// );
   return (
-    <View style={styles.container}>
-      <ScrollView>
+     <View style={styles.container}>
+      {/* <ScrollView> */}
         {/* Display gameplay or guess definitions based on playGame state */}
         {!playGame ? (
           <View>
@@ -315,7 +321,7 @@ setCloseCardFront(true)
             ) : null} */}
 
             {/* Display GuessCard and CardFront components based on conditions */}
-            <View style={styles.cardContainer}>
+            <View style={[styles.cardContainer, {height: cardHeight, width: cardWidth}]}>
               {defInput &&
               game &&
               userScore &&
@@ -333,7 +339,7 @@ setCloseCardFront(true)
               ) : null}
               {userScore && userScore.turnNum && (
                 <CardFront
-                username={username}
+                  username={username}
                   gameTurn={game.turn}
                   userTurn={userScore?.turnNum}
                   handleGetWord={
@@ -383,7 +389,6 @@ setCloseCardFront(true)
             <View style={styles.guessDef}>
               <View style={styles.cardContainer}>
                 <GuessDefs
-              
                   word={word}
                   userScore={userScore}
                   userId={userId}
@@ -406,28 +411,18 @@ setCloseCardFront(true)
             </View>
           </View>
         )}
-      </ScrollView>
+      {/* </ScrollView> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-//   marign: 0
-position: "relative"
-
+    backgroundColor: "pink",
   },
   cardContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
-borderColor: "transparent",
-borderWidth: 20,
-position: "relative"
+    borderColor: "transparent",
+    borderWidth: 20,
   },
   guessDef: {
     marginLeft: -13,
