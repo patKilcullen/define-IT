@@ -326,6 +326,7 @@ console.log("getInfoListener 11111: ", user.displayName);
             handleRemovePlayer={handleRemovePlayer}
             playerName={user.displayName}
             hideScoreCard={hideScoreCard}
+            getInfo={getInfo}
           />
         ): null}
 

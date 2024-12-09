@@ -27,7 +27,8 @@ const ScoreCard = ({
   playerTurnName,
   handleRemovePlayer,
   playerName,
-  hideScoreCard
+  hideScoreCard,
+  getInfo
 }) => {
        const { user } = useContext(UserContext);
   const dispatch = useDispatch();
@@ -46,8 +47,9 @@ const [collapsed, setCollapsed] = useState(game.started ? true : false)
 
     const joinRequestsListener = onValue(joinRequestsRef, (snapshot) => {
       const requests = snapshot.val();
-
+console.log("joinRequestsListener: ", playerName);
       if (requests) {
+        getInfo({ game, user }); 
         // Loop over the requests and handle each one
         Object.values(requests).forEach((request) => {
           if (request.room === game.name) {
