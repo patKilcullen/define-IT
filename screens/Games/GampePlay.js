@@ -37,6 +37,7 @@ const GamePlay = ({
   reloadScores,
   setPlayerTurnName,
   handleHideScoreCard,
+  setHideScoreCard
 }) => {
   const dispatch = useDispatch();
   const me = useSelector(selectMe);
@@ -45,7 +46,7 @@ const GamePlay = ({
   // Retrieve user and game details
   const gameName = game.name;
   const { user } = useContext(UserContext);
-//   console.log("USERRR: ", user.displayName)
+  //   console.log("USERRR: ", user.displayName)
   const { hideNavbar, showNavbar } = useNavbar();
   const username = user.displayName;
 
@@ -65,10 +66,10 @@ const GamePlay = ({
   const [playGame, setPlayGame] = useState(false);
   const [closeGetWord, setCloseGetWord] = useState(false);
 
-     const { width, height } = Dimensions.get("window");
-     const cardWidth = width 
-     //   const cardHeight = width * 1.5;
-     const cardHeight = height
+  const { width, height } = Dimensions.get("window");
+  const cardWidth = width;
+  //   const cardHeight = width * 1.5;
+  const cardHeight = height;
 
   useEffect(() => {
     dispatch(clearWordState());
@@ -98,7 +99,7 @@ const GamePlay = ({
   // Select a random word and set definition
   const handleGetWord = () => {
     hideNavbar();
-    handleHideScoreCard()
+    handleHideScoreCard();
     setGetWord(true);
     const newWord =
       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
@@ -153,7 +154,7 @@ const GamePlay = ({
     // Listener for receiving word
     const wordListener = onValue(wordRef, (snapshot) => {
       const data = snapshot.val();
-console.log("USER @ : ", user.displayName)
+      console.log("USER @ : ", user.displayName);
       if (data) {
         setDefInput(true);
         dispatch(clearFakeDefs());
@@ -293,22 +294,22 @@ console.log("USER @ : ", user.displayName)
   const handleCloseCardFront = () => {
     setCloseCardFront(true);
   };
-// console.log(
-//   "userScore && userScore.turnNum: ", user.displayName,
-//   userScore
-// );
+  // console.log(
+  //   "userScore && userScore.turnNum: ", user.displayName,
+  //   userScore
+  // );
   return (
-     <View style={styles.container}>
+    <View style={styles.container}>
       {/* <ScrollView> */}
-        {/* Display gameplay or guess definitions based on playGame state */}
-        {!playGame ? (
-          <View>
-            <Text>
-              Countdown: {countdown}, Timer: {timer}
-            </Text>
+      {/* Display gameplay or guess definitions based on playGame state */}
+      {!playGame ? (
+        <View>
+          <Text>
+            Countdown: {countdown}, Timer: {timer}
+          </Text>
 
-            {/* Button to get a word if it's the player's turn */}
-            {/* {game &&
+          {/* Button to get a word if it's the player's turn */}
+          {/* {game &&
             !closeGetWord &&
             userScore &&
             game.turn === userScore.turnNum ? (
@@ -320,97 +321,103 @@ console.log("USER @ : ", user.displayName)
               />
             ) : null} */}
 
-            {/* Display GuessCard and CardFront components based on conditions */}
-            <View style={[styles.cardContainer, {height: cardHeight, width: cardWidth}]}>
-              {defInput &&
-              game &&
-              userScore &&
-              game.turn !== userScore.turnNum ? (
-                <GuessCard
-                  word={word}
-                  definition={definition}
-                  flip={flip}
-                  userId={userId}
-                  gameName={game.name}
-                  seeInput={seeInput}
-                  setSeeInput={setSeeInput}
-                  userName={username}
-                />
-              ) : null}
-              {userScore && userScore.turnNum && (
-                <CardFront
-                  username={username}
-                  gameTurn={game.turn}
-                  userTurn={userScore?.turnNum}
-                  handleGetWord={
-                    game &&
-                    !closeGetWord &&
-                    userScore &&
-                    game.turn === userScore.turnNum
-                      ? handleGetWord
-                      : null
-                  }
-                  getWord={getWord}
-                  setGetWord={setGetWord}
-                  word={word}
-                  definition={definition}
-                  getAWord={
-                    <Buttons
-                      name={!word ? "Get Word" : "New Word"}
-                      //   name={"Get Word"}
-                      func={handleGetWord}
-                      pulse={!word || !word.length ? "pulse" : null}
-                    />
-                  }
-                  handleChooseWord={handleChooseWord}
-                  closeCardFront={closeCardFront}
-                />
-              )}
+          {/* Display GuessCard and CardFront components based on conditions */}
+          <View
+            style={[
+              styles.cardContainer,
+              { height: cardHeight, width: cardWidth },
+            ]}
+          >
+            {defInput &&
+            game &&
+            userScore &&
+            game.turn !== userScore.turnNum ? (
+              <GuessCard
+                word={word}
+                definition={definition}
+                flip={flip}
+                userId={userId}
+                gameName={game.name}
+                seeInput={seeInput}
+                setSeeInput={setSeeInput}
+                userName={username}
+              />
+            ) : null}
+            {userScore && userScore.turnNum && (
+              <CardFront
+                username={username}
+                gameTurn={game.turn}
+                userTurn={userScore?.turnNum}
+                handleGetWord={
+                  game &&
+                  !closeGetWord &&
+                  userScore &&
+                  game.turn === userScore.turnNum
+                    ? handleGetWord
+                    : null
+                }
+                getWord={getWord}
+                setGetWord={setGetWord}
+                word={word}
+                definition={definition}
+                getAWord={
+                  <Buttons
+                    name={!word ? "Get Word" : "New Word"}
+                    //   name={"Get Word"}
+                    func={handleGetWord}
+                    pulse={!word || !word.length ? "pulse" : null}
+                  />
+                }
+                handleChooseWord={handleChooseWord}
+                closeCardFront={closeCardFront}
+              />
+            )}
 
-              {/* {!word && (
+            {/* {!word && (
                 <View style={styles.backCard}>
                   <CardBack title={{ first: "Balder", second: "Dash" }} />
                 </View>
               )} */}
-              {closeGetWord && (
-                <View style={styles.backCard}>
-                  <CardBack
-                    title={{ first: "Balder", second: "Dash" }}
-                    flip={flip}
-                  />
-                </View>
-              )}
-            </View>
-          </View>
-        ) : (
-          // Display GuessDefs component when playGame is true
-
-          <View style={styles.container}>
-            <View style={styles.guessDef}>
-              <View style={styles.cardContainer}>
-                <GuessDefs
-                  word={word}
-                  userScore={userScore}
-                  userId={userId}
-                  gameId={game.id}
-                  gameName={gameName}
-                  setPlayGame={setPlayGame}
-                  reloadScores={reloadScores}
-                  game={game}
-                  setDefinition={setDefinition}
-                  setWord={setWord}
-                  setTimer={setTimer}
-                  setChoseWord={setChoseWord}
-                  setGamePlayCountdown={setCountdown}
-                  setSeeInput={setSeeInput}
-                  setParentCountdown={setCountdown}
-                  userName={username}
-                  setGetWord={setGetWord}
+            {closeGetWord && (
+              <View style={styles.backCard}>
+                <CardBack
+                  title={{ first: "Balder", second: "Dash" }}
+                  flip={flip}
                 />
               </View>
+            )}
+          </View>
+        </View>
+      ) : (
+        // Display GuessDefs component when playGame is true
+
+        <View style={styles.container}>
+          <View style={styles.guessDef}>
+            <View style={styles.cardContainer}>
+              <GuessDefs
+                word={word}
+                userScore={userScore}
+                userId={userId}
+                gameId={game.id}
+                gameName={gameName}
+                setPlayGame={setPlayGame}
+                reloadScores={reloadScores}
+                game={game}
+                setDefinition={setDefinition}
+                setWord={setWord}
+                setTimer={setTimer}
+                setChoseWord={setChoseWord}
+                setGamePlayCountdown={setCountdown}
+                setSeeInput={setSeeInput}
+                setParentCountdown={setCountdown}
+                userName={username}
+                setGetWord={setGetWord}
+                setHideScoreCard={setHideScoreCard}
+              />
             </View>
           </View>
-        )}
+        </View>
+      )}
       {/* </ScrollView> */}
     </View>
   );

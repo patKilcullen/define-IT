@@ -299,7 +299,7 @@ console.log("getInfoListener 11111: ", user.displayName);
   }, [dispatch]);
 
   return (
-    <View style={[styles.card, {height: cardHeight}]}>
+    <View style={[styles.card, { height: cardHeight }]}>
       <ScrollView style={styles.card}>
         {/* Display TempScoreCard if active, otherwise show ScoreCard */}
         {showTempScoreCard ? (
@@ -328,7 +328,7 @@ console.log("getInfoListener 11111: ", user.displayName);
             hideScoreCard={hideScoreCard}
             getInfo={getInfo}
           />
-        ): null}
+        ) : null}
 
         {/* Render FinalCard if game rounds are complete */}
         {showFinalCard && <FinalCard game={game} userScore={userScore} />}
@@ -346,6 +346,7 @@ console.log("getInfoListener 11111: ", user.displayName);
             checkIfTied={checkIfTied}
             setPlayerTurnName={setPlayerTurnName}
             handleHideScoreCard={handleHideScoreCard}
+            setHideScoreCard={setHideScoreCard}
           />
         )}
 
