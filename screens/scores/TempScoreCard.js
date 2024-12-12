@@ -274,7 +274,7 @@ const TempScoreCard = ({
         dispatch(clearTempScoreCardMessages());
         setShowTempScoreCard(false);
         dispatch(fetchSingleGame(game.id));
-  set(ref(RealTimeDB, `games/${gameName}/word`), {
+  set(ref(RealTimeDB, `games/${game.name}/word`), {
     word: "",
     definition: "",
     room: game.name,

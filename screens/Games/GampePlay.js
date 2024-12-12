@@ -28,6 +28,7 @@ import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 import { balderdashWords } from "../../Words.js";
 
 import { useNavbar } from "../../NabBarContext.js";
+import { fetchSingleGame } from "../../redux/singleGame.js";
 
 
 const GamePlay = ({
@@ -62,7 +63,7 @@ const GamePlay = ({
 
   const [flip, setFlip] = useState(false);
   const [flipSide, setFlipSide] = useState("back");
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(1);
   const [playGame, setPlayGame] = useState(false);
   const [closeGetWord, setCloseGetWord] = useState(false);
 
@@ -94,10 +95,19 @@ const GamePlay = ({
         setPlayerTurnName(currentPlayerTurn.displayName);
       }
     }
+
+    if(game.turn ===  userScore?.turnNum){
+
+        dispatch(fetchSingleGame(game.id))
+    }
   }, [gameScores, game.turn]);
 
+
+  const [openFlipCArdModalm, setOpenFlipCardModal] = useState(false)
+//   console.log("GAGAG: ", game.turn, userScore.turnNum);
   // Select a random word and set definition
   const handleGetWord = () => {
+
     hideNavbar();
     handleHideScoreCard();
     setGetWord(true);
@@ -154,7 +164,7 @@ const GamePlay = ({
     // Listener for receiving word
     const wordListener = onValue(wordRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("USER @ : ", user.displayName);
+
       if (data) {
         setDefInput(true);
         dispatch(clearFakeDefs());
@@ -345,6 +355,7 @@ const GamePlay = ({
             ) : null}
             {userScore && userScore.turnNum && (
               <CardFront
+              gameId={game.id}
                 username={username}
                 gameTurn={game.turn}
                 userTurn={userScore?.turnNum}

@@ -11,7 +11,7 @@ import {
   selectRealDefinition,
 } from "../../redux/gameplay";
 import { addPoint, getUserScore } from "../../redux/scores";
-import { editGameTurn, selectSingleGame } from "../../redux/singleGame";
+import { editGameTurn, fetchSingleGame, selectSingleGame } from "../../redux/singleGame";
 
 // Contexts
 import { UserContext } from "../../UserContext";
@@ -53,7 +53,7 @@ const GuessDefs = ({
   const [combinedDefs, setCombinedDefs] = useState([]);
   const [defList, setDefList] = useState(false);
   const [guessed, setGuessed] = useState(false);
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(1);
 
   const dispatch = useDispatch();
 
@@ -143,6 +143,7 @@ const GuessDefs = ({
 
   // Countdown timer for guessing phase
   useEffect(() => {
+    console.log("handleChangeGameTurn: ", userName);
     const timer = setTimeout(() => {
       if (countdown > 0) {
         setCountdown(countdown - 1);
@@ -165,7 +166,7 @@ const GuessDefs = ({
         dispatch(clearFakeWords());
         setGamePlayCountdown(5);
         setSeeInput(true);
-        setParentCountdown(15);
+        setParentCountdown(1);
       }
     }, 1000);
 
@@ -174,6 +175,8 @@ const GuessDefs = ({
   }, [countdown]);
 
   const handleChangeGameTurn = () => {
+console.log("CAHGN E TURN: ",  user.displayName,  singleGame.turn === userScore.turnNum)
+ 
         setHideScoreCard(false)
         showNavbar()
     game.roundsLeft !== 1
@@ -209,6 +212,7 @@ const GuessDefs = ({
                 })
               );
         });
+       
   };
 
   return !guessed ? (

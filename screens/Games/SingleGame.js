@@ -104,6 +104,7 @@ const SingleGame = () => {
   const reloadScores = () => {
     dispatch(fetchAllGameScores(gameId));
     setShowTempScoreCard(true);
+    
   };
 
   // Track the previous game turn
@@ -263,9 +264,9 @@ handleHideScoreCard()
     // Listener for game start event
     const getInfoListener = onValue(getInfoRef, (snapshot) => {
       const data = snapshot.val();
-console.log("getInfoListener 11111: ", user.displayName);
+
       if (data && data.room === game.name) {
-    console.log("getInfoListener: ", user.displayName, );
+ 
         dispatch(fetchSingleGame(gameId));
         dispatch(fetchAllGameScores(gameId));
       }
@@ -297,6 +298,8 @@ console.log("getInfoListener 11111: ", user.displayName);
       dispatch(clearPlayerRequests());
     };
   }, [dispatch]);
+
+
 
   return (
     <View style={[styles.card, { height: cardHeight }]}>
