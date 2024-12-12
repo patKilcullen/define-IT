@@ -74,9 +74,10 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
     setPlayerDef("");
     setReverseFlip(true);
     startFlipAnimation2();
+
     setTimeout(() => {
-       setSeeInput(false);
-    // moveOffScreen()
+      setSeeInput(false);
+      // moveOffScreen()
     }, 2000);
   };
 

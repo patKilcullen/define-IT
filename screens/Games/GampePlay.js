@@ -67,7 +67,7 @@ const GamePlay = ({
   const [playGame, setPlayGame] = useState(false);
   const [closeGetWord, setCloseGetWord] = useState(false);
 const [wordCount, setWordCount] = useState(0);
-
+const [showWordCount, setShowWordCount] = useState(false)
 
   const { width, height } = Dimensions.get("window");
   const cardWidth = width;
@@ -77,7 +77,7 @@ const [wordCount, setWordCount] = useState(0);
   useEffect(() => {
     dispatch(clearWordState());
     setWord("");
-    setCountdown(3);
+    setCountdown(10);
   }, []);
 
   useEffect(() => {
@@ -105,12 +105,21 @@ const [wordCount, setWordCount] = useState(0);
     }
   }, [gameScores, game.turn]);
 
+const handleShowWordCount = ()=>{
+    setShowWordCount(true)
+    setTimeout(() => {
+        setShowWordCount(false);
+    }, 3000);
+}
 
-  const [openFlipCArdModalm, setOpenFlipCardModal] = useState(false)
-//   console.log("GAGAG: ", game.turn, userScore.turnNum);
+
   // Select a random word and set definition
   const handleGetWord = () => {
 setWordCount((count)=> count + 1)
+if(wordCount > 0){
+
+    handleShowWordCount()
+}
     hideNavbar();
     handleHideScoreCard();
     setGetWord(true);
@@ -376,7 +385,7 @@ setWordCount((count)=> count + 1)
                 definition={definition}
                 getAWordButton={
                   <Buttons
-                    name={!word ? "Get Word" : `New Word... ${3 - wordCount} to got`}
+                    name={!word ? "Get Word" : `New Word`}
                     //   name={"Get Word"}
                     func={handleGetWord}
                     pulse={!word || !word.length ? "pulse" : null}
@@ -385,6 +394,7 @@ setWordCount((count)=> count + 1)
                 wordCount={wordCount}
                 handleChooseWord={handleChooseWord}
                 closeCardFront={closeCardFront}
+                showWordCount={showWordCount}
               />
             )}
 

@@ -1351,7 +1351,8 @@ const CardFront = ({
   userTurn,
   gameTurn,
   username,
-  wordCount
+  wordCount,
+  showWordCount
 }) => {
 const [reverseFlip, setReverseFlip] = useState(false);
 
@@ -1585,12 +1586,28 @@ const [reverseFlip, setReverseFlip] = useState(false);
                   <Animated.View style={styles.topPortion}>
                     <Text style={styles.topText}>{word}</Text>
                   </Animated.View>
-
                   <View style={styles.bottomPortion}>
                     <Text style={styles.bottomText}>{definition}</Text>
                   </View>
-                  {}
+                  {/* {showWordCount && (
+                    <View >
+                      {wordCount - 1 < 2 && (
+                        <Text
+                          style={{color: "red"}}
+                        >{`${wordCount - 1} draw remaining`}</Text>
+                      )}
+                    </View>
+                  )} */}
                   <View style={styles.buttons}>
+                    {showWordCount && (
+                      <View>
+                        {wordCount - 1 < 2 && (
+                          <Text
+                            style={{ color: "red" }}
+                          >{`${wordCount - 1} draw remaining`}</Text>
+                        )}
+                      </View>
+                    )}
                     {wordCount < 3 && getAWordButton}
                     <Buttons
                       name={"Choose Word"}
