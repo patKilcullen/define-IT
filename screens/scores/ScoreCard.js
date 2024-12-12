@@ -28,19 +28,18 @@ const ScoreCard = ({
   handleRemovePlayer,
   playerName,
   hideScoreCard,
-  getInfo
+  getInfo,
 }) => {
-       const { user } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const scores = useSelector(selectAllScores);
   const playerRequests = useSelector(selectPlayerRequests);
-const [collapsed, setCollapsed] = useState(game.started ? true : false)
-
+  const [collapsed, setCollapsed] = useState(game.started ? true : false);
 
   // console.log("USERSCORE: ", userScore)
   useEffect(() => {
-    if(hideScoreCard){
-        setCollapsed(true)
+    if (hideScoreCard) {
+      setCollapsed(true);
     }
     // Reference to join requests event in Firebase
     const joinRequestsRef = ref(RealTimeDB, `games/${game.id}/join_requests`);
@@ -48,7 +47,7 @@ const [collapsed, setCollapsed] = useState(game.started ? true : false)
     const joinRequestsListener = onValue(joinRequestsRef, (snapshot) => {
       const requests = snapshot.val();
       if (requests) {
-        getInfo({ game, user }); 
+        getInfo({ game, user });
         // Loop over the requests and handle each one
         Object.values(requests).forEach((request) => {
           if (request.room === game.name) {
@@ -63,22 +62,15 @@ const [collapsed, setCollapsed] = useState(game.started ? true : false)
     };
   }, [game.name, game.id, dispatch, hideScoreCard]);
 
-
-
-// console.log("GAME: ", game.ownerId)
-// // console.log("USER: ", user)
-// console.log("SCORE: ", userScore.turn, user.displayName);
-
-const handleToggleCollapse = ()=>{
-setCollapsed((prev)=> !prev)
-}
+  const handleToggleCollapse = () => {
+    setCollapsed((prev) => !prev);
+  };
 
   return (
     <>
       {collapsed ? (
         <Buttons
           name={"Score Card"}
-          //   func={() => user?.user?.id}
           func={() => handleToggleCollapse()}
           small={true}
         />
@@ -99,23 +91,12 @@ setCollapsed((prev)=> !prev)
 
           {/* User's Score and Rounds Left */}
           <View style={styles.scoresContainer}>
-            {/* {userScore && (
-          <View style={styles.scoreSection}>
-            <Text style={styles.label}>Score:</Text>
-            <Text style={styles.score}>{userScore.score}</Text>
-            <Text style={styles.points}>
-              {userScore.score === 1 ? "pt" : "pts"}
-            </Text>
-          </View>
-        )} */}
-
             {game && game.rounds && game.roundsLeft && (
               <View style={styles.roundSection}>
                 <Text style={styles.label}>Round:</Text>
                 <Text style={styles.round}>
                   {game.rounds + 1 - game.roundsLeft}/{game.rounds}
                 </Text>
-                {/* <Text style={styles.label}>{playerTurnName}'s turn</Text> */}
               </View>
             )}
           </View>
@@ -128,8 +109,7 @@ setCollapsed((prev)=> !prev)
                 .filter(
                   (score) =>
                     score !== undefined && score !== null && score.accepted
-                  // && score.userId !== userId
-                ) // Filt
+                )
                 .map((user) => (
                   <View key={user?.user?.id} style={styles.playerScore}>
                     <Text style={styles.playerName}>
@@ -234,7 +214,6 @@ setCollapsed((prev)=> !prev)
     </>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

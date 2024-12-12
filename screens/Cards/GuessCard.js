@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -18,15 +16,17 @@ import { ref, set } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 import CardBack from "./CardBack.js";
 
-const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userName }) => {
+const GuessCard = ({
+  word,
+  gameName,
+  userId,
+  seeInput,
+  setSeeInput,
+  userName,
+}) => {
   const [playerDef, setPlayerDef] = useState("");
   const [reverseFlip, setReverseFlip] = useState(false);
   const inputRef = useRef();
-
-  // Set focus on input box
-  //   useEffect(() => {
-  //     inputRef.current.focus();
-  //   }, []);
 
   const dispatch = useDispatch();
 
@@ -35,21 +35,6 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
   const cardWidth = width * 0.9;
   const textFontSize = width * 0.15;
 
-  // Sends player's fake definition to the player whose turn it is via a socket
-  //   const handleEnterFakeDef = (e) => {
-  //     e.preventDefault();
-
-  //     dispatch(addPlayerFakeDef(playerDef));
-  // console.log(" playerDef,userId,userName, gameName:",  playerDef, userId,  userName, gameName)
-  // console.log("types: ", typeof playerDef, typeof userId, typeof userName);
-  //     set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
-  //       playerDef,
-  //       userId,
-  //       userName
-  //     });
-  //     setSeeInput(false);
-  //     setPlayerDef("");
-  //   };
   const handleEnterFakeDef = async (e) => {
     e.preventDefault();
 
@@ -68,16 +53,12 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
     } catch (error) {
       console.error("Firebase set error:", error.message);
     }
-
-    // setSeeInput(false);
-
     setPlayerDef("");
     setReverseFlip(true);
     startFlipAnimation2();
 
     setTimeout(() => {
       setSeeInput(false);
-      // moveOffScreen()
     }, 2000);
   };
 
@@ -90,35 +71,6 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
       startFlipAnimation();
     }
   }, [word !== "" && seeInput]);
-
-  // const startFlipAnimation = () => {
-  //   Animated.parallel([
-  //     // Flip animation
-  //     Animated.timing(flipAnimation, {
-  //       toValue:  1, // Reverse or forward
-  //       duration: 1500,
-  //       useNativeDriver: true,
-  //     }),
-  //   ]).start();
-  // };
-
-  // // Interpolation for back rotation
-  // const backRotation = flipAnimation.interpolate({
-  //   inputRange: [0, 0.5, 1],
-  //   outputRange: ["0deg", "90deg", "180deg"], // Back starts visible, rotates to hide
-  // });
-
-  // // Interpolation for front rotation
-  // const frontRotation = flipAnimation.interpolate({
-  //   inputRange: [0, 0.5, 1],
-  //   outputRange: ["180deg", "90deg", "0deg"], // Front starts hidden, rotates to show
-  // });
-
-  // // Interpolation for scaling
-  // const scale = flipAnimation.interpolate({
-  //   inputRange: [0, 0.5, 1],
-  //   outputRange:  [1, 1.1, 1.2], // Grow and settle
-  // });
 
   const startFlipAnimation = () => {
     Animated.parallel([
@@ -139,11 +91,11 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
         duration: 1500,
         useNativeDriver: true,
       }),
-         Animated.timing(moveOffScreenValue, {
-      toValue:  0 - cardHeight, // Move completely off-screen to the right
-      duration: 1500, // Animation duration in ms
-      useNativeDriver: true, // Use native driver for performance}
-  })
+      Animated.timing(moveOffScreenValue, {
+        toValue: 0 - cardHeight, // Move completely off-screen
+        duration: 1500,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
@@ -160,16 +112,7 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
     // Front starts hidden, rotates to show
   });
 
-   
- const moveOffScreenValue = useRef(new Animated.Value(0)).current;
-//   const moveOffScreen = () => {
-//     Animated.timing(moveOffScreenValue, {
-//       toValue: cardHeight, // Move completely off-screen to the right
-//       duration: 1000, // Animation duration in ms
-//       useNativeDriver: true, // Use native driver for performance
-//     }).start();
-//   };
-
+  const moveOffScreenValue = useRef(new Animated.Value(0)).current;
 
   // Interpolation for back rotation
   const backRotation = flipAnimation.interpolate({
@@ -190,7 +133,7 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
   // Interpolation for scaling
   const scale = flipAnimation.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: [1, 1.1, 1.2], // Grow and settle
+    outputRange: [1, 1.1, 1.2],
   });
 
   return (
@@ -199,18 +142,13 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
         visible={word !== "" && seeInput}
         animationType="fade"
         transparent={true}
-        // onRequestClose={() => setShowTempScoreCard(false)}
       >
         <View style={styles.modalContainer}>
           <Animated.View
             style={[
               styles.cardContainer,
               {
-                transform: [
-                  //   { translateX: positionAnimation.x },
-                  //   { translateY: positionAnimation.y },
-                  { scale },
-                ],
+                transform: [{ scale }],
               },
             ]}
           >
@@ -224,7 +162,7 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
                   transform: [
                     { scale },
                     { rotateY: reverseFlip ? backRotation2 : backRotation },
-                    { translateY:  moveOffScreenValue },
+                    { translateY: moveOffScreenValue },
                   ],
                   position: "absolute",
                 },
@@ -234,8 +172,7 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput, userNa
             </Animated.View>
 
             {/* Front of the card */}
-            {/* 
-            <Animated.View style={styles.container}> */}
+
             <Animated.View
               style={[
                 styles.card,
@@ -321,7 +258,7 @@ const styles = StyleSheet.create({
     backfaceVisibility: "hidden", // Prevents the back and front from showing simultaneously
   },
   card: {
-     zIndex: 2004,
+    zIndex: 2004,
     borderRadius: 50,
     padding: 30,
     flexDirection: "column",
@@ -331,32 +268,6 @@ const styles = StyleSheet.create({
     borderWidth: 8,
     backfaceVisibility: "hidden", // Prevents the back and front from showing simultaneously
   },
-    // card: {
-    //   borderRadius: 50,
-    //   padding: 30,
-    //   backgroundColor: "#e6e8dc",
-    //   flexDirection: "column",
-    //   justifyContent: "center",
-    //   alignItems: "center",
-    //   shadowColor: "#000",
-    //   shadowOffset: { width: 0, height: 2 },
-    //   shadowOpacity: 0.8,
-    //   shadowRadius: 2,
-    //   elevation: 5,
-    //   marginVertical: 10,
-    //   borderColor: "black",
-    //   borderWidth: 8,
-    // },
-//   topPortion: {
-//     height: "40%",
-//     width: "100%",
-//     backgroundColor: "#88ebe6",
-//     justifyContent: "center",
-//     borderBottomWidth: 5,
-//     borderBottomColor: "#571122",
-//     borderTopLeftRadius: 30,
-//     borderTopRightRadius: 30,
-//   },
   topPortion: {
     height: "40%",
     width: "100%",

@@ -1,14 +1,7 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Dimensions
-} from "react-native";
+import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 
 // Redux State and Actions
 import {
@@ -24,7 +17,6 @@ import {
   createScore,
   acceptJoinRequestByScoreId,
   fetchPlayerRequests,
-  selectPlayerRequests,
   clearScores,
   clearPlayerRequests,
   getInfo,
@@ -59,7 +51,7 @@ const SingleGame = () => {
   const [showTiedGame, setShowTiedGame] = useState(false);
   const [reloadFlip, setReloadFlip] = useState(false);
   const [playerTurnName, setPlayerTurnName] = useState("");
-  const [hideScoreCard, setHideScoreCard] = useState(false)
+  const [hideScoreCard, setHideScoreCard] = useState(false);
 
   const { user } = useContext(UserContext);
 
@@ -76,19 +68,12 @@ const SingleGame = () => {
   const definition = useSelector(selectRealDefinition);
 
   const { width, height } = Dimensions.get("window");
-  const cardWidth = width
-  //   const cardHeight = width * 1.5;
-  const cardHeight = height 
+  const cardWidth = width;
+  const cardHeight = height;
 
   // Find the user’s score in the game
-  const userScore = scores.find((score) => score?.userId === user?.uid, );
-// console.log(
-//   "SINGLE GAME ACCEPTED",
-// //   scores,
-// user.displayName,
-//   userScore?.accepted
+  const userScore = scores.find((score) => score?.userId === user?.uid);
 
-// );
   // Update the state for the final card display when rounds are over
   useEffect(() => {
     setShowFinalCard(game.roundsLeft === 0);
@@ -104,7 +89,6 @@ const SingleGame = () => {
   const reloadScores = () => {
     dispatch(fetchAllGameScores(gameId));
     setShowTempScoreCard(true);
-    
   };
 
   // Track the previous game turn
@@ -114,75 +98,67 @@ const SingleGame = () => {
     prevGameTurn.current = gameTurn;
   }, [showTempScoreCard]);
 
-
-
-const handleAcceptRequest = ({ scoreId, userId }) => {
-  dispatch(
-    editGame({
-      ...game,
-      userId,
-      numPlayers: game.numPlayers + 1,
-      addPlayers: true,
-    })
-  )
-    .then((res) => {
+  const handleAcceptRequest = ({ scoreId, userId }) => {
+    dispatch(
+      editGame({
+        ...game,
+        userId,
+        numPlayers: game.numPlayers + 1,
+        addPlayers: true,
+      })
+    )
+      .then((res) => {
         console.log("res.payload.numPlayers: ", res.payload.numPlayers);
-       
-      dispatch(
-        editScore({
-          scoreId,
-          turnNum: res.payload.numPlayers,
-          gameId: game.id,
-          accepted: true,
-        })
-      ).then(() => {
-        console.log("Calling getInfo...");
-        getInfo({ game, user }) 
-          .then(() => {
-            dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
 
-            dispatch(deletePlayerRequests({ game, scoreId }))
-              .then(() => {
-                dispatch(fetchSingleGame(gameId));
-                dispatch(fetchAllGameScores(gameId));
-                dispatch(fetchPlayerRequests(gameId));
-              })
-              .catch((error) => {
-                console.error("Error deleting player request:", error);
-              });
+        dispatch(
+          editScore({
+            scoreId,
+            turnNum: res.payload.numPlayers,
+            gameId: game.id,
+            accepted: true,
           })
-          .catch((error) => {
-            console.error("Error in getInfo:", user.displayName, error);
-          });
+        ).then(() => {
+          console.log("Calling getInfo...");
+          getInfo({ game, user })
+            .then(() => {
+              dispatch(acceptJoinRequestByScoreId({ game, scoreId }));
+
+              dispatch(deletePlayerRequests({ game, scoreId }))
+                .then(() => {
+                  dispatch(fetchSingleGame(gameId));
+                  dispatch(fetchAllGameScores(gameId));
+                  dispatch(fetchPlayerRequests(gameId));
+                })
+                .catch((error) => {
+                  console.error("Error deleting player request:", error);
+                });
+            })
+            .catch((error) => {
+              console.error("Error in getInfo:", user.displayName, error);
+            });
+        });
+      })
+      .catch((error) => {
+        console.error("Error in handleAcceptRequest:", error);
       });
-    })
-    .catch((error) => {
-      console.error("Error in handleAcceptRequest:", error);
-    });
-};
-
-
+  };
 
   // Decline a join request for the game
   const handleDeclineRequest = (id) => {
-    
-        dispatch(deletePlayerRequests({ game, scoreId: id }));
-    dispatch(deleteScore({ userId: id, gameId: game.id })).then((res)=>{
-  dispatch(fetchSingleGame(gameId));
-  dispatch(fetchAllGameScores(gameId));
-  dispatch(fetchPlayerRequests(gameId));
-
-    })
-  
+    dispatch(deletePlayerRequests({ game, scoreId: id }));
+    dispatch(deleteScore({ userId: id, gameId: game.id })).then((res) => {
+      dispatch(fetchSingleGame(gameId));
+      dispatch(fetchAllGameScores(gameId));
+      dispatch(fetchPlayerRequests(gameId));
+    });
   };
-   const handleRemovePlayer = (id) => {
-
-     dispatch(deleteScore(id)).then((res) => {
-       dispatch(fetchSingleGame(gameId));
-       dispatch(fetchAllGameScores(gameId));
-       dispatch(fetchPlayerRequests(gameId));
-     });
-   };
+  const handleRemovePlayer = (id) => {
+    dispatch(deleteScore(id)).then((res) => {
+      dispatch(fetchSingleGame(gameId));
+      dispatch(fetchAllGameScores(gameId));
+      dispatch(fetchPlayerRequests(gameId));
+    });
+  };
 
   // Handle join request creation
   const handleAskJoin = () => {
@@ -215,13 +191,12 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
     dispatch(editGame({ id: game.id, started: true }))
       .then(() => dispatch(fetchSingleGame(gameId)))
       .then(() => dispatch(startGame({ game, user })));
-      handleHideScoreCard()
+    handleHideScoreCard();
   };
-// hide score card when game starts
-  const handleHideScoreCard = ()=>{
-   
-    setHideScoreCard(true)
-  }
+  // hide score card when game starts
+  const handleHideScoreCard = () => {
+    setHideScoreCard(true);
+  };
 
   // Update tempScoreCard when tempScoreCardTurn changes
   useEffect(() => {
@@ -231,42 +206,25 @@ const handleAcceptRequest = ({ scoreId, userId }) => {
   // Firebase listeners to sync game state
   useEffect(() => {
     // Set up Firebase references
-    //  const scoreCardRef = ref(RealTimeDB, `games/${gameId}/score_card_info`);
     const startGameRef = ref(RealTimeDB, `games/${game.id}/start_game`);
     const playAgainRef = ref(RealTimeDB, `games/${game.name}/play_again`);
 
     const getInfoRef = ref(RealTimeDB, `games/${game.id}/get_info`);
-    // Listener for score card updates
-    //     const scoreCardListener = onValue(scoreCardRef, (snapshot) => {
-
-    //       const data = snapshot.val();
-    //     //   if (data.message) setTempScoreCard(data.message);
-    
-    //     if (data && data.message){
-    //      console.log("DATA SCARE CARD: ", data)
-    //      dispatch(fetchSingleGame(game.id));
-    //  addTempScoreCardMessage(data.message);
-    //     }
-    //     ;
-    //     });
-
 
     // Listener for game start event
     const startGameListener = onValue(startGameRef, (snapshot) => {
       const data = snapshot.val();
-// console.log("SINGLW GAME: ", user.displayName)
-      if (data && data.room === game.name){
+      if (data && data.room === game.name) {
         dispatch(fetchSingleGame(game.id));
-handleHideScoreCard()
-      getInfo({ game, user }); 
-      } 
+        handleHideScoreCard();
+        getInfo({ game, user });
+      }
     });
     // Listener for game start event
     const getInfoListener = onValue(getInfoRef, (snapshot) => {
       const data = snapshot.val();
 
       if (data && data.room === game.name) {
- 
         dispatch(fetchSingleGame(gameId));
         dispatch(fetchAllGameScores(gameId));
       }
@@ -281,7 +239,6 @@ handleHideScoreCard()
 
     // Cleanup function to remove Firebase listeners on component unmount
     return () => {
-      //    off(scoreCardRef, scoreCardListener);
       off(startGameRef, startGameListener);
       off(playAgainRef, playAgainListener);
       off(getInfoRef, getInfoListener);
@@ -298,8 +255,6 @@ handleHideScoreCard()
       dispatch(clearPlayerRequests());
     };
   }, [dispatch]);
-
-
 
   return (
     <View style={[styles.card, { height: cardHeight }]}>
@@ -352,11 +307,6 @@ handleHideScoreCard()
             setHideScoreCard={setHideScoreCard}
           />
         )}
-
-        {/* Home button to navigate back */}
-        {/* <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          <Text style={styles.homeButton}>Home</Text>
-        </TouchableOpacity> */}
       </ScrollView>
     </View>
   );
@@ -364,10 +314,7 @@ handleHideScoreCard()
 
 const styles = StyleSheet.create({
   card: {
-
-
     borderRadius: 10,
-
   },
   homeButton: {
     color: "blue",

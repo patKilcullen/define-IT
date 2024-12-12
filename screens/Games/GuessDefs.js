@@ -10,13 +10,15 @@ import {
   selectFakeDefinitions,
   selectRealDefinition,
 } from "../../redux/gameplay";
-import { addPoint, getUserScore } from "../../redux/scores";
-import { editGameTurn, fetchSingleGame, selectSingleGame } from "../../redux/singleGame";
+import { addPoint } from "../../redux/scores";
+import {
+  editGameTurn,
+  selectSingleGame,
+} from "../../redux/singleGame";
 
 // Contexts
 import { UserContext } from "../../UserContext";
 import { useNavbar } from "../../NabBarContext.js";
-
 
 // Components
 import TempScoreCard from "../../screens/scores/TempScoreCard";
@@ -32,26 +34,21 @@ const GuessDefs = ({
   userScore,
   gameName,
   setPlayGame,
-  playGame,
   reloadScores,
   game,
   setDefinition,
   setWord,
   setTimer,
-  setChoseWord,
   setGamePlayCountdown,
   setSeeInput,
   setParentCountdown,
   userName,
-  setGetWord,
-  setHideScoreCard
+  setHideScoreCard,
 }) => {
   const { user } = useContext(UserContext);
   const userId = user.uid;
-  const { hideNavbar, showNavbar } = useNavbar();
-  // Component state for definitions, guesses, and countdown timer
+  const { showNavbar } = useNavbar();
   const [combinedDefs, setCombinedDefs] = useState([]);
-  const [defList, setDefList] = useState(false);
   const [guessed, setGuessed] = useState(false);
   const [countdown, setCountdown] = useState(1);
 
@@ -89,15 +86,6 @@ const GuessDefs = ({
       // Handle scenario for guessing another player's fake definition
       dispatch(addPoint({ chosenDefUserID, gameId }));
       message = `${user.displayName} guessed ${def.type}'s fake definition... ${def.type} gets 1 point!!`;
-      //   .then((res) => {
-      //     console.log("RES: ", res);
-      //     // console.log(
-      //     //   "res.payload.user.user.displayName: ",
-      //     //   res.payload.userName
-      //     // );
-      //      message = `${user.displayName} guessed ${res.payload.user.user.displayName}'s fake definition... ${res.payload.user.user.displayName} gets 1 point!!`;
-      //     // message = `${userName} guessed turns's fake definition... turd gets 1 point!!`;
-      //   });
     }
 
     // Update score card information in Firebase
@@ -109,15 +97,6 @@ const GuessDefs = ({
       message,
       userName,
     });
-    //   .then(() => {
-    //     console.log("Scorecard information sent to Firebase successfully");
-    //   })
-    //   .catch((error) => {
-    //     console.error(
-    //       "Error sending scorecard information to Firebase:",
-    //       error
-    //     );
-    //   });
 
     // Dispatch score card message if it's the user's turn
     if (singleGame.turn === userScore.turnNum) {
@@ -143,7 +122,6 @@ const GuessDefs = ({
 
   // Countdown timer for guessing phase
   useEffect(() => {
-    console.log("handleChangeGameTurn: ", userName);
     const timer = setTimeout(() => {
       if (countdown > 0) {
         setCountdown(countdown - 1);
@@ -161,7 +139,6 @@ const GuessDefs = ({
         setDefinition("");
         setWord("");
         setGuessed(false);
-        setChoseWord(false);
         setTimer(false);
         dispatch(clearFakeWords());
         setGamePlayCountdown(5);
@@ -175,10 +152,14 @@ const GuessDefs = ({
   }, [countdown]);
 
   const handleChangeGameTurn = () => {
-console.log("CAHGN E TURN: ",  user.displayName,  singleGame.turn === userScore.turnNum)
- 
-        setHideScoreCard(false)
-        showNavbar()
+    console.log(
+      "CAHGN E TURN: ",
+      user.displayName,
+      singleGame.turn === userScore.turnNum
+    );
+
+    setHideScoreCard(false);
+    showNavbar();
     game.roundsLeft !== 1
       ? game.turn === 1
         ? dispatch(
@@ -212,16 +193,10 @@ console.log("CAHGN E TURN: ",  user.displayName,  singleGame.turn === userScore.
                 })
               );
         });
-       
   };
 
   return !guessed ? (
-    <Modal
-      visible={true}
-      animationType="slide"
-      transparent={true}
-      //   onRequestClose={() => setShowTempScoreCard(false)}
-    >
+    <Modal visible={true} animationType="slide" transparent={true}>
       <View style={styles.modalContainer}>
         <View style={styles.container}>
           <Text style={styles.timerText}>Time: {countdown}</Text>
@@ -268,7 +243,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+    backgroundColor: "rgba(0, 0, 0, 0.5)", 
   },
 });
 
