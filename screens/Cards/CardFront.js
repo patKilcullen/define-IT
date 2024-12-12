@@ -229,7 +229,7 @@ const CardFront = ({
                   <View style={styles.buttons}>
                     {showWordCount && (
                       <View>
-                        {wordCount - 1 < 2 && (
+                        {wordCount - 1 < 2 && wordCount - 1 > 0 && (
                           <Text
                             style={{ color: "red" }}
                           >{`${wordCount - 1} draw remaining`}</Text>

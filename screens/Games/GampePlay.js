@@ -77,7 +77,7 @@ const GamePlay = ({
     // Fetch the game scores when the component mounts
     dispatch(fetchAllGameScores());
     showNavbar();
-    setWordCount(0);
+    // setWordCount(0);
   }, [dispatch]);
   useEffect(() => {
     if (gameScores && gameScores.length > 0) {
@@ -148,6 +148,7 @@ const GamePlay = ({
       play: true,
     });
     setCloseGetWord(true);
+      setWordCount(0);
   };
 
   // Firebase listeners for various game data
