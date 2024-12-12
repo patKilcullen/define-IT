@@ -66,6 +66,8 @@ const GamePlay = ({
   const [countdown, setCountdown] = useState(1);
   const [playGame, setPlayGame] = useState(false);
   const [closeGetWord, setCloseGetWord] = useState(false);
+const [wordCount, setWordCount] = useState(0);
+
 
   const { width, height } = Dimensions.get("window");
   const cardWidth = width;
@@ -82,6 +84,7 @@ const GamePlay = ({
     // Fetch the game scores when the component mounts
     dispatch(fetchAllGameScores());
     showNavbar();
+    setWordCount(0)
   }, [dispatch]);
   useEffect(() => {
     if (gameScores && gameScores.length > 0) {
@@ -107,7 +110,7 @@ const GamePlay = ({
 //   console.log("GAGAG: ", game.turn, userScore.turnNum);
   // Select a random word and set definition
   const handleGetWord = () => {
-
+setWordCount((count)=> count + 1)
     hideNavbar();
     handleHideScoreCard();
     setGetWord(true);
@@ -248,7 +251,7 @@ const GamePlay = ({
   // Timer countdown effect for gameplay
   useEffect(() => {
     if (timer) {
-      console.log("OTHER OCUNT: ", countdown);
+  
       setTimeout(() => {
         set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
           countdown,
@@ -371,14 +374,15 @@ const GamePlay = ({
                 setGetWord={setGetWord}
                 word={word}
                 definition={definition}
-                getAWord={
+                getAWordButton={
                   <Buttons
-                    name={!word ? "Get Word" : "New Word"}
+                    name={!word ? "Get Word" : `New Word... ${3 - wordCount} to got`}
                     //   name={"Get Word"}
                     func={handleGetWord}
                     pulse={!word || !word.length ? "pulse" : null}
                   />
                 }
+                wordCount={wordCount}
                 handleChooseWord={handleChooseWord}
                 closeCardFront={closeCardFront}
               />

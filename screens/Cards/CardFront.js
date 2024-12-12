@@ -1320,7 +1320,7 @@
 
 // export default CardFront;
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -1340,7 +1340,7 @@ const CardFront = ({
   definition,
   handleChooseDef,
   guessedDef,
-  getAWord,
+  getAWordButton,
   handleChooseWord,
   visible,
   onClose,
@@ -1351,7 +1351,10 @@ const CardFront = ({
   userTurn,
   gameTurn,
   username,
+  wordCount
 }) => {
+
+
   const { width, height } = Dimensions.get("window");
   const cardWidth = width * 0.9;
   const cardHeight = width * 1.5;
@@ -1430,12 +1433,8 @@ const CardFront = ({
   }, [scaleAnimation]);
 
   console.log(
-    "GAMLE TURN uSER TURN, get word, username: ",
-    gameTurn,
-    userTurn,
-    getWord,
-    username,
-    closeCardFront
+    "wordCount",
+   wordCount
   );
   return (
     <>
@@ -1526,19 +1525,15 @@ const CardFront = ({
                   <View style={styles.bottomPortion}>
                     <Text style={styles.bottomText}>{definition}</Text>
                   </View>
-
+              {}
                   <View style={styles.buttons}>
-                    {getAWord}
+                    {wordCount < 3 && getAWordButton}
                     <Buttons
                       name={"Choose Word"}
                       func={handleChooseWord}
                       pulse={"pulse"}
                     />
-                    <Buttons
-                      name={"close"}
-                      func={handleClose}
-                      pulse={"pulse"}
-                    />
+                   
                   </View>
                 </View>
               </LinearGradient>
