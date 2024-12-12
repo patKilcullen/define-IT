@@ -1353,7 +1353,7 @@ const CardFront = ({
   username,
   wordCount
 }) => {
-
+const [reverseFlip, setReverseFlip] = useState(false);
 
   const { width, height } = Dimensions.get("window");
   const cardWidth = width * 0.9;
@@ -1361,6 +1361,7 @@ const CardFront = ({
   //   const cardHeight = height * .9
 
   const flipAnimation = useRef(new Animated.Value(0)).current;
+   const flipAnimation2 = useRef(new Animated.Value(0)).current;
   const positionAnimation = useRef(
     new Animated.ValueXY({ x: 0, y: 0 })
   ).current;
@@ -1388,16 +1389,60 @@ const CardFront = ({
     ]).start();
   };
 
+    const startFlipAnimation2 = () => {
+      Animated.parallel([
+        // Flip animation
+        Animated.timing(flipAnimation2, {
+          toValue: 1, // Reverse or forward
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        // Animated.timing(moveOffScreenValue, {
+        //   toValue: 0 - cardHeight, // Move completely off-screen to the right
+        //   duration: 1500, // Animation duration in ms
+        //   useNativeDriver: true, // Use native driver for performance}
+        // }),
+      ]).start();
+    };
+
   // Interpolation for back rotation
-  const backRotation = flipAnimation.interpolate({
+//   const backRotation = flipAnimation.interpolate({
+//     inputRange: [0, 0.5, 1],
+//     outputRange: ["0deg", "90deg", "180deg"], // Back starts visible, rotates to hide
+//   });
+ const backRotation = flipAnimation.interpolate({
+   inputRange: [0, 0.5, 1],
+   outputRange: reverseFlip
+     ? ["180deg", "90deg", "0deg"]
+     : ["0deg", "90deg", "180deg"], // Back starts visible, rotates to hide
+ });
+
+
+  // Interpolation for front rotation
+//   const frontRotation = flipAnimation.interpolate({
+//     inputRange: [0, 0.5, 1],
+//     outputRange: ["180deg", "90deg", "0deg"], // Front starts hidden, rotates to show
+//   });
+ const frontRotation = flipAnimation.interpolate({
+   inputRange: [0, 0.5, 1],
+   outputRange: reverseFlip
+     ? ["0deg", "90deg", "180deg"]
+     : ["180deg", "90deg", "0deg"], // Front starts hidden, rotates to show
+ });
+
+
+
+  const backRotation2 = flipAnimation2.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: ["0deg", "90deg", "180deg"], // Back starts visible, rotates to hide
+    outputRange: ["180deg", "90deg", "0deg"],
+    // Back starts visible, rotates to hide
   });
 
   // Interpolation for front rotation
-  const frontRotation = flipAnimation.interpolate({
+  const frontRotation2 = flipAnimation2.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: ["180deg", "90deg", "0deg"], // Front starts hidden, rotates to show
+    outputRange: ["0deg", "90deg", "180deg"],
+    // Front starts hidden, rotates to show
   });
 
   // Interpolation for scaling
@@ -1432,40 +1477,50 @@ const CardFront = ({
     return () => pulse.stop(); // Clean up animation on unmount
   }, [scaleAnimation]);
 
+
+  const handlePickWord = ()=>{
+      setReverseFlip(true);
+      startFlipAnimation2();
+    handleChooseWord()
+  
+  }
   console.log(
     "wordCount",
    wordCount
   );
   return (
     <>
-      {!getWord && !closeCardFront &&
-      <Animated.View
-        style={[
-          {
-            transform: [
-              { scale: !getWord && gameTurn === userTurn ? scaleAnimation : 1 },
-            ],
-          },
-        ]}
-      >
-        <TouchableOpacity
-          style={styles.cardBackContainer}
-          onPress={handleGetWord}
-          activeOpacity={0.8} // For better press feedback
+      {!getWord && !closeCardFront && (
+        <Animated.View
+          style={[
+            {
+              transform: [
+                {
+                  scale: !getWord && gameTurn === userTurn ? scaleAnimation : 1,
+                },
+              ],
+            },
+          ]}
         >
-          <CardBack title={{ first: "Balder", second: "Dash" }} />
-          {handleGetWord && (
-            <Animated.View
-              style={[
-                styles.pulsingButton,
-                { transform: [{ scale: scaleAnimation }] },
-              ]}
-            >
-              <Text style={styles.getWordText}>Click</Text>
-            </Animated.View>
-          )}
-        </TouchableOpacity>
-      </Animated.View>}
+          <TouchableOpacity
+            style={styles.cardBackContainer}
+            onPress={handleGetWord}
+            activeOpacity={0.8} // For better press feedback
+          >
+            <CardBack title={{ first: "Balder", second: "Dash" }} />
+            {handleGetWord && (
+              <Animated.View
+                style={[
+                  styles.pulsingButton,
+                  { transform: [{ scale: scaleAnimation }] },
+                ]}
+              >
+                <Text style={styles.getWordText}>Click</Text>
+              </Animated.View>
+            )}
+          </TouchableOpacity>
+        </Animated.View>
+      )}
 
       <Modal
         visible={getWord && !closeCardFront}
@@ -1493,7 +1548,12 @@ const CardFront = ({
                 {
                   width: cardWidth,
                   height: cardHeight,
-                  transform: [{ scale }, { rotateY: backRotation }],
+                  //   transform: [{ scale }, { rotateY: backRotation }],
+                  transform: [
+                    { scale },
+                    { rotateY: reverseFlip ? backRotation2 : backRotation },
+                    // { translateY: moveOffScreenValue },
+                  ],
                   position: "absolute",
                 },
               ]}
@@ -1508,7 +1568,11 @@ const CardFront = ({
                 {
                   width: cardWidth,
                   height: cardHeight,
-                  transform: [{ scale }, { rotateY: frontRotation }],
+                  //   transform: [{ scale }, { rotateY: frontRotation }],
+                  transform: [
+                    { scale },
+                    { rotateY: reverseFlip ? frontRotation2 : frontRotation },
+                  ],
                   position: "absolute",
                 },
               ]}
@@ -1525,15 +1589,14 @@ const CardFront = ({
                   <View style={styles.bottomPortion}>
                     <Text style={styles.bottomText}>{definition}</Text>
                   </View>
-              {}
+                  {}
                   <View style={styles.buttons}>
                     {wordCount < 3 && getAWordButton}
                     <Buttons
                       name={"Choose Word"}
-                      func={handleChooseWord}
+                      func={handlePickWord}
                       pulse={"pulse"}
                     />
-                   
                   </View>
                 </View>
               </LinearGradient>
