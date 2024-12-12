@@ -284,6 +284,7 @@ export const fetchHighestGameScores = createAsyncThunk(
 export const createScore = createAsyncThunk(
   "createScore",
   async ({ score, accepted, turn, turnNum, gameId, userId, displayName }) => {
+    console.log('CREATE SCORE: ', displayName)
     try {
       const docRef = await addDoc(collection(FireBaseDB, "scores"), {
         score: score || 0,
@@ -356,7 +357,7 @@ export const addPoint = createAsyncThunk(
         await updateDoc(doc.ref, { score: newScore });
 
         console.log("Score updated successfully:", newScore);
-        return { userId, gameId, score: newScore };
+        return { userName, userId, gameId, score: newScore };
       } else {
         console.error("Score document not found.");
         return rejectWithValue("Score document not found.");

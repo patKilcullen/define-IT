@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { View, Text, Button, StyleSheet, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -9,11 +9,16 @@ import { logout } from "./redux/store";
 import { onAuthStateChanged, User, signOut } from "firebase/auth";
 import { FirebaseAuth } from "./Firebase/FirebaseConfig";
 
-
+import { useNavbar } from "./NabBarContext";
+import { NavBarContext } from "./NabBarContext";
 
 const Navbar = () => {
 
   const navigation = useNavigation();
+
+     const { isNavbarVisible } = useNavbar();
+    //    const { isNavbarVisible } = useContext(NavBarContext);
+
 
   const logoutAndRedirectHome = () => {
   signOut(FirebaseAuth)
@@ -41,8 +46,10 @@ const Navbar = () => {
       return () => unsubscribe();
     }, []);
 const screenWidth = Dimensions.get("window").width;
+
+//  if (!isNavbarVisible) return null;
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, {display: isNavbarVisible ? true : "none"}]}>
     <View style={[styles.innerCard, {width:  screenWidth}]}>
       <View id="header" style={styles.header}>
         <Text id="title" style={styles.title}>
@@ -78,9 +85,10 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 2,
     borderColor: "black",
-  
+
     backgroundColor: "#88ebe6",
-    
+
+    zIndex: 5,
   },
   innerCard: {
     // padding: 10,

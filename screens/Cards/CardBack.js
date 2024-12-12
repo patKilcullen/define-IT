@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {Text, StyleSheet, Dimensions, Animated } from "react-native";
+import { Text, StyleSheet, Dimensions, Animated } from "react-native";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -8,45 +8,6 @@ const CardBack = ({ title, flip }) => {
   const cardHeight = width * 1.5;
   const cardWidth = width * 0.9;
   const textFontSize = width * 0.15;
-
-  const [flipAnimation] = useState(new Animated.Value(0));
-  // const flipAnimation = useRef(new Animated.Value(0).current);
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  const handleFlip = () => {
-    if (!isFlipped) {
-      Animated.timing(flipAnimation, {
-        toValue: 180,
-        duration: 800,
-        useNativeDriver: false, // Set to false for unsupported properties
-      }).start(() => {
-        setIsFlipped(true);
-      });
-    } else {
-      Animated.timing(flipAnimation, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: false, // Set to false for unsupported properties
-      }).start(() => {
-        setIsFlipped(false);
-      });
-    }
-  };
-  // FLIP
-  const backInterpolate = flipAnimation.interpolate({
-    inputRange: [0, 180],
-    outputRange: ["180deg", "360deg"],
-  });
-
-  const animatedStyle = {
-    transform: [{ rotateY: backInterpolate }],
-  };
-
-  useEffect(() => {
-    if (flip) {
-      handleFlip();
-    }
-  }, [flip]);
 
   // Load the custom font
   const [fontsLoaded] = useFonts({
@@ -59,10 +20,7 @@ const CardBack = ({ title, flip }) => {
 
   return (
     <Animated.View
-      style={[
-        styles.card,
-        { height: cardHeight, width: cardWidth, animatedStyle },
-      ]}
+      style={[styles.card, { height: cardHeight, width: cardWidth }]}
     >
       {/* Inner Card with Gradient */}
       <LinearGradient colors={["#88ebe6", "#283330"]} style={styles.innerCard}>

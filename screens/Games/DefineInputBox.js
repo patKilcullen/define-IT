@@ -7,20 +7,13 @@ import {
   Text,
   StyleSheet,
   KeyboardAvoidingView,
-  Button
+  Button,
 } from "react-native";
-// SOCKET
-import { SocketContext } from "../../socketProvider";
 
 import { addPlayerFakeDef } from "../../redux/gameplay";
 import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
-const DefInputBox = ({
-  //  showBackOfCard,
-  gameName,
-  userId,
-  playerTurnName,
-}) => {
+const DefInputBox = ({ gameName, userId, playerTurnName }) => {
   // COMPONENT STATE
   const [playerDef, setPlayerDef] = useState("");
   const [seeInput, setSeeInput] = useState(true);
@@ -37,7 +30,6 @@ const DefInputBox = ({
 
   // Sends player's fake definition to the player whose turn it is via a socket
   const handleEnterFakeDef = (e) => {
-
     e.preventDefault();
 
     dispatch(addPlayerFakeDef(playerDef));
@@ -50,9 +42,8 @@ const DefInputBox = ({
     });
     setSeeInput(false);
     setPlayerDef("");
-    // showBackOfCard("back");
   };
-console.log("DSFSDFSDFSDFSDFSDFSDFSDFSDF")
+
   return (
     <View style={styles.container}>
       {seeInput && (

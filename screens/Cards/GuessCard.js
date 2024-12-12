@@ -7,25 +7,26 @@ import {
   StyleSheet,
   Dimensions,
   Animated,
-  Modal
+  Modal,
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import { addPlayerFakeDef } from "../../redux/gameplay";
 import { ref, set } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
+import CardBack from "./CardBack.js";
 
-const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput }) => {
-
-
+const GuessCard = ({
+  word,
+  gameName,
+  userId,
+  seeInput,
+  setSeeInput,
+  userName,
+}) => {
   const [playerDef, setPlayerDef] = useState("");
-
+  const [reverseFlip, setReverseFlip] = useState(false);
   const inputRef = useRef();
-
-  // Set focus on input box
-  //   useEffect(() => {
-  //     inputRef.current.focus();
-  //   }, []);
 
   const dispatch = useDispatch();
 
@@ -34,109 +35,203 @@ const GuessCard = ({ word, flip, gameName, userId, seeInput, setSeeInput }) => {
   const cardWidth = width * 0.9;
   const textFontSize = width * 0.15;
 
-//   const [flipAnimation] = useState(new Animated.Value(0));
-//   // const flipAnimation = useRef(new Animated.Value(0).current);
-//   const [isFlipped, setIsFlipped] = useState(false);
-
-//   const handleFlip = () => {
-//     if (!isFlipped) {
-//       Animated.timing(flipAnimation, {
-//         toValue: 180,
-//         duration: 800,
-//         useNativeDriver: true, // Set to false for unsupported properties
-//       }).start(() => {
-//         setIsFlipped(true);
-//       });
-//     } else {
-//       Animated.timing(flipAnimation, {
-//         toValue: 0,
-//         duration: 800,
-//         useNativeDriver: true, // Set to false for unsupported properties
-//       }).start(() => {
-//         setIsFlipped(false);
-//       });
-//     }
-//   };
-//   const frontInterpolate = flipAnimation.interpolate({
-//     inputRange: [0, 180],
-//     outputRange: ["0deg", "180deg"],
-//   });
-
-//   const animatedStyle = {
-//     transform: [{ rotateY: frontInterpolate }],
-//   };
-
-//   useEffect(() => {
-//     if (flip) {
-//       handleFlip();
-//     }
-//   }, [flip]);
-
-
-  // Sends player's fake definition to the player whose turn it is via a socket
-  const handleEnterFakeDef = (e) => {
+  const handleEnterFakeDef = async (e) => {
     e.preventDefault();
 
-    dispatch(addPlayerFakeDef(playerDef));
+    try {
+      dispatch(
+        addPlayerFakeDef({ def: playerDef, userId: userId, userName: userName })
+      );
 
-    set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
-      playerDef,
-      userId,
-    });
-    setSeeInput(false);
+      await set(ref(RealTimeDB, `games/${gameName}/fake__player_definition`), {
+        playerDef,
+        userId,
+        userName,
+      });
+
+      console.log("Data successfully written to Firebase");
+    } catch (error) {
+      console.error("Firebase set error:", error.message);
+    }
     setPlayerDef("");
+    setReverseFlip(true);
+    startFlipAnimation2();
+
+    setTimeout(() => {
+      setSeeInput(false);
+    }, 2000);
   };
 
+  const flipAnimation = useRef(new Animated.Value(0)).current;
 
-   
+  const flipAnimation2 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (word) {
+      startFlipAnimation();
+    }
+  }, [word !== "" && seeInput]);
+
+  const startFlipAnimation = () => {
+    Animated.parallel([
+      // Flip animation
+      Animated.timing(flipAnimation, {
+        toValue: 1, // Reverse or forward
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const startFlipAnimation2 = () => {
+    Animated.parallel([
+      // Flip animation
+      Animated.timing(flipAnimation2, {
+        toValue: 1, // Reverse or forward
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(moveOffScreenValue, {
+        toValue: 0 - cardHeight, // Move completely off-screen
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const backRotation2 = flipAnimation2.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ["180deg", "90deg", "0deg"],
+    // Back starts visible, rotates to hide
+  });
+
+  // Interpolation for front rotation
+  const frontRotation2 = flipAnimation2.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ["0deg", "90deg", "180deg"],
+    // Front starts hidden, rotates to show
+  });
+
+  const moveOffScreenValue = useRef(new Animated.Value(0)).current;
+
+  // Interpolation for back rotation
+  const backRotation = flipAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: reverseFlip
+      ? ["180deg", "90deg", "0deg"]
+      : ["0deg", "90deg", "180deg"], // Back starts visible, rotates to hide
+  });
+
+  // Interpolation for front rotation
+  const frontRotation = flipAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: reverseFlip
+      ? ["0deg", "90deg", "180deg"]
+      : ["180deg", "90deg", "0deg"], // Front starts hidden, rotates to show
+  });
+
+  // Interpolation for scaling
+  const scale = flipAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 1.1, 1.2],
+  });
+
   return (
-    // <Animated.View style={[styles.container, animatedStyle]}>
-    <Modal
-      visible={word !== "" && seeInput}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={() => setShowTempScoreCard(false)}
-    >
-   
-      <View style={styles.modalContainer}>
-        <Animated.View style={styles.container}>
-          <View style={styles.cardsContainer}>
-            <LinearGradient
-              colors={["#88ebe6", "#283330"]}
-              style={[styles.card, { height: cardHeight, width: cardWidth }]}
+    <>
+      <Modal
+        visible={word !== "" && seeInput}
+        animationType="fade"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <Animated.View
+            style={[
+              styles.cardContainer,
+              {
+                transform: [{ scale }],
+              },
+            ]}
+          >
+            {/* Back of the card */}
+            <Animated.View
+              style={[
+                styles.cardBack,
+                {
+                  width: cardWidth,
+                  height: cardHeight,
+                  transform: [
+                    { scale },
+                    { rotateY: reverseFlip ? backRotation2 : backRotation },
+                    { translateY: moveOffScreenValue },
+                  ],
+                  position: "absolute",
+                },
+              ]}
             >
-              <View style={styles.innerCard}>
-                <View style={styles.topPortion}>
-                  <Text style={styles.topText}>{word}</Text>
-                </View>
-                <View style={styles.bottomPortion}>
-                  {seeInput && (
-                    <View>
-                      <TextInput
-                        style={[styles.textInput, { textAlignVertical: "top" }]}
-                        placeholder="Enter your definition"
-                        multiline={true}
-                        numberOfLines={4}
-                        value={playerDef}
-                        onChangeText={(text) => setPlayerDef(text)}
-                        ref={inputRef}
-                      />
+              <CardBack title={{ first: "What's", second: "It?" }} />
+            </Animated.View>
 
-                      <TouchableOpacity
-                        style={styles.button}
-                        onPress={handleEnterFakeDef}
-                      >
-                        <Text>Submit</Text>
-                      </TouchableOpacity>
+            {/* Front of the card */}
+
+            <Animated.View
+              style={[
+                styles.card,
+                {
+                  width: cardWidth,
+                  height: cardHeight,
+                  transform: [
+                    { scale },
+                    { rotateY: reverseFlip ? frontRotation2 : frontRotation },
+                  ],
+                  position: "absolute",
+                },
+              ]}
+            >
+              <View style={styles.cardsContainer}>
+                <LinearGradient
+                  colors={["#88ebe6", "#283330"]}
+                  style={[
+                    styles.card,
+                    { height: cardHeight, width: cardWidth },
+                  ]}
+                >
+                  <View style={styles.innerCard}>
+                    <View style={styles.topPortion}>
+                      <Text style={styles.topText}>{word}</Text>
                     </View>
-                  )}
-                </View>
+                    <View style={styles.bottomPortion}>
+                      {seeInput && (
+                        <View>
+                          <TextInput
+                            style={[
+                              styles.textInput,
+                              { textAlignVertical: "top" },
+                            ]}
+                            placeholder="Enter your definition"
+                            multiline={true}
+                            numberOfLines={4}
+                            value={playerDef}
+                            onChangeText={(text) => setPlayerDef(text)}
+                            ref={inputRef}
+                          />
+
+                          <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleEnterFakeDef}
+                          >
+                            <Text>Submit</Text>
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </LinearGradient>
               </View>
-            </LinearGradient>
-          </View>
-        </Animated.View>
-      </View>
-    </Modal>
+            </Animated.View>
+          </Animated.View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -147,6 +242,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
   },
+  cardContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    backfaceVisibility: "hidden",
+  },
+  cardBack: {
+    zIndex: 1,
+    borderRadius: 50,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10,
+    overflow: "hidden",
+    backfaceVisibility: "hidden", // Prevents the back and front from showing simultaneously
+  },
+  card: {
+    zIndex: 2004,
+    borderRadius: 50,
+    padding: 30,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    borderWidth: 8,
+    backfaceVisibility: "hidden", // Prevents the back and front from showing simultaneously
+  },
   topPortion: {
     height: "40%",
     width: "100%",
@@ -154,8 +275,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderBottomWidth: 5,
     borderBottomColor: "#571122",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    overflow: "hidden",
   },
   topText: {
     fontSize: 40,
@@ -186,22 +306,6 @@ const styles = StyleSheet.create({
     marginTop: -10,
   },
 
-  card: {
-    borderRadius: 50,
-    padding: 30,
-    backgroundColor: "#e6e8dc",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    marginVertical: 10,
-    borderColor: "black",
-    borderWidth: 8,
-  },
   innerCard: {
     width: "100%",
     height: "100%",

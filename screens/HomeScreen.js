@@ -31,14 +31,14 @@ export default function HomeScreen() {
     
 
          
-      const handleGetWord = async () => {
+//       const handleGetWord = async () => {
         
-        setError(null);
-let newWord = balderdashWords[Math.random() * balderdashWords.length]
+//         setError(null);
+// let newWord = balderdashWords[Math.random() * balderdashWords.length]
 
-          setWord(newWord.word);
-         setDefinition(newWord.definition);
-      };
+//           setWord(newWord.word);
+//          setDefinition(newWord.definition);
+//       };
 
         const handleAskAI = async () => {
           setLoading(true);

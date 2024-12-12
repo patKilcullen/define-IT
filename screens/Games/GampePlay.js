@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import { View, StyleSheet, ScrollView, Text, Dimensions } from "react-native";
 
 // Redux State and Actions
 import {
@@ -27,12 +27,17 @@ import { ref, set, onValue } from "firebase/database";
 import { RealTimeDB } from "../../Firebase/FirebaseConfig.js";
 import { balderdashWords } from "../../Words.js";
 
+import { useNavbar } from "../../NabBarContext.js";
+import { fetchSingleGame } from "../../redux/singleGame.js";
+
 const GamePlay = ({
   game,
   userScore,
   userId,
   reloadScores,
   setPlayerTurnName,
+  handleHideScoreCard,
+  setHideScoreCard,
 }) => {
   const dispatch = useDispatch();
   const me = useSelector(selectMe);
@@ -41,31 +46,38 @@ const GamePlay = ({
   // Retrieve user and game details
   const gameName = game.name;
   const { user } = useContext(UserContext);
+  const { hideNavbar, showNavbar } = useNavbar();
   const username = user.displayName;
 
   // Local Component State
   const [word, setWord] = useState("");
+  const [getWord, setGetWord] = useState("");
   const [definition, setDefinition] = useState("");
-  const [guessDef, setGuessDef] = useState(false);
   const [defInput, setDefInput] = useState(false);
   const [timer, setTimer] = useState(false);
-  const [choseWord, setChoseWord] = useState(false);
-  const [playerTurn, setPlayerTurn] = useState("");
 
   const [flip, setFlip] = useState(false);
-  const [flipSide, setFlipSide] = useState("back");
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(1);
   const [playGame, setPlayGame] = useState(false);
+  const [closeGetWord, setCloseGetWord] = useState(false);
+  const [wordCount, setWordCount] = useState(0);
+  const [showWordCount, setShowWordCount] = useState(false);
 
+  const { width, height } = Dimensions.get("window");
+  const cardWidth = width;
+  const cardHeight = height;
 
-  useEffect(()=>{
-   dispatch(clearWordState()); 
-   setWord("")
-  }, [])
+  useEffect(() => {
+    dispatch(clearWordState());
+    setWord("");
+    setCountdown(10);
+  }, []);
 
   useEffect(() => {
     // Fetch the game scores when the component mounts
     dispatch(fetchAllGameScores());
+    showNavbar();
+    // setWordCount(0);
   }, [dispatch]);
   useEffect(() => {
     if (gameScores && gameScores.length > 0) {
@@ -74,17 +86,33 @@ const GamePlay = ({
         (score) => score.turnNum === game.turn
       );
 
-      setPlayerTurn(currentPlayerTurn);
+      //   setPlayerTurn(currentPlayerTurn);
       if (currentPlayerTurn) {
         setPlayerTurnName(currentPlayerTurn.displayName);
       }
+    }
 
-    
+    if (game.turn === userScore?.turnNum) {
+      dispatch(fetchSingleGame(game.id));
     }
   }, [gameScores, game.turn]);
 
+  const handleShowWordCount = () => {
+    setShowWordCount(true);
+    setTimeout(() => {
+      setShowWordCount(false);
+    }, 3000);
+  };
+
   // Select a random word and set definition
   const handleGetWord = () => {
+    setWordCount((count) => count + 1);
+    if (wordCount > 0) {
+      handleShowWordCount();
+    }
+    hideNavbar();
+    handleHideScoreCard();
+    setGetWord(true);
     const newWord =
       balderdashWords[Math.floor(Math.random() * balderdashWords.length)];
     setWord(newWord?.word);
@@ -110,10 +138,7 @@ const GamePlay = ({
     set(ref(RealTimeDB, `games/${game.name}/countdown`), game.name);
     dispatch(addRealDefinition({ type: "real", definition }));
     handleGetFakeDefs();
-
     setTimer(true);
-    setChoseWord(true);
-
     setDefInput(true);
     set(ref(RealTimeDB, `games/${gameName}/word`), {
       word,
@@ -122,6 +147,8 @@ const GamePlay = ({
       playerTurnName: user.displayName,
       play: true,
     });
+    setCloseGetWord(true);
+      setWordCount(0);
   };
 
   // Firebase listeners for various game data
@@ -153,26 +180,20 @@ const GamePlay = ({
     // Listener for countdown timer
     const countdownNumListener = onValue(countdownNumRef, (snapshot) => {
       const data = snapshot.val();
-  console.log("THOP: ", username, data?.countdown);
+
       if (data && userId !== data.playerTurnId) {
-         console.log("THIS COUNT: ", data?.countdown, username, seeInput);
         if (data.countdown > 0) {
           setCountdown(data.countdown);
-          if(data.countdown === 1){
-              console.log("ONE: ", data?.countdown, username);
-              setSeeInput(false)
+          if (data.countdown === 1) {
+            setSeeInput(false);
           }
         }
         if (data.countdown === 0) {
-                console.log("count 0: ", data?.countdown, username);
-          setCountdown(0);
           setDefInput(false);
-
-         
+          setGetWord(false);
+          setCloseCardFront(false);
           if (data.play === true) {
-             console.log("data play trueee: ", data?.countdown, username);
             setPlayGame(true);
-            //   setSeeInput(true);
           }
         }
       }
@@ -183,7 +204,11 @@ const GamePlay = ({
       const data = snapshot.val();
       if (data) {
         dispatch(
-          addDefinition({ type: [data.userId], definition: data.playerDef })
+          addDefinition({
+            type: data.userName,
+            definition: data.playerDef,
+            userId,
+          })
         );
       }
     });
@@ -210,36 +235,36 @@ const GamePlay = ({
     setPlayerTurnName,
     setWord,
     setFlip,
-    setFlipSide,
     setTimer,
   ]);
-
 
   const [seeInput, setSeeInput] = useState(true);
   // Timer countdown effect for gameplay
   useEffect(() => {
     if (timer) {
       setTimeout(() => {
-  
         set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
           countdown,
           playerTurnId: userId,
           play: true,
         });
         if (countdown > 0) {
-         
           setDefInput(true);
           setCountdown((countdown) => countdown - 1);
-
-
+        }
+        if (countdown === 1) {
+          setCloseCardFront(true);
         } else if (countdown === 0) {
-     
           set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
             playerTurnId: userId,
             play: false,
           });
           setPlayGame(true);
           setDefInput(false);
+          setCloseGetWord(false);
+          console.log("END OF TIMER");
+          setGetWord(false);
+          setCloseCardFront(false);
         } else {
           setDefInput(false);
         }
@@ -247,134 +272,125 @@ const GamePlay = ({
     }
   }, [timer, countdown]);
 
-// useEffect(() => {
-//   if (timer && countdown > 0) {
-//     const interval = setInterval(() => {
-//       setCountdown((prevCountdown) => {
-//         if (prevCountdown > 1) {
-//           return prevCountdown - 1;
-//         } else {
-//           clearInterval(interval); // Stop interval when reaching 0
-//           console.log("HERRR DUDE: ", username);
-//           set(ref(RealTimeDB, `games/${gameName}/countdownNum`), {
-//             playerTurnId: userId,
-//             play: false,
-//           });
-//           setPlayGame(true);
-//           setDefInput(false);
-//           return 0; // Ensure countdown is exactly 0
-//         }
-//       });
-//     }, 1000);
-
-//     return () => clearInterval(interval); // Cleanup interval
-//   }
-// }, [timer, countdown]);
+  const [closeCardFront, setCloseCardFront] = useState(false);
+  const handleCloseCardFront = () => {
+    setCloseCardFront(true);
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView>
-        {/* Display gameplay or guess definitions based on playGame state */}
-        {!playGame ? (
-          <View>
-            <Text>
-              Countdown: {countdown}, Timer: {timer}
-            </Text>
-
-            {/* Button to get a word if it's the player's turn */}
-            {game && userScore && game.turn === userScore.turnNum ? (
-              <Buttons
-                name={!word ? "Get Word" : "Get Another Word"}
-                func={handleGetWord}
-                pulse={!word || !word.length ? "pulse" : null}
+      {/* Display gameplay or guess definitions based on playGame state */}
+      {!playGame ? (
+        <View>
+          <Text>
+            Countdown: {countdown}, Timer: {timer}
+          </Text>
+          {/* Display GuessCard and CardFront components based on conditions */}
+          <View
+            style={[
+              styles.cardContainer,
+              { height: cardHeight, width: cardWidth },
+            ]}
+          >
+            {defInput &&
+            game &&
+            userScore &&
+            game.turn !== userScore.turnNum ? (
+              <GuessCard
+                word={word}
+                definition={definition}
+                flip={flip}
+                userId={userId}
+                gameName={game.name}
+                seeInput={seeInput}
+                setSeeInput={setSeeInput}
+                userName={username}
               />
             ) : null}
+            {userScore && userScore.turnNum && (
+              <CardFront
+                gameId={game.id}
+                username={username}
+                gameTurn={game.turn}
+                userTurn={userScore?.turnNum}
+                handleGetWord={
+                  game &&
+                  !closeGetWord &&
+                  userScore &&
+                  game.turn === userScore.turnNum
+                    ? handleGetWord
+                    : null
+                }
+                getWord={getWord}
+                setGetWord={setGetWord}
+                word={word}
+                definition={definition}
+                getAWordButton={
+                  <Buttons
+                    name={!word ? "Get Word" : `New Word`}
+                    //   name={"Get Word"}
+                    func={handleGetWord}
+                    pulse={!word || !word.length ? "pulse" : null}
+                  />
+                }
+                wordCount={wordCount}
+                handleChooseWord={handleChooseWord}
+                closeCardFront={closeCardFront}
+                showWordCount={showWordCount}
+              />
+            )}
 
-            {/* Display GuessCard and CardFront components based on conditions */}
-            <View style={styles.cardContainer}>
-              {defInput &&
-              game &&
-              userScore &&
-              game.turn !== userScore.turnNum ? (
-                <GuessCard
-                  word={word}
-                  definition={definition}
-                  flip={flip}
-                  userId={userId}
-                  gameName={game.name}
-                  seeInput={seeInput}
-                  setSeeInput={setSeeInput}
-                />
-              ) : null}
-              {game && userScore && game.turn === userScore.turnNum ? (
-                <CardFront word={word} definition={definition} />
-              ) : null}
-
+            {closeGetWord && (
               <View style={styles.backCard}>
                 <CardBack
                   title={{ first: "Balder", second: "Dash" }}
                   flip={flip}
                 />
               </View>
-            </View>
+            )}
+          </View>
+        </View>
+      ) : (
+        // Display GuessDefs component when playGame is true
 
-            {/* Button to choose word once a word is set */}
-            {/* {definition && !choseWord ? (
-              <Buttons
-                name={"Choose Word"}
-                func={handleChooseWord}
-                pulse={"pulse"}
+        <View style={styles.container}>
+          <View style={styles.guessDef}>
+            <View style={styles.cardContainer}>
+              <GuessDefs
+                word={word}
+                userScore={userScore}
+                userId={userId}
+                gameId={game.id}
+                gameName={gameName}
+                setPlayGame={setPlayGame}
+                reloadScores={reloadScores}
+                game={game}
+                setDefinition={setDefinition}
+                setWord={setWord}
+                setTimer={setTimer}
+                setGamePlayCountdown={setCountdown}
+                setSeeInput={setSeeInput}
+                setParentCountdown={setCountdown}
+                userName={username}
+                setGetWord={setGetWord}
+                setHideScoreCard={setHideScoreCard}
               />
-            ) : null} */}
-
-            <Buttons
-              name={"Choose Word"}
-              func={handleChooseWord}
-              pulse={"pulse"}
-            />
-          </View>
-        ) : (
-          // Display GuessDefs component when playGame is true
-
-          <View style={styles.container}>
-            <View style={styles.guessDef}>
-              <View style={styles.cardContainer}>
-                <GuessDefs
-                  word={word}
-                  userScore={userScore}
-                  userId={userId}
-                  gameId={game.id}
-                  gameName={gameName}
-                  setPlayGame={setPlayGame}
-                  reloadScores={reloadScores}
-                  game={game}
-                  setDefinition={setDefinition}
-                  setWord={setWord}
-                  setTimer={setTimer}
-                  setChoseWord={setChoseWord}
-                  setGamePlayCountdown={setCountdown}
-                  setSeeInput={setSeeInput}
-                />
-              </View>
             </View>
           </View>
-        )}
-      </ScrollView>
+        </View>
+      )}
+      {/* </ScrollView> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "pink",
   },
   cardContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
+    borderColor: "transparent",
+    borderWidth: 20,
   },
   guessDef: {
     marginLeft: -13,
